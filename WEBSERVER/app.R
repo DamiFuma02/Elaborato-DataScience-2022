@@ -5,11 +5,21 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
-  includeCSS("./STYLES/main.css"),
-  img(src = "./IMAGES/FLOWCHART.png"),
-  img(src = "./IMAGES/TIMELINE.png"),
-  a(id = "startLink","START", href="./HTML/Presentazione.html"),
-  textOutput("b")
+  tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "./STYLES/main.css")),
+  p(id = "info","Fumagalli Damiano Matr: 157547   "),
+  
+  div(id = "images",
+    h1(id = "title","MOVIE ANALISYS"),
+    a(id = "startLink","START", href="./HTML/Presentazione.html"),
+    br(),
+    img(id = "flow" ,src = "./IMAGES/FLOWCHART.png"),
+    h3("WORKFLOW"),
+    img(src = "./IMAGES/TIMELINE.png"),
+    img(src = "./IMAGES/TIMETABLE.png"),
+  ),
+  
+  
+  
 )
 server <- 
   function(input,output){

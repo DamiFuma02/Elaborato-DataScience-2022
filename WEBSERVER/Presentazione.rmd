@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### FLOWCHART
 
-![](www/IMAGES/FLOWCHART.png){width="1200"}
+![](www/IMAGES/FLOWCHART.png){width="900"}
 
 ![](www/IMAGES/TIMELINE.png)
 
