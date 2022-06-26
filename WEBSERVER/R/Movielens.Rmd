@@ -1,0 +1,134 @@
+---
+title: "MOVIELENS"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(tibble)
+library(leaflet)
+```
+
+```{r import}
+movies <- read_csv("MOVIELENS/movies.csv")
+View(movies)
+spec(movies)
+
+ratings <- read_csv("MOVIELENS/ratings.csv")
+View(ratings)
+spec(ratings)
+
+users <- read_csv("MOVIELENS/users.csv", col_types = "dddcl")
+
+View(users)
+spec(users)
+
+
+
+
+u_user <- read_csv("MOVIELENS/ml-100k/u.user.csv", col_names = c("userId","Age","Gender","Occupation","Zip-code"))
+#View(u_user)
+
+
+uszips <- read_csv("MOVIELENS/zipcodes/uszips.csv" )
+#View(uszips)
+```
+
+# VALIDAZIONE DATI
+
+```{r}
+if ( levels(factor(u_user$userId)) == (u_user %>% arrange(userId))$userId){
+  print("VALORI DI USER ID VALIDI E IN SCALA SENZA VALORI MANCANTI")
+}
+```
+
+# CORRISPONDENZA USERID ZIPCODE
+
+I DATI RELATIVI ALLE INFO GEOGRAFICHE DEGLI ZIPCODE SONO PRESENTI NEL FILE **USZIPS**
+
+```{r}
+corr = left_join(users,uszips, by = "zip") %>% select("userId","Age","Male","Occupation", "zip", "lat", "lng", "city")
+```
+
+# FILTRARE EVENTUALI DATI NULLI
+
+```{r}
+corr=corr %>% filter(!is.na(lat) & !is.na(lng))
+View(corr)
+
+if (all(!is.na(corr))){ print("VALORI VALIDI")}
+
+write_csv(corr,"MOVIELENS/zipUsersLocations.csv")
+
+userLocations = read_csv("MOVIELENS/zipUsersLocations.csv", col_types = "ddldcddc")
+spec(userLocations)
+
+```
+
+# PROVA MAPPA
+
+```{r}
+library(usmap)
+library(ggplot2)
+
+prova = left_join(users,uszips,by="zip") %>% select(userId,Age,zip,Male,lat, lng, county_fips)
+prova = prova %>% filter(!is.na(lat) & !is.na(lng))
+View(prova)
+colnames(prova)[7] = "fips"
+
+prova = prova %>% filter(!is.na(Age))
+
+
+head(prova)
+
+plot_usmap(data = prova, values = "Age", color="black")+  theme(legend.position = "right")
+ggplot(data = prova, aes(lng,lat), color = Age) + geom_point()
+
+
+
+```
+
+# LEAFLET
+
+```{r}
+library(leaflet)
+library(rgdal)
+
+
+countries <- readOGR("https://rstudio.github.io/leaflet/json/countries.geojson")
+
+View(countries)
+
+
+
+pal = colorNumeric(
+  "Blues",prova$Age
+)
+
+typeof(prova$Age)
+
+
+
+leaflet(countries) %>% addPolygons(stroke = FALSE, smoothFactor = 0.2, fillOpacity = 1, color = ~pal(prova$Age))
+
+
+
+
+View(prova)
+
+mean(prova$lng)
+
+
+leaflet(prova) %>% setView(mean(prova$lng),mean(prova$lat), zoom = 3) %>% addTiles() %>% %>% addMarkers(
+  prova$lng,prova$lat, popup = prova$Age
+)
+```

@@ -11,31 +11,23 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # **INTRODUZIONE**
 
-### FLOWCHART
-
-![](www/IMAGES/FLOWCHART.png){width="900"}
-
-![](www/IMAGES/TIMELINE.png)
-
-![](www/IMAGES/TIMETABLE.png)
-
 ### STRUMENTI
 
--   RSTUDIO
+-   ![](images/rstudio.png){width="100"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
-    -   READR (import data)
+    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} (import data)
 
-    -   TIDYR (tidy)
+    -   [SPARKLYR](../CHEATSHEETS/sparklyr.pdf){target="_blank"}(big data)
 
-    -   DPLYR (transform)
+    -   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"}(tidy)
 
-    -   MODELR (model)
+    -   [DPLYR](../CHEATSHEETS/dplyr.pdf){target="_blank"}(transform)
 
-    -   SHINY; GGPLOT (visualize)
+    -   [MODELR](../CHEATSHEETS/modelr.pdf){target="_blank"}(model)
+
+    -   [SHINY](../CHEATSHEETS/shiny.pdf){target="_blank"}; [GGPLOT](../CHEATSHEETS/ggplot.pdf){target="_blank"} (visualize)
 
 ### FONTE DEI DATI
-
--   [KAGGLE-imdb](https://www.kaggle.com/datasets/ashirwadsangwan/imdb-dataset)
 
 -   [MOVIELENS-userinfo + ZIPCODES](https://grouplens.org/datasets/movielens/1m/)
 

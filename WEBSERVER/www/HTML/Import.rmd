@@ -1,0 +1,123 @@
+---
+title: "IMPORT DATA"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## INDICE
+
+-   [AMAZON](#amazon)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [DISNEY+](#disney)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [GROSS](#gross)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [MOVIELENS](#movielens)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [NETFLIX](#netflix)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [SEQUELS](#sequels)
+
+    -   pulizia
+
+    -   trasformazione
+
+-   [TMDB](#tmdb)
+
+    -   pulizia
+
+    -   trasformazione
+
+# AMAZON
+
+```{r}
+library(readr)
+amazon  <- read_csv("../DATASETS/AMAZON/amazon_prime_titles.csv")
+spec(amazon)
+View(amazon)
+```
+
+# DISNEY
+
+```{r}
+library(readr)
+disney <- read_csv("../DATASETS/DISNEY/disney_plus_titles.csv")
+spec(disney)
+View(disney)
+```
+
+# GROSS
+
+```{r}
+library(readr)
+HighestGrossers <- read_csv("../DATASETS/GROSS/HighestGrossers.csv")
+spec(HighestGrossers)
+View(HighestGrossers)
+```
+
+# MOVIELENS
+
+I 3 dataset sono reperibili in [questo link](https://grouplens.org/datasets/movielens/1m/)
+
+I file sono in formato DAT, perciò tramite il blocco note è possibile sostituire i separatori da "::" a "," e successivamente salvare il file nel formato CSV
+
+```{r}
+library(readr)
+movies <- read_csv("../DATASETS/MOVIELENS/ml-1m/movies.csv", col_names = c("movieID","Title","Genres"))
+spec(movies)
+View(movies)
+ratings <- read_csv("../DATASETS/MOVIELENS/ml-1m/ratings.csv", col_names = c("userID","movieID","Rating","Timestamp"))
+spec(ratings)
+View(ratings)
+users <- read_csv("../DATASETS/MOVIELENS/ml-1m/users.csv", col_names = c("UserID","Gender","Age","Occupation","Zip"), col_types = "?")
+spec(users)
+View(users)
+
+# USA ZIPCODES
+uszips <- read_csv("../DATASETS/MOVIELENS/uszips.csv")
+spec(uszips)
+# View(uszips)
+```
+
+# NETFLIX
+
+```{r}
+library(readr)
+netflix <- read_csv("../DATASETS/NETFLIX/netflix_titles.csv")
+spec(netflix)
+View(netflix)
+```
+
+# SEQUELS
+
+```{r}
+library(readr)
+sequels <- read_csv("../DATASETS/SEQUELS/sequels.csv")
+View(sequels)
+spec(sequels)
+```
