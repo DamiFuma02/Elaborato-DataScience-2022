@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-06-26" />
+<meta name="date" content="2022-06-28" />
 
 <title>IMPORT DATA</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">IMPORT DATA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-06-26</h4>
+<h4 class="date">2022-06-28</h4>
 
 </div>
 
@@ -412,87 +412,12 @@ pre code {
 </div>
 <div id="amazon" class="section level1">
 <h1>AMAZON</h1>
-<pre class="r"><code>library(readr)</code></pre>
-<pre><code>## Warning: il pacchetto &#39;readr&#39; è stato creato con R versione 4.1.3</code></pre>
-<pre class="r"><code>amazon  &lt;- read_csv(&quot;../DATASETS/AMAZON/amazon_prime_titles.csv&quot;)</code></pre>
-<pre><code>## Rows: 9668 Columns: 12
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (11): show_id, type, title, director, cast, country, date_added, rating,...
-## dbl  (1): release_year
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(amazon)</code></pre>
-<pre><code>## cols(
-##   show_id = col_character(),
-##   type = col_character(),
-##   title = col_character(),
-##   director = col_character(),
-##   cast = col_character(),
-##   country = col_character(),
-##   date_added = col_character(),
-##   release_year = col_double(),
-##   rating = col_character(),
-##   duration = col_character(),
-##   listed_in = col_character(),
-##   description = col_character()
-## )</code></pre>
-<pre class="r"><code>View(amazon)</code></pre>
 </div>
 <div id="disney" class="section level1">
 <h1>DISNEY</h1>
-<pre class="r"><code>library(readr)
-disney &lt;- read_csv(&quot;../DATASETS/DISNEY/disney_plus_titles.csv&quot;)</code></pre>
-<pre><code>## Rows: 1450 Columns: 12
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (11): show_id, type, title, director, cast, country, date_added, rating,...
-## dbl  (1): release_year
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(disney)</code></pre>
-<pre><code>## cols(
-##   show_id = col_character(),
-##   type = col_character(),
-##   title = col_character(),
-##   director = col_character(),
-##   cast = col_character(),
-##   country = col_character(),
-##   date_added = col_character(),
-##   release_year = col_double(),
-##   rating = col_character(),
-##   duration = col_character(),
-##   listed_in = col_character(),
-##   description = col_character()
-## )</code></pre>
-<pre class="r"><code>View(disney)</code></pre>
 </div>
 <div id="gross" class="section level1">
 <h1>GROSS</h1>
-<pre class="r"><code>library(readr)
-HighestGrossers &lt;- read_csv(&quot;../DATASETS/GROSS/HighestGrossers.csv&quot;)</code></pre>
-<pre><code>## Rows: 27 Columns: 8
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (6): MOVIE, GENRE, MPAA RATING, DISTRIBUTOR, TOTAL FOR YEAR, TOTAL IN 20...
-## dbl (1): YEAR
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(HighestGrossers)</code></pre>
-<pre><code>## cols(
-##   YEAR = col_double(),
-##   MOVIE = col_character(),
-##   GENRE = col_character(),
-##   `MPAA RATING` = col_character(),
-##   DISTRIBUTOR = col_character(),
-##   `TOTAL FOR YEAR` = col_character(),
-##   `TOTAL IN 2019 DOLLARS` = col_character(),
-##   `TICKETS SOLD` = col_number()
-## )</code></pre>
-<pre class="r"><code>View(HighestGrossers)</code></pre>
 </div>
 <div id="movielens" class="section level1">
 <h1>MOVIELENS</h1>
@@ -500,146 +425,12 @@ HighestGrossers &lt;- read_csv(&quot;../DATASETS/GROSS/HighestGrossers.csv&quot;
 <p>I file sono in formato DAT, perciò tramite il blocco note è possibile
 sostituire i separatori da “::” a “,” e successivamente salvare il file
 nel formato CSV</p>
-<pre class="r"><code>library(readr)
-movies &lt;- read_csv(&quot;../DATASETS/MOVIELENS/ml-1m/movies.csv&quot;, col_names = c(&quot;movieID&quot;,&quot;Title&quot;,&quot;Genres&quot;))</code></pre>
-<pre><code>## Warning: One or more parsing issues, see `problems()` for details</code></pre>
-<pre><code>## Rows: 3883 Columns: 3
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (2): Title, Genres
-## dbl (1): movieID
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(movies)</code></pre>
-<pre><code>## cols(
-##   movieID = col_double(),
-##   Title = col_character(),
-##   Genres = col_character()
-## )</code></pre>
-<pre class="r"><code>View(movies)
-ratings &lt;- read_csv(&quot;../DATASETS/MOVIELENS/ml-1m/ratings.csv&quot;, col_names = c(&quot;userID&quot;,&quot;movieID&quot;,&quot;Rating&quot;,&quot;Timestamp&quot;))</code></pre>
-<pre><code>## Rows: 1000209 Columns: 4
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## dbl (4): userID, movieID, Rating, Timestamp
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(ratings)</code></pre>
-<pre><code>## cols(
-##   userID = col_double(),
-##   movieID = col_double(),
-##   Rating = col_double(),
-##   Timestamp = col_double()
-## )</code></pre>
-<pre class="r"><code>View(ratings)
-users &lt;- read_csv(&quot;../DATASETS/MOVIELENS/ml-1m/users.csv&quot;, col_names = c(&quot;UserID&quot;,&quot;Gender&quot;,&quot;Age&quot;,&quot;Occupation&quot;,&quot;Zip&quot;), col_types = &quot;?&quot;)
-spec(users)</code></pre>
-<pre><code>## cols(
-##   UserID = col_double(),
-##   Gender = col_character(),
-##   Age = col_double(),
-##   Occupation = col_double(),
-##   Zip = col_character()
-## )</code></pre>
-<pre class="r"><code>View(users)
-
-# USA ZIPCODES
-uszips &lt;- read_csv(&quot;../DATASETS/MOVIELENS/uszips.csv&quot;)</code></pre>
-<pre><code>## Rows: 33788 Columns: 18
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (10): zip, city, state_id, state_name, county_fips, county_name, county_...
-## dbl  (4): lat, lng, population, density
-## lgl  (4): zcta, parent_zcta, imprecise, military
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(uszips)</code></pre>
-<pre><code>## cols(
-##   zip = col_character(),
-##   lat = col_double(),
-##   lng = col_double(),
-##   city = col_character(),
-##   state_id = col_character(),
-##   state_name = col_character(),
-##   zcta = col_logical(),
-##   parent_zcta = col_logical(),
-##   population = col_double(),
-##   density = col_double(),
-##   county_fips = col_character(),
-##   county_name = col_character(),
-##   county_weights = col_character(),
-##   county_names_all = col_character(),
-##   county_fips_all = col_character(),
-##   imprecise = col_logical(),
-##   military = col_logical(),
-##   timezone = col_character()
-## )</code></pre>
-<pre class="r"><code># View(uszips)</code></pre>
 </div>
 <div id="netflix" class="section level1">
 <h1>NETFLIX</h1>
-<pre class="r"><code>library(readr)
-netflix &lt;- read_csv(&quot;../DATASETS/NETFLIX/netflix_titles.csv&quot;)</code></pre>
-<pre><code>## Rows: 8807 Columns: 12
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (11): show_id, type, title, director, cast, country, date_added, rating,...
-## dbl  (1): release_year
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>spec(netflix)</code></pre>
-<pre><code>## cols(
-##   show_id = col_character(),
-##   type = col_character(),
-##   title = col_character(),
-##   director = col_character(),
-##   cast = col_character(),
-##   country = col_character(),
-##   date_added = col_character(),
-##   release_year = col_double(),
-##   rating = col_character(),
-##   duration = col_character(),
-##   listed_in = col_character(),
-##   description = col_character()
-## )</code></pre>
-<pre class="r"><code>View(netflix)</code></pre>
 </div>
 <div id="sequels" class="section level1">
 <h1>SEQUELS</h1>
-<pre class="r"><code>library(readr)
-sequels &lt;- read_csv(&quot;../DATASETS/SEQUELS/sequels.csv&quot;)</code></pre>
-<pre><code>## Rows: 1074 Columns: 15
-## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (9): Const, Created, Modified, Title, URL, Title Type, Genres, Release D...
-## dbl (5): Position, IMDb Rating, Runtime (mins), Year, Num Votes
-## lgl (1): Description
-## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>View(sequels)
-spec(sequels)</code></pre>
-<pre><code>## cols(
-##   Position = col_double(),
-##   Const = col_character(),
-##   Created = col_character(),
-##   Modified = col_character(),
-##   Description = col_logical(),
-##   Title = col_character(),
-##   URL = col_character(),
-##   `Title Type` = col_character(),
-##   `IMDb Rating` = col_double(),
-##   `Runtime (mins)` = col_double(),
-##   Year = col_double(),
-##   Genres = col_character(),
-##   `Num Votes` = col_double(),
-##   `Release Date` = col_character(),
-##   Directors = col_character()
-## )</code></pre>
 </div>
 
 

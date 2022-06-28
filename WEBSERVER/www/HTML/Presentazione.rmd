@@ -15,9 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   ![](images/rstudio.png){width="100"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
-    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} (import data)
+    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} [(import data)](Import.html)
 
-    -   [SPARKLYR](../CHEATSHEETS/sparklyr.pdf){target="_blank"}(big data)
+    -   [SPARKLYR](../CHEATSHEETS/sparklyr.pdf){target="_blank"}(big data) --\> collegamento con TMDB API
 
     -   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"}(tidy)
 
@@ -30,6 +30,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ### FONTE DEI DATI
 
 -   [MOVIELENS-userinfo + ZIPCODES](https://grouplens.org/datasets/movielens/1m/)
+
+-   [ML 100k](https://grouplens.org/datasets/movielens/100k/)
 
 -   [Movie Sequels](https://data.world/priyankad0993/sequels)
 
@@ -58,6 +60,8 @@ knitr::opts_chunk$set(echo = TRUE)
 -   gross / avarage rating
 
 -   film preferiti delle annate correlati alla mentalità?
+
+-   ANALISI ANTROPOLOGICA DEI FILM
 
 -   trovare film con protagonisti deceduti nella vita reale
 

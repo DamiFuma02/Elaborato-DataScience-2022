@@ -1,0 +1,72 @@
+---
+title: "PULIZIA"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(stringr)
+knitr::opts_chunk$set(echo = TRUE)
+source("../../R/importData.R")
+```
+
+# MOVIELENS
+
+-   modificare i separatori da "::" a ";"
+
+-   Alcuni film sono scritti in notazione francese, quindi presentano una "," intermedia nel loro nome. di conseguenza il formato CSV non è valido
+
+-   Sostituire tutti i carattteri speciali
+
+```{r}
+# rimuove l'ultimo carattere
+View(movies)
+
+movies = separate(movies,Title,into = c("Title","Year"),sep = -5)
+# rimuove gli ultimi due caratteri
+movies$Title = gsub('.{2}$', '', movies$Title)
+
+movies$Year = gsub('.{1}$', '', movies$Year)
+
+
+for (i in 1:nrow(movies)){
+  if (grepl(",",movies$Title[i])){
+    arr = unlist(str_split(movies$Title[i],", "))
+    movies$Title[i] = paste(arr[2],arr[1])
+  }
+}
+
+View(movies)
+
+
+write_csv(movies,"movies.csv")
+
+mov = read_csv("movies.csv",col_types = "?")
+
+View(mov)    #--_> MOVIES FILTRATO
+spec(mov)
+```
+
+```{r}
+spec(ratings)
+ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating))
+```
+
+```{r}
+spec(users)
+users = users %>% filter(!is.na(Gender) && !is.na(Age) && !is.na(Occupation) && !is.na(Zip))
+```
+
+# AMAZON
+
+-   Esistono campi con director NA
+
+-   
+
+```{r}
+View(amazon)
+spec(amazon)
+```
