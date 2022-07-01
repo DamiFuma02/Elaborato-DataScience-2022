@@ -70,3 +70,62 @@ users = users %>% filter(!is.na(Gender) && !is.na(Age) && !is.na(Occupation) && 
 View(amazon)
 spec(amazon)
 ```
+
+# SEQUEL
+
+```{r}
+View(sequels)
+
+(titleTypes = levels(factor(sequels$`Title Type`)))
+
+# CREATED E MODIFIED NON CI INTERESSANO NELLA NOSTRA RICERCA
+
+
+sequels %>% filter(!is.na(Description))
+# la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla
+sequels = sequels %>% select(-Description,-Created,-Modified)
+colnames(sequels)
+
+# FILM CON VOTAZIONE NON VALIDA
+head( sequels %>% filter(is.na(`IMDb Rating`)))
+
+# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
+# sequels = sequels %>% filter(!is.na(`IMDb Rating`))
+
+
+# RUNTIME NON VALIDO
+head(sequels %>% filter(is.na(`Runtime (mins)`)))
+
+# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
+# sequels = sequels %>% filter(!is.na(`Runtime (mins)`))
+
+
+# ANNO NON VALIDO
+sequels %>% filter(is.na(Year))
+# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
+# sequels = sequels %>% sequels %>% filter(!is.na(Year))
+
+
+# DATA DI RILASCIO NON VALIDA
+```
+
+## GENERI FILMS
+
+```{r}
+genres = vector(mode = "character")
+for (i in 1:nrow(sequels)){
+  genres = append(genres,  unlist(str_split(sequels$Genres[i],", ")))
+}
+# LISTA CON TUTTI I GENERI
+(genreList = levels(factor(genres)))
+
+
+```
+
+# AGGIORNAMENTO
+
+I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
+
+```{r}
+filePath = "www/CLEANEDDATASETS"
+```
