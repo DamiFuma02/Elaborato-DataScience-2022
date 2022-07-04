@@ -31,8 +31,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [MOVIELENS-userinfo + ZIPCODES](https://grouplens.org/datasets/movielens/1m/)
 
--   [ML 100k](https://grouplens.org/datasets/movielens/100k/)
-
 -   [Movie Sequels](https://data.world/priyankad0993/sequels)
 
 -   [AMAZON](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows)
@@ -41,7 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [DISNEY+](https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows)
 
--   [hollywood](https://www.kaggle.com/datasets/johnharshith/hollywood-theatrical-market-synopsis-1995-to-2021?select=HighestGrossers.csv)
+-   [HIGH GROSS](https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies)
 
 -   [tmdb](https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies)
 

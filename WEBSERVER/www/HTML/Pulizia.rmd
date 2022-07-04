@@ -13,6 +13,54 @@ knitr::opts_chunk$set(echo = TRUE)
 source("../../R/importData.R")
 ```
 
+# INDICE
+
+-   [AMAZON](#amazon)
+
+-   [DISNEY](#disney)
+
+-   [GROSS](#gross)
+
+-   [MOVIELENS](#movielens)
+
+-   [NETFLIX](#netflix)
+
+-   [SEQUELS](#sequels)
+
+-   [TMDB](#tmdb)
+
+-   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
+
+# AMAZON
+
+```{r}
+# View(amazon)
+
+amazon = amazon %>% select(-date_added,-description)
+colnames(amazon)[7] = "Year"
+head(amazon)
+```
+
+# DISNEY
+
+```{r}
+View(disney)
+disney = disney %>% select(-description,-date_added)
+colnames(disney)[7] = "Year"
+colnames(disney)[10] = "Genres"
+head(disney)
+```
+
+# GROSS
+
+```{r}
+# View(HighestGrossers)
+spec(HighestGrossers)
+# DATA DI RILASCIO E INFORMAZIONI SUL FILM NON NECESSARIE
+HighestGrossers = HighestGrossers %>% select(-...1,-`Movie Info`,-`Release Date`)
+head(HighestGrossers)
+```
+
 # MOVIELENS
 
 -   modificare i separatori da "::" a ";"
@@ -23,7 +71,7 @@ source("../../R/importData.R")
 
 ```{r}
 # rimuove l'ultimo carattere
-View(movies)
+#View(movies)
 
 movies = separate(movies,Title,into = c("Title","Year"),sep = -5)
 # rimuove gli ultimi due caratteri
@@ -39,42 +87,39 @@ for (i in 1:nrow(movies)){
   }
 }
 
-View(movies)
+head(movies)
 
 
-write_csv(movies,"movies.csv")
 
-mov = read_csv("movies.csv",col_types = "?")
-
-View(mov)    #--_> MOVIES FILTRATO
-spec(mov)
 ```
 
 ```{r}
 spec(ratings)
 ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating))
+head(ratings)
 ```
 
 ```{r}
 spec(users)
 users = users %>% filter(!is.na(Gender) && !is.na(Age) && !is.na(Occupation) && !is.na(Zip))
+head(users)
 ```
 
-# AMAZON
-
--   Esistono campi con director NA
-
--   
+# NETFLIX
 
 ```{r}
-View(amazon)
-spec(amazon)
+View(netflix)
+spec(netflix)
+netflix = netflix %>% select(-date_added,-description)
+colnames(netflix)[7] = "Year"
+colnames(netflix)[10] = "Genres"
+head(netflix)
 ```
 
 # SEQUEL
 
 ```{r}
-View(sequels)
+# View(sequels)
 
 (titleTypes = levels(factor(sequels$`Title Type`)))
 
@@ -83,7 +128,7 @@ View(sequels)
 
 sequels %>% filter(!is.na(Description))
 # la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla
-sequels = sequels %>% select(-Description,-Created,-Modified)
+sequels = sequels %>% select(-Description,-Created,-Modified,-`Release Date`,-Const,-URL)
 colnames(sequels)
 
 # FILM CON VOTAZIONE NON VALIDA
@@ -106,10 +151,10 @@ sequels %>% filter(is.na(Year))
 # sequels = sequels %>% sequels %>% filter(!is.na(Year))
 
 
-# DATA DI RILASCIO NON VALIDA
+View(sequels)
 ```
 
-## GENERI FILMS
+### GENERI FILMS
 
 ```{r}
 genres = vector(mode = "character")
@@ -122,10 +167,41 @@ for (i in 1:nrow(sequels)){
 
 ```
 
+# TMDB
+
+```{r}
+View(tmdb)
+tmdb = tmdb %>% select(-original_language,-overview,-...1)
+head(tmdb)
+```
+
 # AGGIORNAMENTO
 
 I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 
 ```{r}
-filePath = "www/CLEANEDDATASETS"
+filePath = "../CLEAN_DATA/"
+# AMAZON
+write_csv(amazon,paste(filePath,"amazon.csv") )
+
+# DISNEY
+write_csv(disney,paste(filePath,"disney.csv") )
+
+# HIGH GROSS
+write_csv(HighestGrossers,paste(filePath,"HighestGrossers.csv") )
+
+# MOVIELENS MOVIES
+write_csv(movies,paste(filePath,"movies.csv") )
+write_csv(ratings,paste(filePath,"ratings.csv") )
+write_csv(users,paste(filePath,"users.csv") )
+
+# NETFLIX
+write_csv(netflix,paste(filePath,"netflix.csv") )
+
+# SEQUELS
+write_csv(sequels,paste(filePath,"sequels.csv") )
+
+# TMDB
+write_csv(tmdb,paste(filePath,"tmdb.csv") )
+
 ```

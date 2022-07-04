@@ -43,3 +43,12 @@ spec(netflix)
 sequels <- read_csv("../DATASETS/SEQUELS/sequels.csv")
 # View(sequels)
 spec(sequels)
+
+
+tmdb <- read_csv("../DATASETS/TMDB/tmdb.csv")
+
+
+
+
+
+
