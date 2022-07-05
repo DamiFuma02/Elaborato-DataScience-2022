@@ -1,0 +1,15 @@
+# IMPORT CLEANED DATA
+library(readr)
+amazon <- read_csv("../CLEAN_DATA/AMAZON/amazon.csv",col_types = "?")
+disney <- read_csv("../CLEAN_DATA/DISNEY/disney.csv",col_types = "?")
+gross <- read_csv("../CLEAN_DATA/GROSS/gross.csv",col_types = "?")
+netflix <- read_csv("../CLEAN_DATA/NETFLIX/netflix.csv",col_types = "?")
+sequels <- read_csv("../CLEAN_DATA/SEQUELS/sequels.csv",col_types = "?")
+tmdb <- read_csv("../CLEAN_DATA/TMDB/tmdb.csv",col_types = "?")
+# MOVIELENS
+movies <- read_csv("../CLEAN_DATA/MOVIELENS/movies.csv",col_types = "?")
+ratings <- read_csv("../CLEAN_DATA/MOVIELENS/ratings.csv",col_types = "?")
+users <- read_csv("../CLEAN_DATA/MOVIELENS/users.csv",col_types = "?")
+workTable <- read_csv("../CLEAN_DATA/MOVIELENS/workTable.csv",col_types = "?")
+ageTable <- read_csv("../CLEAN_DATA/MOVIELENS/ageTable.csv",col_types = "?")
+uszips <- read_csv("../DATASETS/MOVIELENS/uszips.csv",col_types = "?")

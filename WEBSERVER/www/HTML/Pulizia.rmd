@@ -31,17 +31,29 @@ source("../../R/importData.R")
 
 -   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
 
-# AMAZON
+# AMAZON {#amazon}
 
 ```{r}
 # View(amazon)
 
+amazon = amazon %>% filter(!is.na(type))
+
 amazon = amazon %>% select(-date_added,-description)
 colnames(amazon)[7] = "Year"
+colnames(amazon)[10] = "Genres"
+
+levels(factor(amazon$type))
+# siccome sono due i possibili valori si possono salvare in formato booleano
+
+amazon = amazon %>% mutate(Movie = (type=="Movie")) %>% select(-type)
+
+
+
+
 head(amazon)
 ```
 
-# DISNEY
+# DISNEY {#disney}
 
 ```{r}
 View(disney)
@@ -49,19 +61,28 @@ disney = disney %>% select(-description,-date_added)
 colnames(disney)[7] = "Year"
 colnames(disney)[10] = "Genres"
 head(disney)
+
+disney = disney %>% mutate(Movie = (type == "Movie")) %>% select(-type)
+
+
 ```
 
-# GROSS
+# GROSS {#gross}
 
 ```{r}
 # View(HighestGrossers)
 spec(HighestGrossers)
 # DATA DI RILASCIO E INFORMAZIONI SUL FILM NON NECESSARIE
-HighestGrossers = HighestGrossers %>% select(-...1,-`Movie Info`,-`Release Date`)
+HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`)
+
+# SEPARAZIONE TITLE YEAR
+HighestGrossers = separate(HighestGrossers,Title,into = c("Title","Year"),sep = -5) %>% mutate(Title = gsub('.{2}$', '', Title)) %>% mutate(Year = gsub('.{1}$', '', Year))
+
+
 head(HighestGrossers)
 ```
 
-# MOVIELENS
+# MOVIELENS {#movielens}
 
 -   modificare i separatori da "::" a ";"
 
@@ -101,11 +122,34 @@ head(ratings)
 
 ```{r}
 spec(users)
-users = users %>% filter(!is.na(Gender) && !is.na(Age) && !is.na(Occupation) && !is.na(Zip))
+View(users)
+
+colnames(users)[1] = "userID"
+colnames(users)[4] = "zip"
+users = users %>% filter(!is.na(Gender) && !is.na(Age)  && !is.na(zip))
+
+users = users %>% mutate(Male = (Gender == "M")) %>% select(-Gender)
+
+
+
 head(users)
+
+workTable = data.frame(
+  workID = 0:20,
+  workType = c("other","academic/educator","artist","clerical/admin","college/grad student","customer service","doctor/health care","executive/managerial","farmer","homemaker","K-12 student","lawyer","programmer","retired","sales/marketing","scientist","self-employed","technician/engineer","tradesman/craftsman","unemployed","writer")
+)
+
+ageTable = data.frame(
+  ageID = levels(factor(users$Age)),
+  age = c("Under 18","18-24","25-34","35-44","45-49","50-55","Over 56")
+)
+
+View(workTable)
+
+
 ```
 
-# NETFLIX
+# NETFLIX {#netflix}
 
 ```{r}
 View(netflix)
@@ -164,10 +208,14 @@ for (i in 1:nrow(sequels)){
 # LISTA CON TUTTI I GENERI
 (genreList = levels(factor(genres)))
 
+(amazonRatingTypes = levels(factor(amazon$rating)))
+
+(amazonCountries = levels(factor(amazon$country)))
+
 
 ```
 
-# TMDB
+# TMDB {#tmdb}
 
 ```{r}
 View(tmdb)
@@ -182,26 +230,28 @@ I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 ```{r}
 filePath = "../CLEAN_DATA/"
 # AMAZON
-write_csv(amazon,paste(filePath,"amazon.csv") )
+write_csv(amazon,paste(filePath,"AMAZON/","amazon.csv",sep="") )
 
 # DISNEY
-write_csv(disney,paste(filePath,"disney.csv") )
+write_csv(disney,paste(filePath,"DISNEY/","disney.csv",sep="") )
 
 # HIGH GROSS
-write_csv(HighestGrossers,paste(filePath,"HighestGrossers.csv") )
+write_csv(HighestGrossers,paste(filePath,"GROSS/","gross.csv",sep="") )
 
 # MOVIELENS MOVIES
-write_csv(movies,paste(filePath,"movies.csv") )
-write_csv(ratings,paste(filePath,"ratings.csv") )
-write_csv(users,paste(filePath,"users.csv") )
+write_csv(movies,paste(filePath,"MOVIELENS/","movies.csv",sep="") )
+write_csv(ratings,paste(filePath,"MOVIELENS/","ratings.csv",sep="") )
+write_csv(users,paste(filePath,"MOVIELENS/","users.csv",sep="") )
+write_csv(workTable,paste(filePath,"MOVIELENS/","workTable.csv",sep="") )
+write_csv(ageTable,paste(filePath,"MOVIELENS/","ageTable.csv",sep="") )
 
 # NETFLIX
-write_csv(netflix,paste(filePath,"netflix.csv") )
+write_csv(netflix,paste(filePath,"NETFLIX/","netflix.csv",sep="") )
 
 # SEQUELS
-write_csv(sequels,paste(filePath,"sequels.csv") )
+write_csv(sequels,paste(filePath,"SEQUELS/","sequels.csv",sep="") )
 
 # TMDB
-write_csv(tmdb,paste(filePath,"tmdb.csv") )
+write_csv(tmdb,paste(filePath,"TMDB/","tmdb.csv",sep="") )
 
 ```

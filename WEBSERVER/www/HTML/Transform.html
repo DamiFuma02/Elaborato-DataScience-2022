@@ -13,7 +13,7 @@
 
 <meta name="date" content="2022-07-05" />
 
-<title>PULIZIA</title>
+<title>TRANSFORM</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -363,7 +363,7 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">PULIZIA</h1>
+<h1 class="title toc-ignore">TRANSFORM</h1>
 <h4 class="author">Damiano Fumagalli</h4>
 <h4 class="date">2022-07-05</h4>
 
@@ -386,441 +386,113 @@ DATI</a></p></li>
 </div>
 <div id="amazon" class="section level1">
 <h1>AMAZON</h1>
-<pre class="r"><code># View(amazon)
+<pre class="r"><code>View(amazon)
 
-amazon = amazon %&gt;% filter(!is.na(type))
-
-amazon = amazon %&gt;% select(-date_added,-description)
-colnames(amazon)[7] = &quot;Year&quot;
-colnames(amazon)[10] = &quot;Genres&quot;
-
-levels(factor(amazon$type))</code></pre>
-<pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
-<pre class="r"><code># siccome sono due i possibili valori si possono salvare in formato booleano
-
-amazon = amazon %&gt;% mutate(Movie = (type==&quot;Movie&quot;)) %&gt;% select(-type)
-
-
-
-
-head(amazon)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title        director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;   &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 s1      The Grand S~ Don McK~ Bren~ Canada   2014 &lt;NA&gt;   113 min  Comed~ TRUE 
-## 2 s2      Take Care G~ Girish ~ Mahe~ India    2018 13+    110 min  Drama~ TRUE 
-## 3 s3      Secrets of ~ Josh We~ Tom ~ United~  2017 &lt;NA&gt;   74 min   Actio~ TRUE 
-## 4 s4      Pink: Stayi~ Sonia A~ Inte~ United~  2014 &lt;NA&gt;   69 min   Docum~ TRUE 
-## 5 s5      Monster Mak~ Giles F~ Harr~ United~  1989 &lt;NA&gt;   45 min   Drama~ TRUE 
-## 6 s6      Living With~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   52 min   Fanta~ TRUE</code></pre>
-</div>
-<div id="disney" class="section level1">
-<h1>DISNEY</h1>
-<pre class="r"><code>View(disney)
-disney = disney %&gt;% select(-description,-date_added)
-colnames(disney)[7] = &quot;Year&quot;
-colnames(disney)[10] = &quot;Genres&quot;
-head(disney)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id type    title      director cast  country  Year rating duration Genres
-##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
-## 1 s1      Movie   Duck the ~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   23 min   Anima~
-## 2 s2      Movie   Ernest Sa~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     91 min   Comedy
-## 3 s3      Movie   Ice Age: ~ Karen D~ Raym~ United~  2011 TV-G   23 min   Anima~
-## 4 s4      Movie   The Queen~ Hamish ~ Darr~ &lt;NA&gt;     2021 TV-PG  41 min   Music~
-## 5 s5      TV Show The Beatl~ &lt;NA&gt;     John~ &lt;NA&gt;     2021 &lt;NA&gt;   1 Season Docus~
-## 6 s6      Movie   Becoming ~ Liz Gar~ Jacq~ United~  2021 PG-13  94 min   Biogr~</code></pre>
-<pre class="r"><code>disney = disney %&gt;% mutate(Movie = (type == &quot;Movie&quot;)) %&gt;% select(-type)</code></pre>
-</div>
-<div id="gross" class="section level1">
-<h1>GROSS</h1>
-<pre class="r"><code># View(HighestGrossers)
-spec(HighestGrossers)</code></pre>
-<pre><code>## cols(
-##   ...1 = col_double(),
-##   Title = col_character(),
-##   `Movie Info` = col_character(),
-##   Distributor = col_character(),
-##   `Release Date` = col_character(),
-##   `Domestic Sales (in $)` = col_double(),
-##   `International Sales (in $)` = col_double(),
-##   `World Sales (in $)` = col_double(),
-##   Genre = col_character(),
-##   `Movie Runtime` = col_character(),
-##   License = col_character()
-## )</code></pre>
-<pre class="r"><code># DATA DI RILASCIO E INFORMAZIONI SUL FILM NON NECESSARIE
-HighestGrossers = HighestGrossers %&gt;% filter(!is.na(`Movie Runtime`)) %&gt;% select(-...1,-`Movie Info`,-`Release Date`)
-
-# SEPARAZIONE TITLE YEAR
-HighestGrossers = separate(HighestGrossers,Title,into = c(&quot;Title&quot;,&quot;Year&quot;),sep = -5) %&gt;% mutate(Title = gsub(&#39;.{2}$&#39;, &#39;&#39;, Title)) %&gt;% mutate(Year = gsub(&#39;.{1}$&#39;, &#39;&#39;, Year))
-
-
-head(HighestGrossers)</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   Title     Year  Distributor `Domestic Sale~` `International~` `World Sales (~`
-##   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;                  &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
-## 1 Star War~ 2015  Walt Disne~        936662225       1132859475       2069521700
-## 2 Avengers~ 2019  Walt Disne~        858373000       1939128328       2797501328
-## 3 Avatar    2009  Twentieth ~        760507625       2086738578       2847246203
-## 4 Black Pa~ 2018  Walt Disne~        700426566        647171407       1347597973
-## 5 Avengers~ 2018  Walt Disne~        678815482       1369544272       2048359754
-## 6 Spider-M~ 2021  Sony Pictu~        675813257        868642706       1544455963
-## # ... with 3 more variables: Genre &lt;chr&gt;, `Movie Runtime` &lt;chr&gt;, License &lt;chr&gt;</code></pre>
-</div>
-<div id="movielens" class="section level1">
-<h1>MOVIELENS</h1>
-<ul>
-<li><p>modificare i separatori da “::” a “;”</p></li>
-<li><p>Alcuni film sono scritti in notazione francese, quindi presentano
-una “,” intermedia nel loro nome. di conseguenza il formato CSV non è
-valido</p></li>
-<li><p>Sostituire tutti i carattteri speciali</p></li>
-</ul>
-<pre class="r"><code># rimuove l&#39;ultimo carattere
-#View(movies)
-
-movies = separate(movies,Title,into = c(&quot;Title&quot;,&quot;Year&quot;),sep = -5)
-# rimuove gli ultimi due caratteri
-movies$Title = gsub(&#39;.{2}$&#39;, &#39;&#39;, movies$Title)
-
-movies$Year = gsub(&#39;.{1}$&#39;, &#39;&#39;, movies$Year)
-
-
-for (i in 1:nrow(movies)){
-  if (grepl(&quot;,&quot;,movies$Title[i])){
-    arr = unlist(str_split(movies$Title[i],&quot;, &quot;))
-    movies$Title[i] = paste(arr[2],arr[1])
-  }
-}
-
-head(movies)</code></pre>
-<pre><code>## # A tibble: 6 x 4
-##   movieID Title                       Year  Genres                      
-##     &lt;dbl&gt; &lt;chr&gt;                       &lt;chr&gt; &lt;chr&gt;                       
-## 1       1 Toy Story                   1995  Animation|Children&#39;s|Comedy 
-## 2       2 Jumanji                     1995  Adventure|Children&#39;s|Fantasy
-## 3       3 Grumpier Old Men            1995  Comedy|Romance              
-## 4       4 Waiting to Exhale           1995  Comedy|Drama                
-## 5       5 Father of the Bride Part II 1995  Comedy                      
-## 6       6 Heat                        1995  Action|Crime|Thriller</code></pre>
-<pre class="r"><code>spec(ratings)</code></pre>
-<pre><code>## cols(
-##   userID = col_double(),
-##   movieID = col_double(),
-##   Rating = col_double(),
-##   Timestamp = col_double()
-## )</code></pre>
-<pre class="r"><code>ratings = ratings %&gt;% filter(!is.na(movieID) &amp;&amp; !is.na(Rating))
-head(ratings)</code></pre>
-<pre><code>## # A tibble: 6 x 4
-##   userID movieID Rating Timestamp
-##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
-## 1      1    1193      5 978300760
-## 2      1     661      3 978302109
-## 3      1     914      3 978301968
-## 4      1    3408      4 978300275
-## 5      1    2355      5 978824291
-## 6      1    1197      3 978302268</code></pre>
-<pre class="r"><code>spec(users)</code></pre>
-<pre><code>## cols(
-##   UserID = col_double(),
-##   Gender = col_character(),
-##   Age = col_double(),
-##   Occupation = col_double(),
-##   Zip = col_character()
-## )</code></pre>
-<pre class="r"><code>View(users)
-
-colnames(users)[1] = &quot;userID&quot;
-colnames(users)[4] = &quot;zip&quot;
-users = users %&gt;% filter(!is.na(Gender) &amp;&amp; !is.na(Age)  &amp;&amp; !is.na(zip))
-
-users = users %&gt;% mutate(Male = (Gender == &quot;M&quot;)) %&gt;% select(-Gender)
-
-
-
-head(users)</code></pre>
-<pre><code>## # A tibble: 6 x 5
-##   userID   Age   zip Zip   Male 
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
-## 1      1     1    10 48067 FALSE
-## 2      2    56    16 70072 TRUE 
-## 3      3    25    15 55117 TRUE 
-## 4      4    45     7 02460 TRUE 
-## 5      5    25    20 55455 TRUE 
-## 6      6    50     9 55117 FALSE</code></pre>
-<pre class="r"><code>workTable = data.frame(
-  workID = 0:20,
-  workType = c(&quot;other&quot;,&quot;academic/educator&quot;,&quot;artist&quot;,&quot;clerical/admin&quot;,&quot;college/grad student&quot;,&quot;customer service&quot;,&quot;doctor/health care&quot;,&quot;executive/managerial&quot;,&quot;farmer&quot;,&quot;homemaker&quot;,&quot;K-12 student&quot;,&quot;lawyer&quot;,&quot;programmer&quot;,&quot;retired&quot;,&quot;sales/marketing&quot;,&quot;scientist&quot;,&quot;self-employed&quot;,&quot;technician/engineer&quot;,&quot;tradesman/craftsman&quot;,&quot;unemployed&quot;,&quot;writer&quot;)
-)
-
-ageTable = data.frame(
-  ageID = levels(factor(users$Age)),
-  age = c(&quot;Under 18&quot;,&quot;18-24&quot;,&quot;25-34&quot;,&quot;35-44&quot;,&quot;45-49&quot;,&quot;50-55&quot;,&quot;Over 56&quot;)
-)
-
-View(workTable)</code></pre>
-</div>
-<div id="netflix" class="section level1">
-<h1>NETFLIX</h1>
-<pre class="r"><code>View(netflix)
-spec(netflix)</code></pre>
-<pre><code>## cols(
-##   show_id = col_character(),
-##   type = col_character(),
-##   title = col_character(),
-##   director = col_character(),
-##   cast = col_character(),
-##   country = col_character(),
-##   date_added = col_character(),
-##   release_year = col_double(),
-##   rating = col_character(),
-##   duration = col_character(),
-##   listed_in = col_character(),
-##   description = col_character()
-## )</code></pre>
-<pre class="r"><code>netflix = netflix %&gt;% select(-date_added,-description)
-colnames(netflix)[7] = &quot;Year&quot;
-colnames(netflix)[10] = &quot;Genres&quot;
-head(netflix)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id type    title      director cast  country  Year rating duration Genres
-##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
-## 1 s1      Movie   Dick John~ Kirsten~ &lt;NA&gt;  United~  2020 PG-13  90 min   Docum~
-## 2 s2      TV Show Blood &amp; W~ &lt;NA&gt;     Ama ~ South ~  2021 TV-MA  2 Seaso~ Inter~
-## 3 s3      TV Show Ganglands  Julien ~ Sami~ &lt;NA&gt;     2021 TV-MA  1 Season Crime~
-## 4 s4      TV Show Jailbirds~ &lt;NA&gt;     &lt;NA&gt;  &lt;NA&gt;     2021 TV-MA  1 Season Docus~
-## 5 s5      TV Show Kota Fact~ &lt;NA&gt;     Mayu~ India    2021 TV-MA  2 Seaso~ Inter~
-## 6 s6      TV Show Midnight ~ Mike Fl~ Kate~ &lt;NA&gt;     2021 TV-MA  1 Season TV Dr~</code></pre>
-</div>
-<div id="sequel" class="section level1">
-<h1>SEQUEL</h1>
-<pre class="r"><code># View(sequels)
-
-(titleTypes = levels(factor(sequels$`Title Type`)))</code></pre>
-<pre><code>## [1] &quot;movie&quot;     &quot;tvEpisode&quot; &quot;tvMovie&quot;   &quot;tvShort&quot;   &quot;video&quot;</code></pre>
-<pre class="r"><code># CREATED E MODIFIED NON CI INTERESSANO NELLA NOSTRA RICERCA
-
-
-sequels %&gt;% filter(!is.na(Description))</code></pre>
-<pre><code>## # A tibble: 0 x 15
-## # ... with 15 variables: Position &lt;dbl&gt;, Const &lt;chr&gt;, Created &lt;chr&gt;,
-## #   Modified &lt;chr&gt;, Description &lt;lgl&gt;, Title &lt;chr&gt;, URL &lt;chr&gt;,
-## #   Title Type &lt;chr&gt;, IMDb Rating &lt;dbl&gt;, Runtime (mins) &lt;dbl&gt;, Year &lt;dbl&gt;,
-## #   Genres &lt;chr&gt;, Num Votes &lt;dbl&gt;, Release Date &lt;chr&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla
-sequels = sequels %&gt;% select(-Description,-Created,-Modified,-`Release Date`,-Const,-URL)
-colnames(sequels)</code></pre>
-<pre><code>## [1] &quot;Position&quot;       &quot;Title&quot;          &quot;Title Type&quot;     &quot;IMDb Rating&quot;   
-## [5] &quot;Runtime (mins)&quot; &quot;Year&quot;           &quot;Genres&quot;         &quot;Num Votes&quot;     
-## [9] &quot;Directors&quot;</code></pre>
-<pre class="r"><code># FILM CON VOTAZIONE NON VALIDA
-head( sequels %&gt;% filter(is.na(`IMDb Rating`)))</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   Position Title        `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##      &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-## 1      203 Austin Powe~ movie                   NA               NA    NA Comedy
-## 2      213 Kill Bill: ~ movie                   NA               NA    NA Actio~
-## 3      397 Hellraiser   movie                   NA               NA    NA Horror
-## 4      434 The Karate ~ movie                   NA               NA    NA Actio~
-## 5      652 Rush Hour 4  movie                   NA               NA    NA Actio~
-## 6      680 National Tr~ movie                   NA               NA    NA Actio~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% filter(!is.na(`IMDb Rating`))
-
-
-# RUNTIME NON VALIDO
-head(sequels %&gt;% filter(is.na(`Runtime (mins)`)))</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   Position Title        `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##      &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-## 1      203 Austin Powe~ movie                   NA               NA    NA Comedy
-## 2      213 Kill Bill: ~ movie                   NA               NA    NA Actio~
-## 3      397 Hellraiser   movie                   NA               NA    NA Horror
-## 4      434 The Karate ~ movie                   NA               NA    NA Actio~
-## 5      652 Rush Hour 4  movie                   NA               NA    NA Actio~
-## 6      680 National Tr~ movie                   NA               NA    NA Actio~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% filter(!is.na(`Runtime (mins)`))
-
-
-# ANNO NON VALIDO
-sequels %&gt;% filter(is.na(Year))</code></pre>
-<pre><code>## # A tibble: 13 x 9
-##    Position Title       `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##       &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-##  1      203 Austin Pow~ movie                   NA               NA    NA Comedy
-##  2      213 Kill Bill:~ movie                   NA               NA    NA Actio~
-##  3      397 Hellraiser  movie                   NA               NA    NA Horror
-##  4      434 The Karate~ movie                   NA               NA    NA Actio~
-##  5      652 Rush Hour 4 movie                   NA               NA    NA Actio~
-##  6      680 National T~ movie                   NA               NA    NA Actio~
-##  7      740 Untitled I~ movie                   NA               NA    NA Actio~
-##  8      764 Machete Ki~ movie                   NA               NA    NA Actio~
-##  9      816 The Best M~ movie                   NA               NA    NA Comed~
-## 10      920 Get Smart 2 movie                   NA               NA    NA Comedy
-## 11      983 Justice Le~ movie                   NA               NA    NA Actio~
-## 12     1027 Untitled S~ movie                   NA               NA    NA Actio~
-## 13     1030 Gremlins 3  movie                   NA               NA    NA Comed~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% sequels %&gt;% filter(!is.na(Year))
-
-
-View(sequels)</code></pre>
-<div id="generi-films" class="section level3">
-<h3>GENERI FILMS</h3>
-<pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(sequels$Genres[i],&quot;, &quot;)))
-}
 # LISTA CON TUTTI I GENERI
-(genreList = levels(factor(genres)))</code></pre>
-<pre><code>##  [1] &quot;Action&quot;    &quot;Adventure&quot; &quot;Animation&quot; &quot;Biography&quot; &quot;Comedy&quot;    &quot;Crime&quot;    
-##  [7] &quot;Drama&quot;     &quot;Family&quot;    &quot;Fantasy&quot;   &quot;History&quot;   &quot;Horror&quot;    &quot;Music&quot;    
-## [13] &quot;Musical&quot;   &quot;Mystery&quot;   &quot;Romance&quot;   &quot;Sci-Fi&quot;    &quot;Short&quot;     &quot;Sport&quot;    
-## [19] &quot;Thriller&quot;  &quot;War&quot;       &quot;Western&quot;</code></pre>
+genres = vector(mode = &quot;character&quot;)
+for (i in 1:nrow(sequels)){
+  genres = append(genres,  unlist(str_split(amazon$Genres[i],&quot;, &quot;)))
+}
+(amazonGenres = levels(factor(genres)))</code></pre>
+<pre><code>##  [1] &quot;Action&quot;                    &quot;Adventure&quot;                
+##  [3] &quot;and Culture&quot;               &quot;Animation&quot;                
+##  [5] &quot;Anime&quot;                     &quot;Arthouse&quot;                 
+##  [7] &quot;Arts&quot;                      &quot;Comedy&quot;                   
+##  [9] &quot;Documentary&quot;               &quot;Drama&quot;                    
+## [11] &quot;Entertainment&quot;             &quot;Faith and Spirituality&quot;   
+## [13] &quot;Fantasy&quot;                   &quot;Fitness&quot;                  
+## [15] &quot;Historical&quot;                &quot;Horror&quot;                   
+## [17] &quot;International&quot;             &quot;Kids&quot;                     
+## [19] &quot;LGBTQ&quot;                     &quot;Military and War&quot;         
+## [21] &quot;Music Videos and Concerts&quot; &quot;Romance&quot;                  
+## [23] &quot;Science Fiction&quot;           &quot;Special Interest&quot;         
+## [25] &quot;Sports&quot;                    &quot;Suspense&quot;                 
+## [27] &quot;Talk Show and Variety&quot;     &quot;TV Shows&quot;                 
+## [29] &quot;Unscripted&quot;                &quot;Western&quot;                  
+## [31] &quot;Young Adult Audience&quot;</code></pre>
 <pre class="r"><code>(amazonRatingTypes = levels(factor(amazon$rating)))</code></pre>
 <pre><code>##  [1] &quot;13+&quot;      &quot;16&quot;       &quot;16+&quot;      &quot;18+&quot;      &quot;7+&quot;       &quot;AGES_16_&quot;
 ##  [7] &quot;AGES_18_&quot; &quot;ALL&quot;      &quot;ALL_AGES&quot; &quot;G&quot;        &quot;NC-17&quot;    &quot;NOT_RATE&quot;
 ## [13] &quot;NR&quot;       &quot;PG&quot;       &quot;PG-13&quot;    &quot;R&quot;        &quot;TV-14&quot;    &quot;TV-G&quot;    
 ## [19] &quot;TV-MA&quot;    &quot;TV-NR&quot;    &quot;TV-PG&quot;    &quot;TV-Y&quot;     &quot;TV-Y7&quot;    &quot;UNRATED&quot;</code></pre>
-<pre class="r"><code>(amazonCountries = levels(factor(amazon$country)))</code></pre>
-<pre><code>##  [1] &quot;Afghanistan, France&quot;                                     
-##  [2] &quot;Australia&quot;                                               
-##  [3] &quot;Australia, Colombia, United Kingdom&quot;                     
-##  [4] &quot;Australia, United States, Germany&quot;                       
-##  [5] &quot;Austria&quot;                                                 
-##  [6] &quot;Belgium&quot;                                                 
-##  [7] &quot;Brazil&quot;                                                  
-##  [8] &quot;Brazil, United States, India&quot;                            
-##  [9] &quot;Canada&quot;                                                  
-## [10] &quot;Canada, Germany&quot;                                         
-## [11] &quot;Canada, United States&quot;                                   
-## [12] &quot;Canada, United States, Brazil&quot;                           
-## [13] &quot;Chile, Argentina, United States&quot;                         
-## [14] &quot;China, United States, United Kingdom&quot;                    
-## [15] &quot;Czech Republic, Germany&quot;                                 
-## [16] &quot;Denmark, France&quot;                                         
-## [17] &quot;Denmark, Sweden, United States&quot;                          
-## [18] &quot;Denmark, United Kingdom, Czech Republic, Netherlands&quot;    
-## [19] &quot;Egypt&quot;                                                   
-## [20] &quot;France&quot;                                                  
-## [21] &quot;France, Belgium&quot;                                         
-## [22] &quot;France, China, Belgium, Monaco&quot;                          
-## [23] &quot;France, United States&quot;                                   
-## [24] &quot;Germany&quot;                                                 
-## [25] &quot;Germany, Austria, United States&quot;                         
-## [26] &quot;Germany, Canada, United States, France, United Kingdom&quot;  
-## [27] &quot;India&quot;                                                   
-## [28] &quot;India, Denmark&quot;                                          
-## [29] &quot;India, South Africa, Brazil&quot;                             
-## [30] &quot;India, Sweden&quot;                                           
-## [31] &quot;India, United States&quot;                                    
-## [32] &quot;India, United States, United Kingdom, Canada, China&quot;     
-## [33] &quot;Iran, France&quot;                                            
-## [34] &quot;Ireland, Belgium, France, Luxembourg, United Kingdom&quot;    
-## [35] &quot;Italy&quot;                                                   
-## [36] &quot;Italy, Canada&quot;                                           
-## [37] &quot;Italy, Spain&quot;                                            
-## [38] &quot;Japan&quot;                                                   
-## [39] &quot;Japan, France&quot;                                           
-## [40] &quot;Kosovo, Albania, United States, Georgia&quot;                 
-## [41] &quot;Kosovo, Netherlands&quot;                                     
-## [42] &quot;Malaysia&quot;                                                
-## [43] &quot;Mexico&quot;                                                  
-## [44] &quot;Netherlands&quot;                                             
-## [45] &quot;New Zealand&quot;                                             
-## [46] &quot;Poland, United States&quot;                                   
-## [47] &quot;South Africa&quot;                                            
-## [48] &quot;Spain&quot;                                                   
-## [49] &quot;Spain, United Kingdom, Italy&quot;                            
-## [50] &quot;Switzerland&quot;                                             
-## [51] &quot;Switzerland, India&quot;                                      
-## [52] &quot;United Kingdom&quot;                                          
-## [53] &quot;United Kingdom, Canada, United States&quot;                   
-## [54] &quot;United Kingdom, France&quot;                                  
-## [55] &quot;United Kingdom, France, United States&quot;                   
-## [56] &quot;United Kingdom, Hungary, United States&quot;                  
-## [57] &quot;United Kingdom, India&quot;                                   
-## [58] &quot;United Kingdom, Spain&quot;                                   
-## [59] &quot;United Kingdom, United States&quot;                           
-## [60] &quot;United Kingdom, United States, India&quot;                    
-## [61] &quot;United States&quot;                                           
-## [62] &quot;United States, Austria&quot;                                  
-## [63] &quot;United States, Belgium, Denmark, France&quot;                 
-## [64] &quot;United States, Canada&quot;                                   
-## [65] &quot;United States, China&quot;                                    
-## [66] &quot;United States, France&quot;                                   
-## [67] &quot;United States, France, Denmark&quot;                          
-## [68] &quot;United States, Germany&quot;                                  
-## [69] &quot;United States, Germany, Brazil, Italy&quot;                   
-## [70] &quot;United States, Germany, Italy&quot;                           
-## [71] &quot;United States, Germany, Japan, United Kingdom, Hong Kong&quot;
-## [72] &quot;United States, India&quot;                                    
-## [73] &quot;United States, Ireland&quot;                                  
-## [74] &quot;United States, Italy&quot;                                    
-## [75] &quot;United States, Japan&quot;                                    
-## [76] &quot;United States, Japan, Singapore, South Korea&quot;            
-## [77] &quot;United States, Mexico&quot;                                   
-## [78] &quot;United States, Portugal&quot;                                 
-## [79] &quot;United States, Sweden, Norway&quot;                           
-## [80] &quot;United States, Switzerland&quot;                              
-## [81] &quot;United States, Thailand&quot;                                 
-## [82] &quot;United States, United Arab Emirates&quot;                     
-## [83] &quot;United States, United Kingdom&quot;                           
-## [84] &quot;United States, United Kingdom, Canada&quot;                   
-## [85] &quot;United States, United Kingdom, Germany&quot;                  
-## [86] &quot;United States, United Kingdom, Kazakhstan&quot;</code></pre>
+<pre class="r"><code># COUNTRIES
+countries = vector(mode = &quot;character&quot;)
+for (i in 1:nrow(sequels)){
+  countries = append(countries,  unlist(str_split(amazon$country[i],&quot;, &quot;)))
+}
+(amazonCountries = levels(factor(countries)))</code></pre>
+<pre><code>##  [1] &quot;Canada&quot;         &quot;China&quot;          &quot;Czech Republic&quot; &quot;Denmark&quot;       
+##  [5] &quot;France&quot;         &quot;Germany&quot;        &quot;India&quot;          &quot;Ireland&quot;       
+##  [9] &quot;Italy&quot;          &quot;Japan&quot;          &quot;Netherlands&quot;    &quot;Spain&quot;         
+## [13] &quot;Thailand&quot;       &quot;United Kingdom&quot; &quot;United States&quot;</code></pre>
+<div id="separating" class="section level3">
+<h3>SEPARATING</h3>
+<pre class="r"><code>amazonMovies = amazon %&gt;% filter(Movie == TRUE)
+amazonMovies = amazonMovies %&gt;% mutate(time = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-duration)
+head(amazonMovies)</code></pre>
+<pre><code>## # A tibble: 6 x 10
+##   show_id title           director cast  country  Year rating Genres Movie time 
+##   &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;
+## 1 s1      The Grand Sedu~ Don McK~ Bren~ Canada   2014 &lt;NA&gt;   Comed~ TRUE  113  
+## 2 s2      Take Care Good~ Girish ~ Mahe~ India    2018 13+    Drama~ TRUE  110  
+## 3 s3      Secrets of Dec~ Josh We~ Tom ~ United~  2017 &lt;NA&gt;   Actio~ TRUE  74   
+## 4 s4      Pink: Staying ~ Sonia A~ Inte~ United~  2014 &lt;NA&gt;   Docum~ TRUE  69   
+## 5 s5      Monster Maker   Giles F~ Harr~ United~  1989 &lt;NA&gt;   Drama~ TRUE  45   
+## 6 s6      Living With Di~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   Fanta~ TRUE  52</code></pre>
+<pre class="r"><code>amazonShows = amazon %&gt;% filter(Movie == FALSE)
+amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
+head(amazonShows)</code></pre>
+<pre><code>## # A tibble: 6 x 10
+##   show_id title         director cast  country  Year rating Genres Movie Seasons
+##   &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;  
+## 1 s18     Zoo Babies    &lt;NA&gt;     Narr~ &lt;NA&gt;     2008 ALL    Kids,~ FALSE 1      
+## 2 s19     Zoë Coombs M~ &lt;NA&gt;     Zoë ~ &lt;NA&gt;     2020 18+    Comed~ FALSE 1      
+## 3 s21     Zoboomafoo    &lt;NA&gt;     &lt;NA&gt;  &lt;NA&gt;     2001 TV-Y   Kids   FALSE 1      
+## 4 s22     Zo Zo Zombie~ &lt;NA&gt;     Alex~ &lt;NA&gt;     2020 TV-Y7  Actio~ FALSE 1      
+## 5 s24     ZeroZeroZero  &lt;NA&gt;     ANDR~ Italy    2020 18+    TV Sh~ FALSE 1      
+## 6 s27     Zahara: The ~ &lt;NA&gt;     Nata~ &lt;NA&gt;     2020 16+    TV Sh~ FALSE 1</code></pre>
 </div>
 </div>
-<div id="tmdb" class="section level1">
-<h1>TMDB</h1>
-<pre class="r"><code>View(tmdb)
-tmdb = tmdb %&gt;% select(-original_language,-overview,-...1)
-head(tmdb)</code></pre>
-<pre><code>## # A tibble: 6 x 6
-##   adult popularity release_date vote_average vote_count title                   
-##   &lt;lgl&gt;      &lt;dbl&gt; &lt;date&gt;              &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;                   
-## 1 FALSE     10277. 2021-11-03            7.3       3218 Eternals                
-## 2 FALSE      9886. 2022-01-13            7.7        835 Hotel Transylvania: Tra~
-## 3 FALSE      6034. 2021-12-15            8.4       4572 Spider-Man: No Way Home 
-## 4 FALSE      5236. 2021-12-01            8.3       1167 Sing 2                  
-## 5 FALSE      4974. 2021-11-24            7.8       3211 Encanto                 
-## 6 FALSE      3911. 2021-11-11            7.7       1403 Ghostbusters: Afterlife</code></pre>
+<div id="disney" class="section level1">
+<h1>DISNEY</h1>
+<pre class="r"><code>View(disney)
+
+disneyMovies = disney %&gt;% filter(Movie == TRUE)
+# MODIFICARE IL CAMPO DURATION
+disneyMovies = disneyMovies %&gt;% mutate(time = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-duration)
+head(disneyMovies)</code></pre>
+<pre><code>## # A tibble: 6 x 10
+##   show_id title           director cast  country  Year rating Genres Movie time 
+##   &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;
+## 1 s1      Duck the Halls~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   Anima~ TRUE  23   
+## 2 s2      Ernest Saves C~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     Comedy TRUE  91   
+## 3 s3      Ice Age: A Mam~ Karen D~ Raym~ United~  2011 TV-G   Anima~ TRUE  23   
+## 4 s4      The Queen Fami~ Hamish ~ Darr~ &lt;NA&gt;     2021 TV-PG  Music~ TRUE  41   
+## 5 s6      Becoming Coust~ Liz Gar~ Jacq~ United~  2021 PG-13  Biogr~ TRUE  94   
+## 6 s10     A Muppets Chri~ Kirk R.~ Stev~ United~  2008 G      Comed~ TRUE  45</code></pre>
+<pre class="r"><code>disneyShows = disney %&gt;% filter(Movie == FALSE)
+# rimuove tutti i caratteri superflui in modo da salvare solo il numero
+disneyShows = disneyShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
+head(disneyShows)</code></pre>
+<pre><code>## # A tibble: 6 x 10
+##   show_id title         director cast  country  Year rating Genres Movie Seasons
+##   &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;  
+## 1 s5      The Beatles:~ &lt;NA&gt;     John~ &lt;NA&gt;     2021 &lt;NA&gt;   Docus~ FALSE 1      
+## 2 s7      Hawkeye       &lt;NA&gt;     Jere~ &lt;NA&gt;     2021 TV-14  Actio~ FALSE 1      
+## 3 s8      Port Protect~ &lt;NA&gt;     Gary~ United~  2015 TV-14  Docus~ FALSE 2      
+## 4 s9      Secrets of t~ &lt;NA&gt;     Dr. ~ United~  2019 TV-PG  Anima~ FALSE 2      
+## 5 s14     Dr. Oakley, ~ &lt;NA&gt;     Dr. ~ United~  2013 TV-PG  Actio~ FALSE 10     
+## 6 s18     Disney Fancy~ &lt;NA&gt;     Mia ~ United~  2018 TV-PG  Anima~ FALSE 3</code></pre>
 </div>
 <div id="aggiornamento" class="section level1">
 <h1>AGGIORNAMENTO</h1>
-<p>I datasets sono stati riformati togliendo eventuali dati inutili alla
-ricerca.</p>
-<pre class="r"><code>filePath = &quot;../CLEAN_DATA/&quot;
-# AMAZON
-write_csv(amazon,paste(filePath,&quot;AMAZON/&quot;,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code># AMAZON
+write_csv(amazonMovies,&quot;../CLEAN_DATA/AMAZON/amazonMovies.csv&quot;)
+write_csv(amazonShows,&quot;../CLEAN_DATA/AMAZON/amazonShows.csv&quot;)
 
 # DISNEY
-write_csv(disney,paste(filePath,&quot;DISNEY/&quot;,&quot;disney.csv&quot;,sep=&quot;&quot;) )
-
-# HIGH GROSS
-write_csv(HighestGrossers,paste(filePath,&quot;GROSS/&quot;,&quot;gross.csv&quot;,sep=&quot;&quot;) )
-
-# MOVIELENS MOVIES
-write_csv(movies,paste(filePath,&quot;MOVIELENS/&quot;,&quot;movies.csv&quot;,sep=&quot;&quot;) )
-write_csv(ratings,paste(filePath,&quot;MOVIELENS/&quot;,&quot;ratings.csv&quot;,sep=&quot;&quot;) )
-write_csv(users,paste(filePath,&quot;MOVIELENS/&quot;,&quot;users.csv&quot;,sep=&quot;&quot;) )
-write_csv(workTable,paste(filePath,&quot;MOVIELENS/&quot;,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(ageTable,paste(filePath,&quot;MOVIELENS/&quot;,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
-
-# NETFLIX
-write_csv(netflix,paste(filePath,&quot;NETFLIX/&quot;,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
-
-# SEQUELS
-write_csv(sequels,paste(filePath,&quot;SEQUELS/&quot;,&quot;sequels.csv&quot;,sep=&quot;&quot;) )
-
-# TMDB
-write_csv(tmdb,paste(filePath,&quot;TMDB/&quot;,&quot;tmdb.csv&quot;,sep=&quot;&quot;) )</code></pre>
+write_csv(disneyMovies,&quot;../CLEAN_DATA/DISNEY/disneyMovies.csv&quot;)
+write_csv(disneyShows,&quot;../CLEAN_DATA/DISNEY/disneyShows.csv&quot;)</code></pre>
 </div>
 
 
