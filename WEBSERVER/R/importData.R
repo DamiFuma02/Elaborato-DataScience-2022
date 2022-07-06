@@ -9,10 +9,10 @@ spec(disney)
 # View(disney)
 
 
-HighestGrossers <- read_csv("../DATASETS/GROSS/HighestGrossers.csv")
+HighestGrossers <- read_csv("../DATASETS/GROSS/prova.csv")
 spec(HighestGrossers)
 # View(HighestGrossers)
-
+prova <- read_csv("../DATASETS/GROSS/prova.csv")
 
 movies <- read_delim("../DATASETS/MOVIELENS/ml-1m/movies.dat",delim = ';', col_names = c("movieID","Title","Genres"))
 spec(movies)

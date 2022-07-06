@@ -31,29 +31,85 @@ source("../../R/importData.R")
 
 -   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
 
-# AMAZON {#amazon}
+# [AMAZON](#indice) {#amazon}
+
+```{r}
+levels(factor(amazon$type))
+```
+
+-   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
 
 ```{r}
 # View(amazon)
 
-amazon = amazon %>% filter(!is.na(type))
-
-amazon = amazon %>% select(-date_added,-description)
+amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description)
 colnames(amazon)[7] = "Year"
 colnames(amazon)[10] = "Genres"
 
-levels(factor(amazon$type))
-# siccome sono due i possibili valori si possono salvare in formato booleano
-
+# MODIFICA COLONNA TYPE
 amazon = amazon %>% mutate(Movie = (type=="Movie")) %>% select(-type)
-
-
-
 
 head(amazon)
 ```
 
-# DISNEY {#disney}
+### SEPARAZIONE
+
+```{r}
+amazonMovies = amazon %>% filter(Movie == TRUE)
+amazonMovies = amazonMovies %>% mutate(time = gsub(".{4}$","",duration)) %>% select(-duration)
+head(amazonMovies)
+
+
+
+amazonShows = amazon %>% filter(Movie == FALSE)
+amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
+head(amazonShows)
+```
+
+### GENERI
+
+```{r}
+genres = vector(mode = "character")
+for (i in 1:nrow(sequels)){
+  genres = append(genres,  unlist(str_split(amazon$Genres[i],", ")))
+}
+amazGenres = levels(factor(genres))
+amazonGenres = data.frame(
+  genreID = 1:length(amazGenres),
+  genre = amazGenres
+)
+```
+
+### RATING
+
+```{r}
+amazonRatTypes = levels(factor(amazon$rating))
+(amazonRatingTypes = data.frame(
+  ratingID = 1:length(amazonRatTypes),
+  rating = amazonRatTypes
+))
+
+
+```
+
+### COUNTRIES
+
+```{r}
+countries = vector(mode = "character")
+for (i in 1:nrow(sequels)){
+  countries = append(countries,  unlist(str_split(amazon$country[i],", ")))
+}
+amazCountr = levels(factor(countries))
+(amazonCountries = data.frame(
+  countryID = 1:length(amazCountr),
+  country = amazCountr
+))
+
+```
+
+# [DISNEY](#indice) {#disney}
+
+-   Descrizione e Data di Aggiunta non necessarie
 
 ```{r}
 View(disney)
@@ -61,46 +117,172 @@ disney = disney %>% select(-description,-date_added)
 colnames(disney)[7] = "Year"
 colnames(disney)[10] = "Genres"
 head(disney)
+```
 
+```{r}
+levels(factor(disney$type))
+```
+
+-   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
+
+```{r}
+# MODIFICA TYPE
 disney = disney %>% mutate(Movie = (type == "Movie")) %>% select(-type)
+head(disney)
+```
 
+### SEPARAZIONE
+
+-   Il campo Duration va modificato per Film e Serie TV diversamente
+
+```{r}
+disneyMovies = disney %>% filter(Movie == TRUE)
+# MODIFICARE IL CAMPO DURATION
+# rimuove " min" alla fine di ogni campo
+disneyMovies = disneyMovies %>% mutate(duration = gsub(".{4}$","",duration)) 
+head(disneyMovies)
+
+
+
+disneyShows = disney %>% filter(Movie == FALSE)
+# rimuove tutti i caratteri superflui in modo da salvare solo il numero
+disneyShows = disneyShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
+head(disneyShows)
 
 ```
 
-# GROSS {#gross}
+### GENERI
+
+```{r}
+genres = vector(mode = "character")
+for (i in 1:nrow(sequels)){
+  genres = append(genres,  unlist(str_split(disney$Genres[i],", ")))
+}
+disGenre  = levels(factor(genres))
+(disneyGenreTable = data.frame(
+  genreID = 1:length(disGenre),
+  genre = disGenre
+))
+```
+
+### RATING
+
+```{r}
+disRats = levels(factor(disney$rating))
+(disneyRatingTypes = data.frame(
+  ratingID = 1:length(disRats),
+  rating = disRats
+))
+```
+
+### COUNTRIES
+
+```{r}
+countries = vector(mode = "character")
+for (i in 1:nrow(disney)){
+  countries = append(countries,  unlist(str_split(disney$country[i],", ")))
+}
+disCount = levels(factor(countries))
+(disneyCountries = data.frame(
+  countryID = 1:length(disCount),
+  country = disCount
+))
+```
+
+# [GROSS](#indice) {#gross}
+
+-   Release_Date e Movie Info non sono necessari
 
 ```{r}
 # View(HighestGrossers)
-spec(HighestGrossers)
-# DATA DI RILASCIO E INFORMAZIONI SUL FILM NON NECESSARIE
+# spec(HighestGrossers)
 HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`)
+```
 
+### SEPARAZIONE
+
+```{r}
 # SEPARAZIONE TITLE YEAR
 HighestGrossers = separate(HighestGrossers,Title,into = c("Title","Year"),sep = -5) %>% mutate(Title = gsub('.{2}$', '', Title)) %>% mutate(Year = gsub('.{1}$', '', Year))
+```
+
+-   Convertire la notazione da "x hr y min" a "x min"
+
+```{r}
+# DURATION
+HighestGrossers = HighestGrossers  %>% separate(`Movie Runtime`,into = c("Hour","Min"),sep = " hr ")
+# toglie " min" da ogni campo
+HighestGrossers = HighestGrossers %>% mutate(Min = gsub(" min","",Min))
+
+# HOUR e MIN SONO CHARACTER, PERCIò BISOGNA CONVERTIRE IN INTERO
+HighestGrossers = HighestGrossers %>% mutate("Duration (mins)" = ifelse(!is.na(Min), strtoi( Min)+(strtoi(Hour)*60),strtoi(Hour)*60 )) %>% select(-Min, -Hour)
 
 
 head(HighestGrossers)
 ```
 
-# MOVIELENS {#movielens}
+### GENERI
 
--   modificare i separatori da "::" a ";"
+-   è necessario rimuovere le "[" "]" dal blocco note, al fine di rendere leggibile il contenuto del campo Genre
 
--   Alcuni film sono scritti in notazione francese, quindi presentano una "," intermedia nel loro nome. di conseguenza il formato CSV non è valido
+```{r}
 
--   Sostituire tutti i carattteri speciali
+HighestGrossers = HighestGrossers %>% mutate(Genre = gsub("'","",Genre))
+
+
+genres = vector(mode = "character")
+for (i in 1:nrow(sequels)){
+  genres = append(genres,  unlist(str_split(HighestGrossers$Genre[i],", ")))
+}
+grossGenre = levels(factor(genres))
+(grossGenreTable = data.frame(
+  genreID = 1:length(grossGenre),
+  genre = grossGenre
+))
+```
+
+### RATING
+
+```{r}
+levels(factor(HighestGrossers$License))
+```
+
+### DISTRIBUTORS
+
+```{r}
+grossDistr = levels(factor(HighestGrossers$Distributor))
+(grossDistributors = data.frame(
+  distrID = 1:length(grossDistr),
+  distributor = grossDistr
+))
+```
+
+# [MOVIELENS](#indice) {#movielens}
+
+-   modificare i separatori da "::" a ";" direttamente dal blocco note
+
+## MOVIES
+
+-   Separazione Titolo e Anno
 
 ```{r}
 # rimuove l'ultimo carattere
 #View(movies)
+
 
 movies = separate(movies,Title,into = c("Title","Year"),sep = -5)
 # rimuove gli ultimi due caratteri
 movies$Title = gsub('.{2}$', '', movies$Title)
 
 movies$Year = gsub('.{1}$', '', movies$Year)
+```
 
+-   errori nel campo Title
 
+```{r}
+# alcuni film possiedono una notazione errata
+head(movies %>% filter(grepl(",",Title)) %>% select(Title))
+# ciclo per risolvere la notazione
 for (i in 1:nrow(movies)){
   if (grepl(",",movies$Title[i])){
     arr = unlist(str_split(movies$Title[i],", "))
@@ -109,10 +291,29 @@ for (i in 1:nrow(movies)){
 }
 
 head(movies)
+```
+
+### GENERI
+
+```{r}
+View(movies)
+arr = vector(mode = "character")
+for (i in 1:nrow(movies)){
+  arr = append(arr,  unlist(strsplit(movies$Genres[i],"|",fixed = TRUE)))
+}
+(movieLensGenreTable = data.frame(
+ genreID = 1:length(levels(factor(arr))),
+ genre = levels(factor(arr))
+))
+
+
+
 
 
 
 ```
+
+## RATINGS
 
 ```{r}
 spec(ratings)
@@ -120,36 +321,43 @@ ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating))
 head(ratings)
 ```
 
+## USERS
+
 ```{r}
 spec(users)
-View(users)
-
 colnames(users)[1] = "userID"
 colnames(users)[4] = "zip"
 users = users %>% filter(!is.na(Gender) && !is.na(Age)  && !is.na(zip))
-
-users = users %>% mutate(Male = (Gender == "M")) %>% select(-Gender)
-
-
-
-head(users)
-
-workTable = data.frame(
-  workID = 0:20,
-  workType = c("other","academic/educator","artist","clerical/admin","college/grad student","customer service","doctor/health care","executive/managerial","farmer","homemaker","K-12 student","lawyer","programmer","retired","sales/marketing","scientist","self-employed","technician/engineer","tradesman/craftsman","unemployed","writer")
-)
-
-ageTable = data.frame(
-  ageID = levels(factor(users$Age)),
-  age = c("Under 18","18-24","25-34","35-44","45-49","50-55","Over 56")
-)
-
-View(workTable)
-
-
 ```
 
-# NETFLIX {#netflix}
+```{r}
+levels(factor(users$Gender))
+```
+
+-   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
+
+```{r}
+# MODIFICA
+users = users %>% mutate(Male = (Gender == "M")) %>% select(-Gender)
+head(users)
+```
+
+```{r}
+(workTable = data.frame(
+  workID = 0:20,
+  workType = c("other","academic/educator","artist","clerical/admin","college/grad student","customer service","doctor/health care","executive/managerial","farmer","homemaker","K-12 student","lawyer","programmer","retired","sales/marketing","scientist","self-employed","technician/engineer","tradesman/craftsman","unemployed","writer")
+))
+
+
+(ageTable = data.frame(
+  ageID = levels(factor(users$Age)),
+  age = c("Under 18","18-24","25-34","35-44","45-49","50-55","Over 56")
+))
+```
+
+# [NETFLIX](#indice) {#netflix}
+
+-   Descrizione e Data di Aggiunta non necessarie
 
 ```{r}
 View(netflix)
@@ -157,22 +365,85 @@ spec(netflix)
 netflix = netflix %>% select(-date_added,-description)
 colnames(netflix)[7] = "Year"
 colnames(netflix)[10] = "Genres"
-head(netflix)
 ```
 
-# SEQUEL
+-   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
+
+```{r}
+levels(factor(netflix$type))
+```
+
+```{r}
+# MODIFICA TYPE
+netflix = netflix %>% mutate(Movie = (type == "Movie")) %>% select(-type)
+```
+
+### SEPARAZIONE
+
+```{r}
+netflixMovies = netflix %>% filter(Movie == TRUE)
+# MODIFICA AL CAMPO DURATION
+netflixMovies = netflixMovies %>% mutate(duration = gsub(" min","",duration))
+
+
+netflixShows = netflix %>% filter(Movie == FALSE)
+# DURATION TO SEASONS
+netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = gsub(" ","",Seasons)) %>% select(-duration)
+
+```
+
+### GENERI
+
+```{r}
+genres = vector(mode = "character")
+for (i in 1:nrow(netflix)){
+  genres = append(genres,  unlist(str_split(netflix$Genres[i],", ")))
+}
+netGenr = levels(factor(genres))
+(netflixGenres = data.frame(
+  genreID = 1:length(netGenr),
+  genre = netGenr
+))
+```
+
+### RATING
+
+```{r}
+netRat = levels(factor(netflix$rating))
+(netflixRatingTypes = data.frame(
+  ratingID = 1:length(netRat),
+  rating = netRat
+))
+```
+
+### COUNTRIES
+
+```{r}
+countries = vector(mode = "character")
+for (i in 1:nrow(netflix)){
+  countries = append(countries,  unlist(str_split(netflix$country[i],", ")))
+}
+netCount = levels(factor(countries))
+(netflixCountries = data.frame(
+  countryID = 1:length(netCount),
+  country = netCount
+))
+```
+
+# [SEQUELS](#indice)
 
 ```{r}
 # View(sequels)
 
-(titleTypes = levels(factor(sequels$`Title Type`)))
+
+
+if (all(is.na(sequels$Description))){
+  print("la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla")
+}
 
 # CREATED E MODIFIED NON CI INTERESSANO NELLA NOSTRA RICERCA
-
-
-sequels %>% filter(!is.na(Description))
-# la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla
 sequels = sequels %>% select(-Description,-Created,-Modified,-`Release Date`,-Const,-URL)
+
 colnames(sequels)
 
 # FILM CON VOTAZIONE NON VALIDA
@@ -198,7 +469,7 @@ sequels %>% filter(is.na(Year))
 View(sequels)
 ```
 
-### GENERI FILMS
+### GENERI
 
 ```{r}
 genres = vector(mode = "character")
@@ -206,52 +477,124 @@ for (i in 1:nrow(sequels)){
   genres = append(genres,  unlist(str_split(sequels$Genres[i],", ")))
 }
 # LISTA CON TUTTI I GENERI
-(genreList = levels(factor(genres)))
+(sequelsGenreTable = data.frame(
+  genreID = 1:length(levels(factor(genres))),
+  genre = levels(factor(genres))
+))
+```
 
-(amazonRatingTypes = levels(factor(amazon$rating)))
+### TITLE TYPES
 
-(amazonCountries = levels(factor(amazon$country)))
+```{r}
+(titleTypes = levels(factor(sequels$`Title Type`)))
+# SEPARAZIONE
+sequelMovies = sequels %>% filter(`Title Type`==titleTypes[1])
+sequelTVEpisodes = sequels %>% filter(`Title Type`==titleTypes[2])
+sequelTVMovies = sequels %>% filter(`Title Type`==titleTypes[3])
+sequelTVShorts = sequels %>% filter(`Title Type`==titleTypes[4])
+sequelVideos = sequels %>% filter(`Title Type`==titleTypes[5])
+
 
 
 ```
 
-# TMDB {#tmdb}
+# [TMDB](#indice) {#tmdb}
 
 ```{r}
 View(tmdb)
-tmdb = tmdb %>% select(-original_language,-overview,-...1)
+spec(tmdb)
+tmdb = tmdb %>% select(-original_language,-overview,-...1) %>% mutate(Year = format(release_date,"%Y")) %>% select(-release_date)
+# MODIFICA LA DATA IN FORMATO SOLO ANNO
 head(tmdb)
+
 ```
 
-# AGGIORNAMENTO
+# [AGGIORNAMENTO](#indice)
 
 I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 
+### AMAZON
+
 ```{r}
 filePath = "../CLEAN_DATA/"
-# AMAZON
-write_csv(amazon,paste(filePath,"AMAZON/","amazon.csv",sep="") )
 
-# DISNEY
-write_csv(disney,paste(filePath,"DISNEY/","disney.csv",sep="") )
+amazonPath = "AMAZON/"
+write_csv(amazon,paste(filePath,amazonPath,"amazon.csv",sep="") )
+write_csv(amazonMovies,paste(filePath,amazonPath,"amazonMovies.csv",sep="") )
+write_csv(amazonShows,paste(filePath,amazonPath,"amazonShows.csv",sep="") )
+write_csv(amazonGenres,paste(filePath,amazonPath,"amazonGenres.csv",sep="") )
+write_csv(amazonRatingTypes,paste(filePath,amazonPath,"amazonRatingTypes.csv",sep="") )
+write_csv(amazonCountries,paste(filePath,amazonPath,"amazonCountries.csv",sep="") )
+```
 
-# HIGH GROSS
-write_csv(HighestGrossers,paste(filePath,"GROSS/","gross.csv",sep="") )
+### DISNEY
 
-# MOVIELENS MOVIES
-write_csv(movies,paste(filePath,"MOVIELENS/","movies.csv",sep="") )
-write_csv(ratings,paste(filePath,"MOVIELENS/","ratings.csv",sep="") )
-write_csv(users,paste(filePath,"MOVIELENS/","users.csv",sep="") )
-write_csv(workTable,paste(filePath,"MOVIELENS/","workTable.csv",sep="") )
-write_csv(ageTable,paste(filePath,"MOVIELENS/","ageTable.csv",sep="") )
+```{r}
 
-# NETFLIX
-write_csv(netflix,paste(filePath,"NETFLIX/","netflix.csv",sep="") )
+disneyPath = "DISNEY/"
+write_csv(disney,paste(filePath,disneyPath,"disney.csv",sep="") )
+write_csv(disneyMovies,paste(filePath,disneyPath,"disneyMovies.csv",sep="") )
+write_csv(disneyShows,paste(filePath,disneyPath,"disneyShows.csv",sep="") )
+write_csv(disneyGenreTable,paste(filePath,disneyPath,"disneyGenreTable.csv",sep="") )
+write_csv(disneyRatingTypes,paste(filePath,disneyPath,"disneyRatingTypes.csv",sep="") )
+write_csv(disneyCountries,paste(filePath,disneyPath,"disneyCountries.csv",sep="") )
+```
 
-# SEQUELS
-write_csv(sequels,paste(filePath,"SEQUELS/","sequels.csv",sep="") )
+### HIGH GROSS
 
-# TMDB
+```{r}
+grossPath = "GROSS/"
+write_csv(HighestGrossers,paste(filePath,grossPath,"gross.csv",sep="") )
+write_csv(grossGenreTable,paste(filePath,grossPath,"grossGenreTable.csv",sep="") )
+write_csv(grossDistributors,paste(filePath,grossPath,"grossDistributors.csv",sep="") )
+
+```
+
+### MOVIELENS
+
+```{r}
+movielensPath = "MOVIELENS/"
+write_csv(movies,paste(filePath,movielensPath,"movies.csv",sep="") )
+write_csv(ratings,paste(filePath,movielensPath,"ratings.csv",sep="") )
+write_csv(users,paste(filePath,movielensPath,"users.csv",sep="") )
+write_csv(workTable,paste(filePath,movielensPath,"workTable.csv",sep="") )
+write_csv(ageTable,paste(filePath,movielensPath,"ageTable.csv",sep="") )
+write_csv(movieLensGenreTable,paste(filePath,movielensPath,"movieLensGenreTable.csv",sep="") )
+```
+
+### NETFLIX
+
+```{r}
+netflixPath = "NETFLIX/"
+write_csv(netflix,paste(filePath,netflixPath,"netflix.csv",sep="") )
+write_csv(netflixMovies,paste(filePath,netflixPath,"netflixMovies.csv",sep="") )
+write_csv(netflixShows,paste(filePath,netflixPath,"netflixShows.csv",sep="") )
+write_csv(netflixGenres,paste(filePath,netflixPath,"netflixGenres.csv",sep="") )
+write_csv(netflixRatingTypes,paste(filePath,netflixPath,"netflixRatingTypes.csv",sep="") )
+write_csv(netflixCountries,paste(filePath,netflixPath,"netflixCountries.csv",sep="") )
+
+```
+
+### SEQUELS {#sequels}
+
+```{r}
+sequelPath = "SEQUELS/"
+write_csv(sequels,paste(filePath,sequelPath,"sequels.csv",sep="") )
+write_csv(sequelsGenreTable,paste(filePath,sequelPath,"sequelsGenreTable.csv",sep="") )
+
+
+write_csv(sequelMovies,paste(filePath,sequelPath,"sequelMovies.csv",sep="") )
+write_csv(sequelTVEpisodes,paste(filePath,sequelPath,"sequelTVEpisodes.csv",sep="") )
+write_csv(sequelTVMovies,paste(filePath,sequelPath,"sequelTVMovies.csv",sep="") )
+write_csv(sequelTVShorts,paste(filePath,sequelPath,"sequelTVShorts.csv",sep="") )
+write_csv(sequelVideos,paste(filePath,sequelPath,"sequelVideos.csv",sep="") )
+
+```
+
+### TMDB
+
+```{r}
+
 write_csv(tmdb,paste(filePath,"TMDB/","tmdb.csv",sep="") )
 
 ```

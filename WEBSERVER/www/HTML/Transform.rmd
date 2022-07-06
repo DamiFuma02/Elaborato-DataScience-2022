@@ -23,6 +23,8 @@ source("../../R/cleanedData.r")
 
 -   [MOVIELENS](#movielens)
 
+    -   [MAPS](./Maps.html)
+
 -   [NETFLIX](#netflix)
 
 -   [SEQUELS](#sequels)
@@ -31,81 +33,11 @@ source("../../R/cleanedData.r")
 
 -   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
 
-# AMAZON {#amazon}
-
-```{r}
-View(amazon)
-
-# LISTA CON TUTTI I GENERI
-genres = vector(mode = "character")
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(amazon$Genres[i],", ")))
-}
-(amazonGenres = levels(factor(genres)))
-
-(amazonRatingTypes = levels(factor(amazon$rating)))
-# COUNTRIES
-countries = vector(mode = "character")
-for (i in 1:nrow(sequels)){
-  countries = append(countries,  unlist(str_split(amazon$country[i],", ")))
-}
-(amazonCountries = levels(factor(countries)))
-
-```
-
-### SEPARATING
-
-```{r}
-amazonMovies = amazon %>% filter(Movie == TRUE)
-amazonMovies = amazonMovies %>% mutate(time = gsub(".{4}$","",duration)) %>% select(-duration)
-head(amazonMovies)
 
 
 
-amazonShows = amazon %>% filter(Movie == FALSE)
-amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
-head(amazonShows)
-```
 
-# DISNEY
-
-```{r}
-View(disney)
-
-disneyMovies = disney %>% filter(Movie == TRUE)
-# MODIFICARE IL CAMPO DURATION
-disneyMovies = disneyMovies %>% mutate(time = gsub(".{4}$","",duration)) %>% select(-duration)
-head(disneyMovies)
-
-
-
-disneyShows = disney %>% filter(Movie == FALSE)
-# rimuove tutti i caratteri superflui in modo da salvare solo il numero
-disneyShows = disneyShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
-head(disneyShows)
-
-```
-
-# GROSS
-
-```{r}
-View(gross)
-
-#  RUNTIME DA "X HR Y MIN" --> "X MIN"
-# I CAMPI IN CUI MANCANO I MIN VENGONO SOSTITUITI CON NA
-gross = gross  %>% separate(`Movie Runtime`,into = c("Hour","Min"),sep = " hr ")
-
-gross = gross %>% mutate(Min = gsub(" min","",Min))
-
-# HOUR e MIN SONO CHARACTER, PERCIò BISOGNA CONVERTIRE IN INTERO
-gross = gross %>% mutate("Duration (mins)" = strtoi( Min)+(strtoi(Hour)*60)) %>% select(-Min, -Hour)
-
-head(gross)
-str(gross)
-
-```
-
-# MOVIELENS
+# MOVIELENS {#movielens}
 
 ```{r}
 user_ratings = left_join(users,ratings,by = "userID")
@@ -113,24 +45,10 @@ user_ratings = left_join(users,ratings,by = "userID")
 # View(workTable)
 # View(ageTable)
 
-
-
-
-
-```
-
-# AGGIORNAMENTO
-
-```{r}
-# AMAZON
-write_csv(amazonMovies,"../CLEAN_DATA/AMAZON/amazonMovies.csv")
-write_csv(amazonShows,"../CLEAN_DATA/AMAZON/amazonShows.csv")
-
-# DISNEY
-write_csv(disneyMovies,"../CLEAN_DATA/DISNEY/disneyMovies.csv")
-write_csv(disneyShows,"../CLEAN_DATA/DISNEY/disneyShows.csv")
-
+View(sequels)
 
 
 
 ```
+
+
