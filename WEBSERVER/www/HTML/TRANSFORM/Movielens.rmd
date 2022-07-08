@@ -1,0 +1,147 @@
+---
+title: "MOVIELENS"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(dplyr)
+library(usmap)
+library(ggplot2)
+```
+
+# INDICE
+
+-   IMPORT DATA
+-   RATING - OCCUPATION
+-   MAPS
+
+# IMPORT
+
+```{r}
+ageTable = read_csv("../../CLEAN_DATA/MOVIELENS/ageTable.csv", col_types = "?")
+spec(ageTable)
+genreTable = read_csv("../../CLEAN_DATA/MOVIELENS/movieLensGenreTable.csv", col_types = "?")
+spec(genreTable)
+movies = read_csv("../../CLEAN_DATA/MOVIELENS/movies.csv", col_types = "?")
+spec(movies)
+ratings = read_csv("../../CLEAN_DATA/MOVIELENS/ratings.csv", col_types = "?")
+spec(ratings)
+users = read_csv("../../CLEAN_DATA/MOVIELENS/users.csv", col_types = "?")
+spec(users)
+uszips = read_csv("../../DATASETS/MOVIELENS/uszips.csv", col_types = "?") 
+spec(uszips)
+workTable = read_csv("../../CLEAN_DATA/MOVIELENS/workTable.csv", col_types = "?")
+spec(workTable)
+```
+
+# RATING PER OCCUPATION
+
+```{r}
+# View(users)
+# View(ratings)
+# View(workTable)
+# View(genreTable)
+# View(workTable)
+
+genreOcc = function(occID){
+  # occID = workTable[workTable$workType == occType,]$workID
+  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID")
+  prec = 0
+  gen = ""
+  for (i in 1:length(genreTable$genre)){
+    a = nrow(mov %>% filter(grepl(genreTable$genre[i],Genres)))
+    if (a > prec) {
+      prec = a
+      gen = genreTable$genre[i]
+    }
+  }
+  return(gen)
+}
+
+# stampa la workTable
+workTable
+
+
+# genera un numero casuale tra [1:nrow(workTable)]
+(id = floor( runif(1) * nrow(workTable))+1)
+(randomWork = workTable$workType[id])
+print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
+
+
+
+
+
+
+```
+
+# MAPS
+
+```{r}
+# spec(users)
+# spec(ratings)
+```
+
+-   Creare una tabella con ogni votazione associata al zipcode dell'utente
+
+```{r}
+user_ratings = left_join(ratings,users,by = "userID")
+# View(user_ratings)
+
+ratingMap = left_join(user_ratings ,uszips %>% select(zip,lat,lng,county_fips),by = "zip")
+
+colnames(ratingMap)[10] = "fips"
+
+
+```
+
+```{r}
+
+
+ratingMap = ratingMap %>% filter(!is.na(Rating))
+colnames(ratingMap)
+
+# plot_usmap(data = ratingMap, values = "Rating", color = "black") +  scale_fill_continuous(low="white",high="red" ,name = "Ratings") +  theme(legend.position = "right")
+
+# plot_usmap(data = ratingMap, values = "Rating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Rating", label = scales::comma ) + theme(legend.position = "right")
+
+# mapdata = map_data("world")
+# View(mapdata)
+# MAPPA DI TUTTO IL MONDO
+# ggplot(mapdata, aes(x=long,y=lat))  + geom_point(size = 0.1)
+# 
+# 
+# ggplot(ratingMap, aes(x=lng, y=lat)) +  geom_polygon(aes(fill=Rating))
+
+
+```
+
+```{r}
+# USA DATA LOCALIZATION
+# usa = map_data("county") %>% select(lng = long, lat, group, id=region)
+# 
+# (usa_IDs = levels(factor(usa$id)))
+# usaID_DF = data.frame(id = usa_IDs, n = 1:length(usa_IDs))
+# View(usaID_DF)
+# USZIPS DATASETS
+# colnames(uszips)[6] = "id"
+# uszips$id = tolower(uszips$id)
+# head(uszips)
+# (uszips_IDs = levels(factor(uszips$id)))
+# uszipsID_DF = data.frame(id = uszips_IDs, n = 1:length(uszips_IDs))
+# head(uszipsID_DF)
+# CONTIENE GLI ID DELE REGIONI NEI DUE DATASETS
+# statesIDs = left_join(uszipsID_DF,usaID_DF, by = "id")
+# head(statesIDs)
+
+
+
+
+# head(left_join(usa,uszips,by="id"))
+# 
+# ggplot(usa, aes(lng, lat, group = group)) +
+#   geom_polygon(fill = "white", colour = "blue") + 
+#   coord_quickmap()
+```

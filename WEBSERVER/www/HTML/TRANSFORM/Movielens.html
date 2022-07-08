@@ -11,9 +11,9 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-08" />
+<meta name="date" content="2022-07-09" />
 
-<title>PRESENTAZIONE</title>
+<title>MOVIELENS</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -363,67 +363,204 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">PRESENTAZIONE</h1>
+<h1 class="title toc-ignore">MOVIELENS</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-08</h4>
+<h4 class="date">2022-07-09</h4>
 
 </div>
 
 
-<div id="introduzione" class="section level1">
-<h1><strong>INTRODUZIONE</strong></h1>
-<pre class="r"><code>source(&quot;C:/Elaborato-DataScience-2022/WEBSERVER/app.R&quot;)</code></pre>
-<pre><code>## Warning: il pacchetto &#39;shiny&#39; è stato creato con R versione 4.1.3</code></pre>
-<div id="strumenti" class="section level3">
-<h3>STRUMENTI</h3>
+<pre class="r"><code>library(readr)</code></pre>
+<pre><code>## Warning: il pacchetto &#39;readr&#39; è stato creato con R versione 4.1.3</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## Warning: il pacchetto &#39;dplyr&#39; è stato creato con R versione 4.1.3</code></pre>
+<pre><code>## 
+## Caricamento pacchetto: &#39;dplyr&#39;</code></pre>
+<pre><code>## I seguenti oggetti sono mascherati da &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## I seguenti oggetti sono mascherati da &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(usmap)</code></pre>
+<pre><code>## Warning: il pacchetto &#39;usmap&#39; è stato creato con R versione 4.1.3</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<div id="indice" class="section level1">
+<h1>INDICE</h1>
 <ul>
-<li><p><img src="data:image/png;base64,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" width="100" /> <a href="https://www.rstudio.com/resources/cheatsheets/">cheatsheets</a></p>
-<ul>
-<li><p><a href="../CHEATSHEETS/readr.pdf" target="_blank">READR</a> <a href="/IMPORT/Import.html">(import data)</a></p></li>
-<li><p><a href="../CHEATSHEETS/sparklyr.pdf" target="_blank">SPARKLYR</a>(big data) –&gt; collegamento con TMDB
-API</p></li>
-<li><p><a href="../CHEATSHEETS/tidyr.pdf" target="_blank">TIDYR</a>(tidy)</p></li>
-<li><p><a href="../CHEATSHEETS/dplyr.pdf" target="_blank">DPLYR</a>(transform)</p></li>
-<li><p><a href="../CHEATSHEETS/modelr.pdf" target="_blank">MODELR</a>(model)</p></li>
-<li><p><a href="../CHEATSHEETS/shiny.pdf" target="_blank">SHINY</a>; <a href="../CHEATSHEETS/ggplot.pdf" target="_blank">GGPLOT</a>
-(visualize)</p></li>
-</ul></li>
+<li>IMPORT DATA</li>
+<li>RATING - OCCUPATION</li>
+<li>MAPS</li>
 </ul>
 </div>
-<div id="fonte-dei-dati" class="section level3">
-<h3>FONTE DEI DATI</h3>
-<ul>
-<li><p><a href="https://grouplens.org/datasets/movielens/1m/">MOVIELENS-userinfo +
-ZIPCODES</a></p></li>
-<li><p><a href="https://data.world/priyankad0993/sequels">Movie
-Sequels</a></p></li>
-<li><p><a href="https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows">AMAZON</a></p></li>
-<li><p><a href="https://www.kaggle.com/datasets/shivamb/netflix-shows">NETFLIX</a></p></li>
-<li><p><a href="https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows">DISNEY+</a></p></li>
-<li><p><a href="https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies">HIGH
-GROSS</a></p></li>
-<li><p><a href="https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies">tmdb</a></p></li>
-</ul>
+<div id="import" class="section level1">
+<h1>IMPORT</h1>
+<pre class="r"><code>ageTable = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/ageTable.csv&quot;, col_types = &quot;?&quot;)
+spec(ageTable)</code></pre>
+<pre><code>## cols(
+##   ageID = col_double(),
+##   age = col_character()
+## )</code></pre>
+<pre class="r"><code>genreTable = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/movieLensGenreTable.csv&quot;, col_types = &quot;?&quot;)
+spec(genreTable)</code></pre>
+<pre><code>## cols(
+##   genreID = col_double(),
+##   genre = col_character()
+## )</code></pre>
+<pre class="r"><code>movies = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/movies.csv&quot;, col_types = &quot;?&quot;)
+spec(movies)</code></pre>
+<pre><code>## cols(
+##   movieID = col_double(),
+##   Title = col_character(),
+##   Year = col_double(),
+##   Genres = col_character()
+## )</code></pre>
+<pre class="r"><code>ratings = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/ratings.csv&quot;, col_types = &quot;?&quot;)
+spec(ratings)</code></pre>
+<pre><code>## cols(
+##   userID = col_double(),
+##   movieID = col_double(),
+##   Rating = col_double()
+## )</code></pre>
+<pre class="r"><code>users = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/users.csv&quot;, col_types = &quot;?&quot;)
+spec(users)</code></pre>
+<pre><code>## cols(
+##   userID = col_double(),
+##   Age = col_double(),
+##   Occupation = col_double(),
+##   zip = col_character(),
+##   Male = col_logical()
+## )</code></pre>
+<pre class="r"><code>uszips = read_csv(&quot;../../DATASETS/MOVIELENS/uszips.csv&quot;, col_types = &quot;?&quot;) 
+spec(uszips)</code></pre>
+<pre><code>## cols(
+##   zip = col_character(),
+##   lat = col_double(),
+##   lng = col_double(),
+##   city = col_character(),
+##   state_id = col_character(),
+##   state_name = col_character(),
+##   zcta = col_logical(),
+##   parent_zcta = col_logical(),
+##   population = col_double(),
+##   density = col_double(),
+##   county_fips = col_character(),
+##   county_name = col_character(),
+##   county_weights = col_character(),
+##   county_names_all = col_character(),
+##   county_fips_all = col_character(),
+##   imprecise = col_logical(),
+##   military = col_logical(),
+##   timezone = col_character()
+## )</code></pre>
+<pre class="r"><code>workTable = read_csv(&quot;../../CLEAN_DATA/MOVIELENS/workTable.csv&quot;, col_types = &quot;?&quot;)
+spec(workTable)</code></pre>
+<pre><code>## cols(
+##   workID = col_double(),
+##   workType = col_character()
+## )</code></pre>
 </div>
+<div id="rating-per-occupation" class="section level1">
+<h1>RATING PER OCCUPATION</h1>
+<pre class="r"><code># View(users)
+# View(ratings)
+# View(workTable)
+# View(genreTable)
+# View(workTable)
+
+genreOcc = function(occID){
+  # occID = workTable[workTable$workType == occType,]$workID
+  mov = left_join(left_join(users %&gt;% filter(Occupation == occID),ratings, by = &quot;userID&quot;),movies,by = &quot;movieID&quot;)
+  prec = 0
+  gen = &quot;&quot;
+  for (i in 1:length(genreTable$genre)){
+    a = nrow(mov %&gt;% filter(grepl(genreTable$genre[i],Genres)))
+    if (a &gt; prec) {
+      prec = a
+      gen = genreTable$genre[i]
+    }
+  }
+  return(gen)
+}
+
+# stampa la workTable
+workTable</code></pre>
+<pre><code>## # A tibble: 21 x 2
+##    workID workType            
+##     &lt;dbl&gt; &lt;chr&gt;               
+##  1      0 other               
+##  2      1 academic/educator   
+##  3      2 artist              
+##  4      3 clerical/admin      
+##  5      4 college/grad student
+##  6      5 customer service    
+##  7      6 doctor/health care  
+##  8      7 executive/managerial
+##  9      8 farmer              
+## 10      9 homemaker           
+## # ... with 11 more rows</code></pre>
+<pre class="r"><code># genera un numero casuale tra [1:nrow(workTable)]
+(id = floor( runif(1) * nrow(workTable))+1)</code></pre>
+<pre><code>## [1] 11</code></pre>
+<pre class="r"><code>(randomWork = workTable$workType[id])</code></pre>
+<pre><code>## [1] &quot;K-12 student&quot;</code></pre>
+<pre class="r"><code>print(paste(&quot;Genere preferito da &quot;,randomWork,&quot;: &quot;,genreOcc(id),sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;Genere preferito da K-12 student: Drama&quot;</code></pre>
 </div>
-<div id="domande" class="section level1">
-<h1>DOMANDE</h1>
+<div id="maps" class="section level1">
+<h1>MAPS</h1>
+<pre class="r"><code># spec(users)
+# spec(ratings)</code></pre>
 <ul>
-<li><p>i film con più alto gross sono più presenti nelle varie
-piattaforme netflix, amazon?</p></li>
-<li><p>categorizzare i film in base alla location degli user</p></li>
-<li><p>numero di film in base al genere prevalente</p></li>
-<li><p>mappe con zipcodes</p></li>
-<li><p>numero di voti da varie regioni</p></li>
-<li><p>gross / avarage rating</p></li>
-<li><p>film preferiti delle annate correlati alla mentalità?</p></li>
-<li><p>ANALISI ANTROPOLOGICA DEI FILM</p></li>
-<li><p>trovare film con protagonisti deceduti nella vita reale</p></li>
-<li><p>Trovare i film più visti con i sequel</p></li>
-<li><p>correlazione sequel rating</p></li>
-<li><p>CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY,
-NETFLIX, AMAZON)</p></li>
+<li>Creare una tabella con ogni votazione associata al zipcode
+dell’utente</li>
 </ul>
+<pre class="r"><code>user_ratings = left_join(ratings,users,by = &quot;userID&quot;)
+# View(user_ratings)
+
+ratingMap = left_join(user_ratings ,uszips %&gt;% select(zip,lat,lng,county_fips),by = &quot;zip&quot;)
+
+colnames(ratingMap)[10] = &quot;fips&quot;</code></pre>
+<pre class="r"><code>ratingMap = ratingMap %&gt;% filter(!is.na(Rating))
+colnames(ratingMap)</code></pre>
+<pre><code>##  [1] &quot;userID&quot;     &quot;movieID&quot;    &quot;Rating&quot;     &quot;Age&quot;        &quot;Occupation&quot;
+##  [6] &quot;zip&quot;        &quot;Male&quot;       &quot;lat&quot;        &quot;lng&quot;        &quot;fips&quot;</code></pre>
+<pre class="r"><code># plot_usmap(data = ratingMap, values = &quot;Rating&quot;, color = &quot;black&quot;) +  scale_fill_continuous(low=&quot;white&quot;,high=&quot;red&quot; ,name = &quot;Ratings&quot;) +  theme(legend.position = &quot;right&quot;)
+
+# plot_usmap(data = ratingMap, values = &quot;Rating&quot;, color = &quot;red&quot;) +  scale_fill_continuous( low = &quot;white&quot;, high = &quot;red&quot;, name = &quot;Rating&quot;, label = scales::comma ) + theme(legend.position = &quot;right&quot;)
+
+# mapdata = map_data(&quot;world&quot;)
+# View(mapdata)
+# MAPPA DI TUTTO IL MONDO
+# ggplot(mapdata, aes(x=long,y=lat))  + geom_point(size = 0.1)
+# 
+# 
+# ggplot(ratingMap, aes(x=lng, y=lat)) +  geom_polygon(aes(fill=Rating))</code></pre>
+<pre class="r"><code># USA DATA LOCALIZATION
+# usa = map_data(&quot;county&quot;) %&gt;% select(lng = long, lat, group, id=region)
+# 
+# (usa_IDs = levels(factor(usa$id)))
+# usaID_DF = data.frame(id = usa_IDs, n = 1:length(usa_IDs))
+# View(usaID_DF)
+# USZIPS DATASETS
+# colnames(uszips)[6] = &quot;id&quot;
+# uszips$id = tolower(uszips$id)
+# head(uszips)
+# (uszips_IDs = levels(factor(uszips$id)))
+# uszipsID_DF = data.frame(id = uszips_IDs, n = 1:length(uszips_IDs))
+# head(uszipsID_DF)
+# CONTIENE GLI ID DELE REGIONI NEI DUE DATASETS
+# statesIDs = left_join(uszipsID_DF,usaID_DF, by = &quot;id&quot;)
+# head(statesIDs)
+
+
+
+
+# head(left_join(usa,uszips,by=&quot;id&quot;))
+# 
+# ggplot(usa, aes(lng, lat, group = group)) +
+#   geom_polygon(fill = &quot;white&quot;, colour = &quot;blue&quot;) + 
+#   coord_quickmap()</code></pre>
 </div>
 
 

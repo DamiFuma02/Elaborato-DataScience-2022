@@ -10,10 +10,10 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-source("../../R/importData.R")
+source("../importData.R")
 ```
 
-# INDICE
+# INDICE {#indice}
 
 -   [AMAZON](#amazon)
 
@@ -41,6 +41,7 @@ levels(factor(amazon$type))
 
 ```{r}
 # View(amazon)
+spec(amazon)
 
 amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description)
 colnames(amazon)[7] = "Year"
@@ -70,10 +71,10 @@ head(amazonShows)
 
 ```{r}
 genres = vector(mode = "character")
-for (i in 1:nrow(sequels)){
+for (i in 1:nrow(amazon)){
   genres = append(genres,  unlist(str_split(amazon$Genres[i],", ")))
 }
-amazGenres = levels(factor(genres))
+(amazGenres = levels(factor(genres)))
 amazonGenres = data.frame(
   genreID = 1:length(amazGenres),
   genre = amazGenres
@@ -317,7 +318,7 @@ for (i in 1:nrow(movies)){
 
 ```{r}
 spec(ratings)
-ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating))
+ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating)) %>% select(-Timestamp) 
 head(ratings)
 ```
 
@@ -326,7 +327,7 @@ head(ratings)
 ```{r}
 spec(users)
 colnames(users)[1] = "userID"
-colnames(users)[4] = "zip"
+colnames(users)[5] = "zip"   # affinche coincida con uszips
 users = users %>% filter(!is.na(Gender) && !is.na(Age)  && !is.na(zip))
 ```
 
@@ -430,7 +431,7 @@ netCount = levels(factor(countries))
 ))
 ```
 
-# [SEQUELS](#indice)
+# [SEQUELS](#indice) {#sequels}
 
 ```{r}
 # View(sequels)
@@ -516,7 +517,7 @@ I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 ### AMAZON
 
 ```{r}
-filePath = "../CLEAN_DATA/"
+filePath = "../../CLEAN_DATA/"
 
 amazonPath = "AMAZON/"
 write_csv(amazon,paste(filePath,amazonPath,"amazon.csv",sep="") )
@@ -575,7 +576,7 @@ write_csv(netflixCountries,paste(filePath,netflixPath,"netflixCountries.csv",sep
 
 ```
 
-### SEQUELS {#sequels}
+### SEQUELS
 
 ```{r}
 sequelPath = "SEQUELS/"

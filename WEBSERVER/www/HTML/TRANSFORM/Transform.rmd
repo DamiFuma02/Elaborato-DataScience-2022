@@ -10,7 +10,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-source("../../R/cleanedData.r")
+source("C:/Elaborato-DataScience-2022/WEBSERVER/R/cleanedData.R")
 ```
 
 # INDICE
@@ -40,6 +40,8 @@ source("../../R/cleanedData.r")
 # MOVIELENS {#movielens}
 
 ```{r}
+colnames(ratings)
+
 user_ratings = left_join(users,ratings,by = "userID")
 # View(user_ratings)
 # View(workTable)

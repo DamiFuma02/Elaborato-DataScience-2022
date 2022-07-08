@@ -1,0 +1,13 @@
+name: WEBSERVER
+title: WEBSERVER
+username:
+account: damiandmn
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6612281
+bundleId: 6082300
+url: https://damiandmn.shinyapps.io/WEBSERVER/
+when: 1657300890.23827
+lastSyncTime: 1657300890.23827
+asMultiple: FALSE
+asStatic: FALSE

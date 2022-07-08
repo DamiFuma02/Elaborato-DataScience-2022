@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-06" />
+<meta name="date" content="2022-07-08" />
 
 <title>PULIZIA</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">PULIZIA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-06</h4>
+<h4 class="date">2022-07-08</h4>
 
 </div>
 
@@ -393,8 +393,22 @@ DATI</a></p></li>
 sostituita con valori logici TRUE o FALSE</li>
 </ul>
 <pre class="r"><code># View(amazon)
-
-amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description)
+spec(amazon)</code></pre>
+<pre><code>## cols(
+##   show_id = col_character(),
+##   type = col_character(),
+##   title = col_character(),
+##   director = col_character(),
+##   cast = col_character(),
+##   country = col_character(),
+##   date_added = col_character(),
+##   release_year = col_double(),
+##   rating = col_character(),
+##   duration = col_character(),
+##   listed_in = col_character(),
+##   description = col_character()
+## )</code></pre>
+<pre class="r"><code>amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description)
 colnames(amazon)[7] = &quot;Year&quot;
 colnames(amazon)[10] = &quot;Genres&quot;
 
@@ -441,11 +455,27 @@ head(amazonShows)</code></pre>
 <div id="generi" class="section level3">
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(sequels)){
+for (i in 1:nrow(amazon)){
   genres = append(genres,  unlist(str_split(amazon$Genres[i],&quot;, &quot;)))
 }
-amazGenres = levels(factor(genres))
-amazonGenres = data.frame(
+(amazGenres = levels(factor(genres)))</code></pre>
+<pre><code>##  [1] &quot;Action&quot;                    &quot;Adventure&quot;                
+##  [3] &quot;and Culture&quot;               &quot;Animation&quot;                
+##  [5] &quot;Anime&quot;                     &quot;Arthouse&quot;                 
+##  [7] &quot;Arts&quot;                      &quot;Comedy&quot;                   
+##  [9] &quot;Documentary&quot;               &quot;Drama&quot;                    
+## [11] &quot;Entertainment&quot;             &quot;Faith and Spirituality&quot;   
+## [13] &quot;Fantasy&quot;                   &quot;Fitness&quot;                  
+## [15] &quot;Historical&quot;                &quot;Horror&quot;                   
+## [17] &quot;International&quot;             &quot;Kids&quot;                     
+## [19] &quot;LGBTQ&quot;                     &quot;Military and War&quot;         
+## [21] &quot;Music Videos and Concerts&quot; &quot;Romance&quot;                  
+## [23] &quot;Science Fiction&quot;           &quot;Special Interest&quot;         
+## [25] &quot;Sports&quot;                    &quot;Suspense&quot;                 
+## [27] &quot;Talk Show and Variety&quot;     &quot;TV Shows&quot;                 
+## [29] &quot;Unscripted&quot;                &quot;Western&quot;                  
+## [31] &quot;Young Adult Audience&quot;</code></pre>
+<pre class="r"><code>amazonGenres = data.frame(
   genreID = 1:length(amazGenres),
   genre = amazGenres
 )</code></pre>
@@ -941,17 +971,17 @@ for (i in 1:nrow(movies)){
 ##   Rating = col_double(),
 ##   Timestamp = col_double()
 ## )</code></pre>
-<pre class="r"><code>ratings = ratings %&gt;% filter(!is.na(movieID) &amp;&amp; !is.na(Rating))
+<pre class="r"><code>ratings = ratings %&gt;% filter(!is.na(movieID) &amp;&amp; !is.na(Rating)) %&gt;% select(-Timestamp) 
 head(ratings)</code></pre>
-<pre><code>## # A tibble: 6 x 4
-##   userID movieID Rating Timestamp
-##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
-## 1      1    1193      5 978300760
-## 2      1     661      3 978302109
-## 3      1     914      3 978301968
-## 4      1    3408      4 978300275
-## 5      1    2355      5 978824291
-## 6      1    1197      3 978302268</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   userID movieID Rating
+##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
+## 1      1    1193      5
+## 2      1     661      3
+## 3      1     914      3
+## 4      1    3408      4
+## 5      1    2355      5
+## 6      1    1197      3</code></pre>
 </div>
 <div id="users" class="section level2">
 <h2>USERS</h2>
@@ -964,7 +994,7 @@ head(ratings)</code></pre>
 ##   Zip = col_character()
 ## )</code></pre>
 <pre class="r"><code>colnames(users)[1] = &quot;userID&quot;
-colnames(users)[4] = &quot;zip&quot;
+colnames(users)[5] = &quot;zip&quot;   # affinche coincida con uszips
 users = users %&gt;% filter(!is.na(Gender) &amp;&amp; !is.na(Age)  &amp;&amp; !is.na(zip))</code></pre>
 <pre class="r"><code>levels(factor(users$Gender))</code></pre>
 <pre><code>## [1] &quot;F&quot; &quot;M&quot;</code></pre>
@@ -976,14 +1006,14 @@ sostituita con valori logici TRUE o FALSE</li>
 users = users %&gt;% mutate(Male = (Gender == &quot;M&quot;)) %&gt;% select(-Gender)
 head(users)</code></pre>
 <pre><code>## # A tibble: 6 x 5
-##   userID   Age   zip Zip   Male 
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
-## 1      1     1    10 48067 FALSE
-## 2      2    56    16 70072 TRUE 
-## 3      3    25    15 55117 TRUE 
-## 4      4    45     7 02460 TRUE 
-## 5      5    25    20 55455 TRUE 
-## 6      6    50     9 55117 FALSE</code></pre>
+##   userID   Age Occupation zip   Male 
+##    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
+## 1      1     1         10 48067 FALSE
+## 2      2    56         16 70072 TRUE 
+## 3      3    25         15 55117 TRUE 
+## 4      4    45          7 02460 TRUE 
+## 5      5    25         20 55455 TRUE 
+## 6      6    50          9 55117 FALSE</code></pre>
 <pre class="r"><code>(workTable = data.frame(
   workID = 0:20,
   workType = c(&quot;other&quot;,&quot;academic/educator&quot;,&quot;artist&quot;,&quot;clerical/admin&quot;,&quot;college/grad student&quot;,&quot;customer service&quot;,&quot;doctor/health care&quot;,&quot;executive/managerial&quot;,&quot;farmer&quot;,&quot;homemaker&quot;,&quot;K-12 student&quot;,&quot;lawyer&quot;,&quot;programmer&quot;,&quot;retired&quot;,&quot;sales/marketing&quot;,&quot;scientist&quot;,&quot;self-employed&quot;,&quot;technician/engineer&quot;,&quot;tradesman/craftsman&quot;,&quot;unemployed&quot;,&quot;writer&quot;)
@@ -1456,7 +1486,7 @@ head(tmdb)</code></pre>
 ricerca.</p>
 <div id="amazon-1" class="section level3">
 <h3>AMAZON</h3>
-<pre class="r"><code>filePath = &quot;../CLEAN_DATA/&quot;
+<pre class="r"><code>filePath = &quot;../../CLEAN_DATA/&quot;
 
 amazonPath = &quot;AMAZON/&quot;
 write_csv(amazon,paste(filePath,amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
@@ -1503,7 +1533,7 @@ write_csv(netflixGenres,paste(filePath,netflixPath,&quot;netflixGenres.csv&quot;
 write_csv(netflixRatingTypes,paste(filePath,netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
 write_csv(netflixCountries,paste(filePath,netflixPath,&quot;netflixCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
-<div id="sequels" class="section level3">
+<div id="sequels-1" class="section level3">
 <h3>SEQUELS</h3>
 <pre class="r"><code>sequelPath = &quot;SEQUELS/&quot;
 write_csv(sequels,paste(filePath,sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;) )

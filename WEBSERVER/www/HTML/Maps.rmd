@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+d
 ```{r libraries}
 library(ggplot2)
 library(tidyverse)
@@ -18,17 +18,17 @@ library(readr)
 
 
 ```{r import}
-movies <- read_csv("MOVIELENS/movies.csv")
-View(movies)
+movies <- read_csv("../CLEAN_DATA/MOVIELENS/movies.csv")
+nrow(movies)
 
-ratings <- read_csv("MOVIELENS/ratings.csv")
-View(ratings)
+ratings <- read_csv("../CLEAN_DATA/MOVIELENS/ratings.csv")
+# View(ratings)
 
-users <- read_csv("MOVIELENS/users.csv")
-View(users)
+users <- read_csv("../CLEAN_DATA/MOVIELENS/users.csv")
+# View(users)
 
-uszips <- read_csv("MOVIELENS/zipcodes/uszips.csv")
-View(uszips)
+uszips <- read_csv("../DATASETS/MOVIELENS/uszips.csv")
+# View(uszips)
 
 ```
 
@@ -37,12 +37,12 @@ View(uszips)
 * UNIONE DEL DATASET USERS CON IL MAPDATA CON CHIAVE = ZIPCODE
 ```{r tidy}
 mapdata = map_data("world")
-View(mapdata)
+# View(mapdata)
 # MAPPA DI TUTTO IL MONDO
 ggplot(mapdata, aes(x=long,y=lat))  + geom_point(size = 0.1)
 
-usermapped = left_join(users,ratings, by = "userId") %>% select(-timestamp)
-head(usermapped)
+usermapped = left_join(ratings,users, by = "userID")
+
 ```
 
 > CORRISPONDENZA TRA ZIP DEL USERMAPPED E ZIP DEL USZIPS
@@ -51,11 +51,10 @@ head(usermapped)
 
 
 ```{r tiding}
-mapdata1 = left_join(usermapped,uszips,by="zip") %>% select(userId,zip,rating) %>% left_join(uszips, by = "zip") %>% select(lng,lat,userId,county_fips, rating)
+mapdata1 = left_join(usermapped,uszips,by="zip") %>% select(userID,zip,Rating) %>% left_join(uszips, by = "zip") %>% select(lng,lat,userID,county_fips, Rating)
 head(mapdata1)
 # il nome è stato impostato affinchè ggplot riconosca il parametro fips
 colnames(mapdata1)[4] = "fips"
-
 
 
 # ggplot(mapdata1, aes(x=lng, y=lat)) +  geom_polygon(aes(fill=population))
@@ -67,22 +66,22 @@ colnames(mapdata1)[4] = "fips"
 library(usmap)
 library(ggplot2)
 
-mapdata1 = mapdata1 %>% filter(!is.na(rating))
+mapdata1 = mapdata1 %>% filter(!is.na(Rating))
 colnames(mapdata1)
 
 
-plot_usmap(data = mapdata1, values = "rating", color = "black") +  scale_fill_continuous(low="white",high="red" ,name = "Ratings") +  theme(legend.position = "right")
+plot_usmap(data = mapdata1, values = "Rating", color = "black") +  scale_fill_continuous(low="white",high="red" ,name = "Ratings") +  theme(legend.position = "right")
 ```
 # USERID COUNT
 
 ```{r}
-countUsers = mapdata1 %>% group_by(userId) %>% summarise(count = n())  %>% arrange(desc(count))
-
-nrow(mapdata1 %>% filter(userId == 668)) == unlist(countUsers %>% filter(userId == 668) %>% select(count))
-
-ggplot(countUsers,aes(x=userId,y=count)) + geom_point(size = 0.1)
-
-countUsers %>% filter(count > 1)
+# countUsers = mapdata1 %>% group_by(userID) %>% summarise(count = n())  %>% arrange(desc(count))
+# 
+# nrow(mapdata1 %>% filter(userID == 668)) == unlist(countUsers %>% filter(userID == 668) %>% select(count))
+# 
+# ggplot(countUsers,aes(x=userId,y=count)) + geom_point(size = 0.1)
+# 
+# countUsers %>% filter(count > 1)
 ```
 
 # GGPLOT MAPPING

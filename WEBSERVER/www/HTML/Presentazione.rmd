@@ -7,15 +7,22 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+dir()
+source("../../app.R")
 ```
 
 # **INTRODUZIONE**
+
+```{r}
+#library(dplyr)
+colnames(amazon)
+```
 
 ### STRUMENTI
 
 -   ![](images/rstudio.png){width="100"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
-    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} [(import data)](Import.html)
+    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} [(import data)](/IMPORT/Import.html)
 
     -   [SPARKLYR](../CHEATSHEETS/sparklyr.pdf){target="_blank"}(big data) --\> collegamento con TMDB API
 
