@@ -47,7 +47,7 @@ amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description)
 colnames(amazon)[7] = "Year"
 colnames(amazon)[10] = "Genres"
 
-# MODIFICA COLONNA TYPE
+# CREA UNA COLONNA "Movie" LOGICA 
 amazon = amazon %>% mutate(Movie = (type=="Movie")) %>% select(-type)
 
 head(amazon)
@@ -57,13 +57,17 @@ head(amazon)
 
 ```{r}
 amazonMovies = amazon %>% filter(Movie == TRUE)
-amazonMovies = amazonMovies %>% mutate(time = gsub(".{4}$","",duration)) %>% select(-duration)
+# ".{N}$" seleziona gli ultimi N caratteri della stringa
+# viene rimosso " min" da ogni campo duration
+amazonMovies = amazonMovies %>% mutate(duration = gsub(".{4}$","",duration)) %>% select(-Movie,-show_id)
 head(amazonMovies)
 
 
 
 amazonShows = amazon %>% filter(Movie == FALSE)
-amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
+# In Seasons vengono lasciati solo i primi 2 caratteri
+amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie,-show_id) %>% mutate(Seasons = gsub(" ","",Seasons))
+# Se esiste un carattere " " viene rimosso
 head(amazonShows)
 ```
 
@@ -72,7 +76,10 @@ head(amazonShows)
 ```{r}
 genres = vector(mode = "character")
 for (i in 1:nrow(amazon)){
-  genres = append(genres,  unlist(str_split(amazon$Genres[i],", ")))
+  gen = unlist(str_split(amazon$Genres[i],", "))
+  # vengono selezionati solo i generi che NON sono presenti in genres
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 (amazGenres = levels(factor(genres)))
 amazonGenres = data.frame(
@@ -84,11 +91,17 @@ amazonGenres = data.frame(
 ### RATING
 
 ```{r}
+
+amazonMovieRatings = levels(factor(amazonMovies$rating))
+amazonTVRatings = levels(factor(amazonShows$rating))
+
 amazonRatTypes = levels(factor(amazon$rating))
 (amazonRatingTypes = data.frame(
   ratingID = 1:length(amazonRatTypes),
-  rating = amazonRatTypes
+  rating = amazonRatTypes,
+  Movie = amazonRatTypes %in% amazonMovieRatings
 ))
+# la colonna Movie indicherà se il rating type appartiene alla categoria Film o TV Show
 
 
 ```
@@ -97,15 +110,32 @@ amazonRatTypes = levels(factor(amazon$rating))
 
 ```{r}
 countries = vector(mode = "character")
-for (i in 1:nrow(sequels)){
-  countries = append(countries,  unlist(str_split(amazon$country[i],", ")))
+for (i in 1:nrow(amazon)){
+  countr = unlist(str_split(amazon$country[i],", "))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries,countr)
 }
 amazCountr = levels(factor(countries))
 (amazonCountries = data.frame(
   countryID = 1:length(amazCountr),
   country = amazCountr
 ))
+```
 
+### DIRECTORS
+
+```{r}
+directors = vector(mode = "character")
+for (i in 1:nrow(amazon)){
+  dir = unlist(str_split(amazon$director[i],", "))
+  dir = dir[!(dir %in% directors)]
+  directors = append(directors,dir)
+}
+dirs = levels(factor(directors))
+amazonDirectors = data.frame(
+  dirID = 1:length(dirs),
+  director = dirs
+)
 ```
 
 # [DISNEY](#indice) {#disney}
@@ -113,7 +143,7 @@ amazCountr = levels(factor(countries))
 -   Descrizione e Data di Aggiunta non necessarie
 
 ```{r}
-View(disney)
+# View(disney)
 disney = disney %>% select(-description,-date_added)
 colnames(disney)[7] = "Year"
 colnames(disney)[10] = "Genres"
@@ -156,8 +186,10 @@ head(disneyShows)
 
 ```{r}
 genres = vector(mode = "character")
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(disney$Genres[i],", ")))
+for (i in 1:nrow(disney)){
+  gen = unlist(str_split(disney$Genres[i],", "))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres,gen  )
 }
 disGenre  = levels(factor(genres))
 (disneyGenreTable = data.frame(
@@ -181,7 +213,9 @@ disRats = levels(factor(disney$rating))
 ```{r}
 countries = vector(mode = "character")
 for (i in 1:nrow(disney)){
-  countries = append(countries,  unlist(str_split(disney$country[i],", ")))
+  countr = unlist(str_split(disney$country[i],", "))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries,countr  )
 }
 disCount = levels(factor(countries))
 (disneyCountries = data.frame(
@@ -232,8 +266,10 @@ HighestGrossers = HighestGrossers %>% mutate(Genre = gsub("'","",Genre))
 
 
 genres = vector(mode = "character")
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(HighestGrossers$Genre[i],", ")))
+for (i in 1:nrow(HighestGrossers)){
+  gen = unlist(str_split(HighestGrossers$Genre[i],", "))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 grossGenre = levels(factor(genres))
 (grossGenreTable = data.frame(
@@ -297,10 +333,12 @@ head(movies)
 ### GENERI
 
 ```{r}
-View(movies)
+# View(movies)
 arr = vector(mode = "character")
 for (i in 1:nrow(movies)){
-  arr = append(arr,  unlist(strsplit(movies$Genres[i],"|",fixed = TRUE)))
+  gen = unlist(strsplit(movies$Genres[i],"|",fixed = TRUE))
+  gen = gen[!(gen %in% arr)]
+  arr = append(arr, gen )
 }
 (movieLensGenreTable = data.frame(
  genreID = 1:length(levels(factor(arr))),
@@ -320,6 +358,7 @@ for (i in 1:nrow(movies)){
 spec(ratings)
 ratings = ratings %>% filter(!is.na(movieID) && !is.na(Rating)) %>% select(-Timestamp) 
 head(ratings)
+(votiAmmessi = levels(factor(ratings$Rating)))
 ```
 
 ## USERS
@@ -361,7 +400,7 @@ head(users)
 -   Descrizione e Data di Aggiunta non necessarie
 
 ```{r}
-View(netflix)
+# View(netflix)
 spec(netflix)
 netflix = netflix %>% select(-date_added,-description)
 colnames(netflix)[7] = "Year"
@@ -398,7 +437,9 @@ netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = gsu
 ```{r}
 genres = vector(mode = "character")
 for (i in 1:nrow(netflix)){
-  genres = append(genres,  unlist(str_split(netflix$Genres[i],", ")))
+  gen = unlist(str_split(netflix$Genres[i],", "))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 netGenr = levels(factor(genres))
 (netflixGenres = data.frame(
@@ -422,7 +463,9 @@ netRat = levels(factor(netflix$rating))
 ```{r}
 countries = vector(mode = "character")
 for (i in 1:nrow(netflix)){
-  countries = append(countries,  unlist(str_split(netflix$country[i],", ")))
+  countr = unlist(str_split(netflix$country[i],", "))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries, countr )
 }
 netCount = levels(factor(countries))
 (netflixCountries = data.frame(
@@ -467,7 +510,7 @@ sequels %>% filter(is.na(Year))
 # sequels = sequels %>% sequels %>% filter(!is.na(Year))
 
 
-View(sequels)
+# View(sequels)
 ```
 
 ### GENERI
@@ -475,7 +518,9 @@ View(sequels)
 ```{r}
 genres = vector(mode = "character")
 for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(sequels$Genres[i],", ")))
+  gen = unlist(str_split(sequels$Genres[i],", "))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 # LISTA CON TUTTI I GENERI
 (sequelsGenreTable = data.frame(
@@ -502,7 +547,7 @@ sequelVideos = sequels %>% filter(`Title Type`==titleTypes[5])
 # [TMDB](#indice) {#tmdb}
 
 ```{r}
-View(tmdb)
+# View(tmdb)
 spec(tmdb)
 tmdb = tmdb %>% select(-original_language,-overview,-...1) %>% mutate(Year = format(release_date,"%Y")) %>% select(-release_date)
 # MODIFICA LA DATA IN FORMATO SOLO ANNO
@@ -526,6 +571,8 @@ write_csv(amazonShows,paste(filePath,amazonPath,"amazonShows.csv",sep="") )
 write_csv(amazonGenres,paste(filePath,amazonPath,"amazonGenres.csv",sep="") )
 write_csv(amazonRatingTypes,paste(filePath,amazonPath,"amazonRatingTypes.csv",sep="") )
 write_csv(amazonCountries,paste(filePath,amazonPath,"amazonCountries.csv",sep="") )
+write_csv(amazonDirectors,paste(filePath,amazonPath,"amazonDirectors.csv",sep="") )
+
 ```
 
 ### DISNEY

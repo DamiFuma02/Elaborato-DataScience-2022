@@ -1,0 +1,50 @@
+---
+title: "AMAZON"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(dplyr)
+```
+
+# INDICE
+
+# IMPORT
+
+```{r}
+amazon = read_csv("../../CLEAN_DATA/AMAZON/amazon.csv", col_types = "?")
+
+amazonShows = read_csv("../../CLEAN_DATA/AMAZON/amazonShows.csv", col_types = "?")
+
+amazonMovies = read_csv("../../CLEAN_DATA/AMAZON/amazonMovies.csv", col_types = "?")
+
+# ---------------
+
+amazonCountries = read_csv("../../CLEAN_DATA/AMAZON/amazonCountries.csv", col_types = "?")
+
+
+amazonGenres = read_csv("../../CLEAN_DATA/AMAZON/amazonGenres.csv", col_types = "?")
+
+amazonRatingTypes = read_csv("../../CLEAN_DATA/AMAZON/amazonRatingTypes.csv", col_types = "?")
+
+```
+
+[RatingTypesTable](https://www.primevideo.com/help/ref=atv_hp_nd_cnt?nodeId=GFGQU3WYEG6FSJFJ)
+
+```{r}
+View(amazonRatingTypes)
+A = (amazonRatingTypes %>% filter(Movie == TRUE))$rating
+B = levels(factor(amazonMovies$rating))
+if (all(A == B)){
+  print("A e B rappresentano i possibili rating types per i film amazon")
+}
+```
+
+## MOVIES
+
+```{r}
+View(amazonMovies)
+```

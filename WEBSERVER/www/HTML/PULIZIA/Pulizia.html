@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-08" />
+<meta name="date" content="2022-07-09" />
 
 <title>PULIZIA</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">PULIZIA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-08</h4>
+<h4 class="date">2022-07-09</h4>
 
 </div>
 
@@ -412,7 +412,7 @@ spec(amazon)</code></pre>
 colnames(amazon)[7] = &quot;Year&quot;
 colnames(amazon)[10] = &quot;Genres&quot;
 
-# MODIFICA COLONNA TYPE
+# CREA UNA COLONNA &quot;Movie&quot; LOGICA 
 amazon = amazon %&gt;% mutate(Movie = (type==&quot;Movie&quot;)) %&gt;% select(-type)
 
 head(amazon)</code></pre>
@@ -428,35 +428,42 @@ head(amazon)</code></pre>
 <div id="separazione" class="section level3">
 <h3>SEPARAZIONE</h3>
 <pre class="r"><code>amazonMovies = amazon %&gt;% filter(Movie == TRUE)
-amazonMovies = amazonMovies %&gt;% mutate(time = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-duration)
+# &quot;.{N}$&quot; seleziona gli ultimi N caratteri della stringa
+# viene rimosso &quot; min&quot; da ogni campo duration
+amazonMovies = amazonMovies %&gt;% mutate(duration = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-Movie,-show_id)
 head(amazonMovies)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title           director cast  country  Year rating Genres Movie time 
-##   &lt;chr&gt;   &lt;chr&gt;           &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;
-## 1 s1      The Grand Sedu~ Don McK~ Bren~ Canada   2014 &lt;NA&gt;   Comed~ TRUE  113  
-## 2 s2      Take Care Good~ Girish ~ Mahe~ India    2018 13+    Drama~ TRUE  110  
-## 3 s3      Secrets of Dec~ Josh We~ Tom ~ United~  2017 &lt;NA&gt;   Actio~ TRUE  74   
-## 4 s4      Pink: Staying ~ Sonia A~ Inte~ United~  2014 &lt;NA&gt;   Docum~ TRUE  69   
-## 5 s5      Monster Maker   Giles F~ Harr~ United~  1989 &lt;NA&gt;   Drama~ TRUE  45   
-## 6 s6      Living With Di~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   Fanta~ TRUE  52</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   title                 director      cast  country  Year rating duration Genres
+##   &lt;chr&gt;                 &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
+## 1 The Grand Seduction   Don McKellar  Bren~ Canada   2014 &lt;NA&gt;   113      Comed~
+## 2 Take Care Good Night  Girish Joshi  Mahe~ India    2018 13+    110      Drama~
+## 3 Secrets of Deception  Josh Webber   Tom ~ United~  2017 &lt;NA&gt;   74       Actio~
+## 4 Pink: Staying True    Sonia Anders~ Inte~ United~  2014 &lt;NA&gt;   69       Docum~
+## 5 Monster Maker         Giles Foster  Harr~ United~  1989 &lt;NA&gt;   45       Drama~
+## 6 Living With Dinosaurs Paul Weiland  Greg~ United~  1989 &lt;NA&gt;   52       Fanta~</code></pre>
 <pre class="r"><code>amazonShows = amazon %&gt;% filter(Movie == FALSE)
-amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
+# In Seasons vengono lasciati solo i primi 2 caratteri
+amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration,-Movie,-show_id) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
+# Se esiste un carattere &quot; &quot; viene rimosso
 head(amazonShows)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title         director cast  country  Year rating Genres Movie Seasons
-##   &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt; &lt;chr&gt;  
-## 1 s18     Zoo Babies    &lt;NA&gt;     Narr~ &lt;NA&gt;     2008 ALL    Kids,~ FALSE 1      
-## 2 s19     Zoë Coombs M~ &lt;NA&gt;     Zoë ~ &lt;NA&gt;     2020 18+    Comed~ FALSE 1      
-## 3 s21     Zoboomafoo    &lt;NA&gt;     &lt;NA&gt;  &lt;NA&gt;     2001 TV-Y   Kids   FALSE 1      
-## 4 s22     Zo Zo Zombie~ &lt;NA&gt;     Alex~ &lt;NA&gt;     2020 TV-Y7  Actio~ FALSE 1      
-## 5 s24     ZeroZeroZero  &lt;NA&gt;     ANDR~ Italy    2020 18+    TV Sh~ FALSE 1      
-## 6 s27     Zahara: The ~ &lt;NA&gt;     Nata~ &lt;NA&gt;     2020 16+    TV Sh~ FALSE 1</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   title                       director cast  country  Year rating Genres Seasons
+##   &lt;chr&gt;                       &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;  
+## 1 Zoo Babies                  &lt;NA&gt;     Narr~ &lt;NA&gt;     2008 ALL    Kids,~ 1      
+## 2 Zoë Coombs Marr: Bossy Bot~ &lt;NA&gt;     Zoë ~ &lt;NA&gt;     2020 18+    Comed~ 1      
+## 3 Zoboomafoo                  &lt;NA&gt;     &lt;NA&gt;  &lt;NA&gt;     2001 TV-Y   Kids   1      
+## 4 Zo Zo Zombie: Mini-Series   &lt;NA&gt;     Alex~ &lt;NA&gt;     2020 TV-Y7  Actio~ 1      
+## 5 ZeroZeroZero                &lt;NA&gt;     ANDR~ Italy    2020 18+    TV Sh~ 1      
+## 6 Zahara: The Return          &lt;NA&gt;     Nata~ &lt;NA&gt;     2020 16+    TV Sh~ 1</code></pre>
 </div>
 <div id="generi" class="section level3">
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(amazon)){
-  genres = append(genres,  unlist(str_split(amazon$Genres[i],&quot;, &quot;)))
+  gen = unlist(str_split(amazon$Genres[i],&quot;, &quot;))
+  # vengono selezionati solo i generi che NON sono presenti in genres
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 (amazGenres = levels(factor(genres)))</code></pre>
 <pre><code>##  [1] &quot;Action&quot;                    &quot;Adventure&quot;                
@@ -482,64 +489,115 @@ for (i in 1:nrow(amazon)){
 </div>
 <div id="rating" class="section level3">
 <h3>RATING</h3>
-<pre class="r"><code>amazonRatTypes = levels(factor(amazon$rating))
+<pre class="r"><code>amazonMovieRatings = levels(factor(amazonMovies$rating))
+amazonTVRatings = levels(factor(amazonShows$rating))
+
+amazonRatTypes = levels(factor(amazon$rating))
 (amazonRatingTypes = data.frame(
   ratingID = 1:length(amazonRatTypes),
-  rating = amazonRatTypes
+  rating = amazonRatTypes,
+  Movie = amazonRatTypes %in% amazonMovieRatings
 ))</code></pre>
-<pre><code>##    ratingID   rating
-## 1         1      13+
-## 2         2       16
-## 3         3      16+
-## 4         4      18+
-## 5         5       7+
-## 6         6 AGES_16_
-## 7         7 AGES_18_
-## 8         8      ALL
-## 9         9 ALL_AGES
-## 10       10        G
-## 11       11    NC-17
-## 12       12 NOT_RATE
-## 13       13       NR
-## 14       14       PG
-## 15       15    PG-13
-## 16       16        R
-## 17       17    TV-14
-## 18       18     TV-G
-## 19       19    TV-MA
-## 20       20    TV-NR
-## 21       21    TV-PG
-## 22       22     TV-Y
-## 23       23    TV-Y7
-## 24       24  UNRATED</code></pre>
+<pre><code>##    ratingID   rating Movie
+## 1         1      13+  TRUE
+## 2         2       16  TRUE
+## 3         3      16+  TRUE
+## 4         4      18+  TRUE
+## 5         5       7+  TRUE
+## 6         6 AGES_16_  TRUE
+## 7         7 AGES_18_  TRUE
+## 8         8      ALL  TRUE
+## 9         9 ALL_AGES  TRUE
+## 10       10        G  TRUE
+## 11       11    NC-17  TRUE
+## 12       12 NOT_RATE  TRUE
+## 13       13       NR  TRUE
+## 14       14       PG  TRUE
+## 15       15    PG-13  TRUE
+## 16       16        R  TRUE
+## 17       17    TV-14 FALSE
+## 18       18     TV-G FALSE
+## 19       19    TV-MA FALSE
+## 20       20    TV-NR FALSE
+## 21       21    TV-PG FALSE
+## 22       22     TV-Y FALSE
+## 23       23    TV-Y7 FALSE
+## 24       24  UNRATED  TRUE</code></pre>
+<pre class="r"><code># la colonna Movie indicherà se il rating type appartiene alla categoria Film o TV Show</code></pre>
 </div>
 <div id="countries" class="section level3">
 <h3>COUNTRIES</h3>
 <pre class="r"><code>countries = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(sequels)){
-  countries = append(countries,  unlist(str_split(amazon$country[i],&quot;, &quot;)))
+for (i in 1:nrow(amazon)){
+  countr = unlist(str_split(amazon$country[i],&quot;, &quot;))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries,countr)
 }
 amazCountr = levels(factor(countries))
 (amazonCountries = data.frame(
   countryID = 1:length(amazCountr),
   country = amazCountr
 ))</code></pre>
-<pre><code>##    countryID        country
-## 1          1         Canada
-## 2          2          China
-## 3          3 Czech Republic
-## 4          4        Denmark
-## 5          5         France
-## 6          6        Germany
-## 7          7          India
-## 8          8        Ireland
-## 9          9          Italy
-## 10        10          Japan
-## 11        11    Netherlands
-## 12        12          Spain
-## 13        13       Thailand
-## 14        14 United Kingdom
-## 15        15  United States</code></pre>
+<pre><code>##    countryID              country
+## 1          1          Afghanistan
+## 2          2              Albania
+## 3          3            Argentina
+## 4          4            Australia
+## 5          5              Austria
+## 6          6              Belgium
+## 7          7               Brazil
+## 8          8               Canada
+## 9          9                Chile
+## 10        10                China
+## 11        11             Colombia
+## 12        12       Czech Republic
+## 13        13              Denmark
+## 14        14                Egypt
+## 15        15               France
+## 16        16              Georgia
+## 17        17              Germany
+## 18        18            Hong Kong
+## 19        19              Hungary
+## 20        20                India
+## 21        21                 Iran
+## 22        22              Ireland
+## 23        23                Italy
+## 24        24                Japan
+## 25        25           Kazakhstan
+## 26        26               Kosovo
+## 27        27           Luxembourg
+## 28        28             Malaysia
+## 29        29               Mexico
+## 30        30               Monaco
+## 31        31          Netherlands
+## 32        32          New Zealand
+## 33        33               Norway
+## 34        34               Poland
+## 35        35             Portugal
+## 36        36            Singapore
+## 37        37         South Africa
+## 38        38          South Korea
+## 39        39                Spain
+## 40        40               Sweden
+## 41        41          Switzerland
+## 42        42             Thailand
+## 43        43 United Arab Emirates
+## 44        44       United Kingdom
+## 45        45        United States</code></pre>
+</div>
+<div id="directors" class="section level3">
+<h3>DIRECTORS</h3>
+<pre class="r"><code>directors = vector(mode = &quot;character&quot;)
+for (i in 1:nrow(amazon)){
+  dir = unlist(str_split(amazon$director[i],&quot;, &quot;))
+  dir = dir[!(dir %in% directors)]
+  directors = append(directors,dir)
+}
+dirs = levels(factor(directors))
+amazonDirectors = data.frame(
+  dirID = 1:length(dirs),
+  director = dirs
+)</code></pre>
 </div>
 </div>
 <div id="disney" class="section level1">
@@ -547,7 +605,7 @@ amazCountr = levels(factor(countries))
 <ul>
 <li>Descrizione e Data di Aggiunta non necessarie</li>
 </ul>
-<pre class="r"><code>View(disney)
+<pre class="r"><code># View(disney)
 disney = disney %&gt;% select(-description,-date_added)
 colnames(disney)[7] = &quot;Year&quot;
 colnames(disney)[10] = &quot;Genres&quot;
@@ -616,8 +674,10 @@ head(disneyShows)</code></pre>
 <div id="generi-1" class="section level3">
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(disney$Genres[i],&quot;, &quot;)))
+for (i in 1:nrow(disney)){
+  gen = unlist(str_split(disney$Genres[i],&quot;, &quot;))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres,gen  )
 }
 disGenre  = levels(factor(genres))
 (disneyGenreTable = data.frame(
@@ -666,8 +726,9 @@ disGenre  = levels(factor(genres))
 ## 39      39                Survival
 ## 40      40               Talk Show
 ## 41      41                Thriller
-## 42      42                 Variety
-## 43      43                 Western</code></pre>
+## 42      42                  Travel
+## 43      43                 Variety
+## 44      44                 Western</code></pre>
 </div>
 <div id="rating-1" class="section level3">
 <h3>RATING</h3>
@@ -691,7 +752,9 @@ disGenre  = levels(factor(genres))
 <h3>COUNTRIES</h3>
 <pre class="r"><code>countries = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(disney)){
-  countries = append(countries,  unlist(str_split(disney$country[i],&quot;, &quot;)))
+  countr = unlist(str_split(disney$country[i],&quot;, &quot;))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries,countr  )
 }
 disCount = levels(factor(countries))
 (disneyCountries = data.frame(
@@ -798,8 +861,10 @@ rendere leggibile il contenuto del campo Genre</li>
 
 
 genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(HighestGrossers$Genre[i],&quot;, &quot;)))
+for (i in 1:nrow(HighestGrossers)){
+  gen = unlist(str_split(HighestGrossers$Genre[i],&quot;, &quot;))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 grossGenre = levels(factor(genres))
 (grossGenreTable = data.frame(
@@ -932,10 +997,12 @@ head(movies)</code></pre>
 ## 6       6 Heat                        1995  Action|Crime|Thriller</code></pre>
 <div id="generi-3" class="section level3">
 <h3>GENERI</h3>
-<pre class="r"><code>View(movies)
+<pre class="r"><code># View(movies)
 arr = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(movies)){
-  arr = append(arr,  unlist(strsplit(movies$Genres[i],&quot;|&quot;,fixed = TRUE)))
+  gen = unlist(strsplit(movies$Genres[i],&quot;|&quot;,fixed = TRUE))
+  gen = gen[!(gen %in% arr)]
+  arr = append(arr, gen )
 }
 (movieLensGenreTable = data.frame(
  genreID = 1:length(levels(factor(arr))),
@@ -982,6 +1049,8 @@ head(ratings)</code></pre>
 ## 4      1    3408      4
 ## 5      1    2355      5
 ## 6      1    1197      3</code></pre>
+<pre class="r"><code>(votiAmmessi = levels(factor(ratings$Rating)))</code></pre>
+<pre><code>## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot;</code></pre>
 </div>
 <div id="users" class="section level2">
 <h2>USERS</h2>
@@ -1059,7 +1128,7 @@ head(users)</code></pre>
 <ul>
 <li>Descrizione e Data di Aggiunta non necessarie</li>
 </ul>
-<pre class="r"><code>View(netflix)
+<pre class="r"><code># View(netflix)
 spec(netflix)</code></pre>
 <pre><code>## cols(
 ##   show_id = col_character(),
@@ -1115,7 +1184,9 @@ netflixShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% mutate(Seasons
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(netflix)){
-  genres = append(genres,  unlist(str_split(netflix$Genres[i],&quot;, &quot;)))
+  gen = unlist(str_split(netflix$Genres[i],&quot;, &quot;))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 netGenr = levels(factor(genres))
 (netflixGenres = data.frame(
@@ -1196,7 +1267,9 @@ netGenr = levels(factor(genres))
 <h3>COUNTRIES</h3>
 <pre class="r"><code>countries = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(netflix)){
-  countries = append(countries,  unlist(str_split(netflix$country[i],&quot;, &quot;)))
+  countr = unlist(str_split(netflix$country[i],&quot;, &quot;))
+  countr = countr[!(countr %in% countries)]
+  countries = append(countries, countr )
 }
 netCount = levels(factor(countries))
 (netflixCountries = data.frame(
@@ -1405,12 +1478,14 @@ sequels %&gt;% filter(is.na(Year))</code></pre>
 # sequels = sequels %&gt;% sequels %&gt;% filter(!is.na(Year))
 
 
-View(sequels)</code></pre>
+# View(sequels)</code></pre>
 <div id="generi-5" class="section level3">
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
 for (i in 1:nrow(sequels)){
-  genres = append(genres,  unlist(str_split(sequels$Genres[i],&quot;, &quot;)))
+  gen = unlist(str_split(sequels$Genres[i],&quot;, &quot;))
+  gen = gen[!(gen %in% genres)]
+  genres = append(genres, gen )
 }
 # LISTA CON TUTTI I GENERI
 (sequelsGenreTable = data.frame(
@@ -1454,7 +1529,7 @@ sequelVideos = sequels %&gt;% filter(`Title Type`==titleTypes[5])</code></pre>
 </div>
 <div id="tmdb" class="section level1">
 <h1><a href="#indice">TMDB</a></h1>
-<pre class="r"><code>View(tmdb)
+<pre class="r"><code># View(tmdb)
 spec(tmdb)</code></pre>
 <pre><code>## cols(
 ##   ...1 = col_double(),
@@ -1494,7 +1569,8 @@ write_csv(amazonMovies,paste(filePath,amazonPath,&quot;amazonMovies.csv&quot;,se
 write_csv(amazonShows,paste(filePath,amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;) )
 write_csv(amazonGenres,paste(filePath,amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
 write_csv(amazonRatingTypes,paste(filePath,amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonCountries,paste(filePath,amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+write_csv(amazonCountries,paste(filePath,amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonDirectors,paste(filePath,amazonPath,&quot;amazonDirectors.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="disney-1" class="section level3">
 <h3>DISNEY</h3>

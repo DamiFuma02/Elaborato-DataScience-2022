@@ -79,11 +79,6 @@ print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
 
 # MAPS
 
-```{r}
-# spec(users)
-# spec(ratings)
-```
-
 -   Creare una tabella con ogni votazione associata al zipcode dell'utente
 
 ```{r}
@@ -95,25 +90,25 @@ ratingMap = left_join(user_ratings ,uszips %>% select(zip,lat,lng,county_fips),b
 colnames(ratingMap)[10] = "fips"
 
 
+ratingMap = ratingMap %>% filter(!is.na(Rating))
+colnames(ratingMap)
+plot_usmap(data = ratingMap, values = "Rating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Rating", label = scales::comma ) + theme(legend.position = "right")
+
 ```
+
+# GROUPING
 
 ```{r}
 
+userZips = users %>% group_by(zip) %>% summarise(count = n()) %>% arrange(desc(count))
+str(userZips)
 
-ratingMap = ratingMap %>% filter(!is.na(Rating))
-colnames(ratingMap)
+countZips = left_join(userZips,uszips,by="zip") %>% select(zip,lng,lat,count,county_fips)
+colnames(countZips)[5] = "fips"
 
-# plot_usmap(data = ratingMap, values = "Rating", color = "black") +  scale_fill_continuous(low="white",high="red" ,name = "Ratings") +  theme(legend.position = "right")
+plot_usmap(data = countZips, values = "count", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Number of Ratings", label = scales::comma ) + theme(legend.position = "right")
+ 
 
-# plot_usmap(data = ratingMap, values = "Rating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Rating", label = scales::comma ) + theme(legend.position = "right")
-
-# mapdata = map_data("world")
-# View(mapdata)
-# MAPPA DI TUTTO IL MONDO
-# ggplot(mapdata, aes(x=long,y=lat))  + geom_point(size = 0.1)
-# 
-# 
-# ggplot(ratingMap, aes(x=lng, y=lat)) +  geom_polygon(aes(fill=Rating))
 
 
 ```
