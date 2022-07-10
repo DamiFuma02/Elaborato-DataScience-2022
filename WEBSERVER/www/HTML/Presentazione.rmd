@@ -8,15 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 dir()
-source("../../app.R")
+# source("../../app.R")
 ```
 
 # **INTRODUZIONE**
-
-```{r}
-#library(dplyr)
-colnames(amazon)
-```
 
 ### STRUMENTI
 
@@ -43,6 +38,8 @@ colnames(amazon)
 -   [AMAZON](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows)
 
 -   [NETFLIX](https://www.kaggle.com/datasets/shivamb/netflix-shows)
+
+-   [OSCARS](https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars)
 
 -   [DISNEY+](https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows)
 

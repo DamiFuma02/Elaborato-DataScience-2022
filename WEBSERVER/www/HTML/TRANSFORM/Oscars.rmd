@@ -1,0 +1,13 @@
+---
+title: "OSCARS"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Creare una mappa tra Possibile vincita dell'oscar correlata alla valutazione 
+per IMDB e RT

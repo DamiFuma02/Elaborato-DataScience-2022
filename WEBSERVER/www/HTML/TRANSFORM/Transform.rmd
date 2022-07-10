@@ -10,7 +10,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-source("C:/Elaborato-DataScience-2022/WEBSERVER/R/cleanedData.R")
+source("../../../R/cleanedData.R")
 ```
 
 # INDICE
@@ -48,6 +48,7 @@ user_ratings = left_join(users,ratings,by = "userID")
 # View(ageTable)
 
 View(sequels)
+View(amazon)
 
 
 

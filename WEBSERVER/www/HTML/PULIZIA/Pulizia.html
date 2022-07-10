@@ -11,9 +11,9 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-09" />
+<meta name="date" content="2022-07-10" />
 
-<title>PULIZIA</title>
+<title>PULIZIA /DATASETS/</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -363,9 +363,9 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">PULIZIA</h1>
+<h1 class="title toc-ignore">PULIZIA /DATASETS/</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-09</h4>
+<h4 class="date">2022-07-10</h4>
 
 </div>
 
@@ -379,6 +379,7 @@ pre code {
 <li><p><a href="#movielens">MOVIELENS</a></p></li>
 <li><p><a href="#netflix">NETFLIX</a></p></li>
 <li><p><a href="#sequels">SEQUELS</a></p></li>
+<li><p><a href="#oscars">OSCARS</a></p></li>
 <li><p><a href="#tmdb">TMDB</a></p></li>
 <li><p><a href="./Presentazione.html#fonte-dei-dati">FONTE
 DATI</a></p></li>
@@ -408,29 +409,29 @@ spec(amazon)</code></pre>
 ##   listed_in = col_character(),
 ##   description = col_character()
 ## )</code></pre>
-<pre class="r"><code>amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description)
-colnames(amazon)[7] = &quot;Year&quot;
-colnames(amazon)[10] = &quot;Genres&quot;
+<pre class="r"><code>amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description,-show_id)
+colnames(amazon)[6] = &quot;Year&quot;
+colnames(amazon)[9] = &quot;Genres&quot;
 
 # CREA UNA COLONNA &quot;Movie&quot; LOGICA 
 amazon = amazon %&gt;% mutate(Movie = (type==&quot;Movie&quot;)) %&gt;% select(-type)
 
 head(amazon)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title        director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;   &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 s1      The Grand S~ Don McK~ Bren~ Canada   2014 &lt;NA&gt;   113 min  Comed~ TRUE 
-## 2 s2      Take Care G~ Girish ~ Mahe~ India    2018 13+    110 min  Drama~ TRUE 
-## 3 s3      Secrets of ~ Josh We~ Tom ~ United~  2017 &lt;NA&gt;   74 min   Actio~ TRUE 
-## 4 s4      Pink: Stayi~ Sonia A~ Inte~ United~  2014 &lt;NA&gt;   69 min   Docum~ TRUE 
-## 5 s5      Monster Mak~ Giles F~ Harr~ United~  1989 &lt;NA&gt;   45 min   Drama~ TRUE 
-## 6 s6      Living With~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   52 min   Fanta~ TRUE</code></pre>
+<pre><code>## # A tibble: 6 x 9
+##   title                director cast  country  Year rating duration Genres Movie
+##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
+## 1 The Grand Seduction  Don McK~ Bren~ Canada   2014 &lt;NA&gt;   113 min  Comed~ TRUE 
+## 2 Take Care Good Night Girish ~ Mahe~ India    2018 13+    110 min  Drama~ TRUE 
+## 3 Secrets of Deception Josh We~ Tom ~ United~  2017 &lt;NA&gt;   74 min   Actio~ TRUE 
+## 4 Pink: Staying True   Sonia A~ Inte~ United~  2014 &lt;NA&gt;   69 min   Docum~ TRUE 
+## 5 Monster Maker        Giles F~ Harr~ United~  1989 &lt;NA&gt;   45 min   Drama~ TRUE 
+## 6 Living With Dinosau~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   52 min   Fanta~ TRUE</code></pre>
 <div id="separazione" class="section level3">
 <h3>SEPARAZIONE</h3>
 <pre class="r"><code>amazonMovies = amazon %&gt;% filter(Movie == TRUE)
 # &quot;.{N}$&quot; seleziona gli ultimi N caratteri della stringa
 # viene rimosso &quot; min&quot; da ogni campo duration
-amazonMovies = amazonMovies %&gt;% mutate(duration = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-Movie,-show_id)
+amazonMovies = amazonMovies %&gt;% mutate(duration = gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)) %&gt;% select(-Movie)
 head(amazonMovies)</code></pre>
 <pre><code>## # A tibble: 6 x 8
 ##   title                 director      cast  country  Year rating duration Genres
@@ -443,7 +444,7 @@ head(amazonMovies)</code></pre>
 ## 6 Living With Dinosaurs Paul Weiland  Greg~ United~  1989 &lt;NA&gt;   52       Fanta~</code></pre>
 <pre class="r"><code>amazonShows = amazon %&gt;% filter(Movie == FALSE)
 # In Seasons vengono lasciati solo i primi 2 caratteri
-amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration,-Movie,-show_id) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
+amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration,-Movie) %&gt;% mutate(Seasons = gsub(&quot; &quot;,&quot;&quot;,Seasons))
 # Se esiste un carattere &quot; &quot; viene rimosso
 head(amazonShows)</code></pre>
 <pre><code>## # A tibble: 6 x 8
@@ -1407,124 +1408,86 @@ netCount = levels(factor(countries))
 </div>
 </div>
 <div id="sequels" class="section level1">
-<h1><a href="#indice">SEQUELS</a></h1>
-<pre class="r"><code># View(sequels)
-
-
-
-if (all(is.na(sequels$Description))){
-  print(&quot;la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla&quot;)
-}</code></pre>
-<pre><code>## [1] &quot;la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla&quot;</code></pre>
-<pre class="r"><code># CREATED E MODIFIED NON CI INTERESSANO NELLA NOSTRA RICERCA
-sequels = sequels %&gt;% select(-Description,-Created,-Modified,-`Release Date`,-Const,-URL)
-
-colnames(sequels)</code></pre>
-<pre><code>## [1] &quot;Position&quot;       &quot;Title&quot;          &quot;Title Type&quot;     &quot;IMDb Rating&quot;   
-## [5] &quot;Runtime (mins)&quot; &quot;Year&quot;           &quot;Genres&quot;         &quot;Num Votes&quot;     
-## [9] &quot;Directors&quot;</code></pre>
-<pre class="r"><code># FILM CON VOTAZIONE NON VALIDA
-head( sequels %&gt;% filter(is.na(`IMDb Rating`)))</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   Position Title        `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##      &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-## 1      203 Austin Powe~ movie                   NA               NA    NA Comedy
-## 2      213 Kill Bill: ~ movie                   NA               NA    NA Actio~
-## 3      397 Hellraiser   movie                   NA               NA    NA Horror
-## 4      434 The Karate ~ movie                   NA               NA    NA Actio~
-## 5      652 Rush Hour 4  movie                   NA               NA    NA Actio~
-## 6      680 National Tr~ movie                   NA               NA    NA Actio~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% filter(!is.na(`IMDb Rating`))
-
-
-# RUNTIME NON VALIDO
-head(sequels %&gt;% filter(is.na(`Runtime (mins)`)))</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   Position Title        `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##      &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-## 1      203 Austin Powe~ movie                   NA               NA    NA Comedy
-## 2      213 Kill Bill: ~ movie                   NA               NA    NA Actio~
-## 3      397 Hellraiser   movie                   NA               NA    NA Horror
-## 4      434 The Karate ~ movie                   NA               NA    NA Actio~
-## 5      652 Rush Hour 4  movie                   NA               NA    NA Actio~
-## 6      680 National Tr~ movie                   NA               NA    NA Actio~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% filter(!is.na(`Runtime (mins)`))
-
-
-# ANNO NON VALIDO
-sequels %&gt;% filter(is.na(Year))</code></pre>
-<pre><code>## # A tibble: 13 x 9
-##    Position Title       `Title Type` `IMDb Rating` `Runtime (mins)`  Year Genres
-##       &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
-##  1      203 Austin Pow~ movie                   NA               NA    NA Comedy
-##  2      213 Kill Bill:~ movie                   NA               NA    NA Actio~
-##  3      397 Hellraiser  movie                   NA               NA    NA Horror
-##  4      434 The Karate~ movie                   NA               NA    NA Actio~
-##  5      652 Rush Hour 4 movie                   NA               NA    NA Actio~
-##  6      680 National T~ movie                   NA               NA    NA Actio~
-##  7      740 Untitled I~ movie                   NA               NA    NA Actio~
-##  8      764 Machete Ki~ movie                   NA               NA    NA Actio~
-##  9      816 The Best M~ movie                   NA               NA    NA Comed~
-## 10      920 Get Smart 2 movie                   NA               NA    NA Comedy
-## 11      983 Justice Le~ movie                   NA               NA    NA Actio~
-## 12     1027 Untitled S~ movie                   NA               NA    NA Actio~
-## 13     1030 Gremlins 3  movie                   NA               NA    NA Comed~
-## # ... with 2 more variables: `Num Votes` &lt;dbl&gt;, Directors &lt;chr&gt;</code></pre>
-<pre class="r"><code># PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %&gt;% sequels %&gt;% filter(!is.na(Year))
-
-
-# View(sequels)</code></pre>
+<h1>SEQUELS</h1>
+<pre class="r"><code>spec(sequels)</code></pre>
+<pre><code>## cols(
+##   Title = col_character(),
+##   `Release Date` = col_character(),
+##   Year = col_double(),
+##   Description = col_logical(),
+##   URL = col_character(),
+##   `IMDb Rating` = col_double(),
+##   `Runtime (mins)` = col_double(),
+##   Genres = col_character(),
+##   `Num Votes` = col_double(),
+##   Directors = col_character(),
+##   `Movie Series` = col_character(),
+##   Order = col_double()
+## )</code></pre>
+<pre class="r"><code>sequels = sequels %&gt;% select(-Year,-Description,-URL)</code></pre>
+<pre class="r"><code>Series = levels(factor(sequels$`Movie Series`))
+# Contiene tutte le Serie che possiedono dei sequels
+length(Series)</code></pre>
+<pre><code>## [1] 376</code></pre>
 <div id="generi-5" class="section level3">
 <h3>GENERI</h3>
 <pre class="r"><code>genres = vector(mode = &quot;character&quot;)
+sequels = sequels %&gt;% filter(!is.na(Genres))
 for (i in 1:nrow(sequels)){
   gen = unlist(str_split(sequels$Genres[i],&quot;, &quot;))
   gen = gen[!(gen %in% genres)]
-  genres = append(genres, gen )
+  genres = append(genres,gen)
 }
-# LISTA CON TUTTI I GENERI
-(sequelsGenreTable = data.frame(
-  genreID = 1:length(levels(factor(genres))),
-  genre = levels(factor(genres))
-))</code></pre>
-<pre><code>##    genreID     genre
-## 1        1    Action
-## 2        2 Adventure
-## 3        3 Animation
-## 4        4 Biography
-## 5        5    Comedy
-## 6        6     Crime
-## 7        7     Drama
-## 8        8    Family
-## 9        9   Fantasy
-## 10      10   History
-## 11      11    Horror
-## 12      12     Music
-## 13      13   Musical
-## 14      14   Mystery
-## 15      15   Romance
-## 16      16    Sci-Fi
-## 17      17     Short
-## 18      18     Sport
-## 19      19  Thriller
-## 20      20       War
-## 21      21   Western</code></pre>
+(seqGen = levels(factor(genres)))</code></pre>
+<pre><code>##  [1] &quot;Action&quot;    &quot;Adventure&quot; &quot;Animation&quot; &quot;Biography&quot; &quot;Comedy&quot;    &quot;Crime&quot;    
+##  [7] &quot;Drama&quot;     &quot;Family&quot;    &quot;Fantasy&quot;   &quot;History&quot;   &quot;Horror&quot;    &quot;Music&quot;    
+## [13] &quot;Musical&quot;   &quot;Mystery&quot;   &quot;Romance&quot;   &quot;Sci-Fi&quot;    &quot;Sport&quot;     &quot;Thriller&quot; 
+## [19] &quot;War&quot;       &quot;Western&quot;</code></pre>
+<pre class="r"><code>#View(MoviesCleaned)</code></pre>
 </div>
-<div id="title-types" class="section level3">
-<h3>TITLE TYPES</h3>
-<pre class="r"><code>(titleTypes = levels(factor(sequels$`Title Type`)))</code></pre>
-<pre><code>## [1] &quot;movie&quot;     &quot;tvEpisode&quot; &quot;tvMovie&quot;   &quot;tvShort&quot;   &quot;video&quot;</code></pre>
-<pre class="r"><code># SEPARAZIONE
-sequelMovies = sequels %&gt;% filter(`Title Type`==titleTypes[1])
-sequelTVEpisodes = sequels %&gt;% filter(`Title Type`==titleTypes[2])
-sequelTVMovies = sequels %&gt;% filter(`Title Type`==titleTypes[3])
-sequelTVShorts = sequels %&gt;% filter(`Title Type`==titleTypes[4])
-sequelVideos = sequels %&gt;% filter(`Title Type`==titleTypes[5])</code></pre>
+</div>
+<div id="sondaggio" class="section level1">
+<h1><a href="#indice">OSCARS</a></h1>
+<pre class="r"><code># spec(oscars)
+# rimozione colonne inutili
+
+spec(oscars)</code></pre>
+<pre><code>## cols(
+##   year_film = col_double(),
+##   year_ceremony = col_double(),
+##   ceremony = col_double(),
+##   Category = col_character(),
+##   gender = col_character(),
+##   name = col_character(),
+##   Race = col_character(),
+##   film = col_character(),
+##   winner = col_character()
+## )</code></pre>
+<div id="gender" class="section level3">
+<h3>GENDER</h3>
+<pre class="r"><code>levels(factor(oscars$gender))</code></pre>
+<pre><code>## [1] &quot;female&quot; &quot;Female&quot; &quot;Male&quot;</code></pre>
+<pre class="r"><code>oscars = oscars %&gt;% mutate(gender = ifelse(str_starts(gender,&quot;f&quot;),&quot;Female&quot;,gender))
+levels(factor(oscars$gender))</code></pre>
+<pre><code>## [1] &quot;Female&quot; &quot;Male&quot;</code></pre>
+<ul>
+<li>Due valori possibili, è possibile sostituire con TRUE o FALSE</li>
+</ul>
+<pre class="r"><code>oscars = oscars %&gt;% mutate(Male = (gender == &quot;Male&quot;)) %&gt;% select(-gender)</code></pre>
+<pre class="r"><code>oscars = oscars %&gt;% mutate(winner = (winner == &quot;VERO&quot;))</code></pre>
+</div>
+<div id="oscar-years" class="section level3">
+<h3>OSCAR YEARS</h3>
+<pre class="r"><code>oscars %&gt;% filter(year_film == year_ceremony)</code></pre>
+<pre><code>## # A tibble: 0 x 9
+## # ... with 9 variables: year_film &lt;dbl&gt;, year_ceremony &lt;dbl&gt;, ceremony &lt;dbl&gt;,
+## #   Category &lt;chr&gt;, name &lt;chr&gt;, Race &lt;chr&gt;, film &lt;chr&gt;, winner &lt;lgl&gt;,
+## #   Male &lt;lgl&gt;</code></pre>
+<pre class="r"><code>if (all(oscars$year_ceremony == oscars$year_film+1)){
+  print(&quot;Nelle cerimonie degli oscar vengono premiati i film dell&#39;anno precedente, perciò è possibile rimuovere la colonna relativa all&#39;anno della cerimonia&quot;)
+  oscars = oscars %&gt;% select(-year_ceremony)
+}</code></pre>
+<pre><code>## [1] &quot;Nelle cerimonie degli oscar vengono premiati i film dell&#39;anno precedente, perciò è possibile rimuovere la colonna relativa all&#39;anno della cerimonia&quot;</code></pre>
 </div>
 </div>
 <div id="tmdb" class="section level1">
@@ -1561,70 +1524,76 @@ head(tmdb)</code></pre>
 ricerca.</p>
 <div id="amazon-1" class="section level3">
 <h3>AMAZON</h3>
-<pre class="r"><code>filePath = &quot;../../CLEAN_DATA/&quot;
+<pre class="r"><code>filePath = &quot;../../CLEAN_DATA/&quot;  # www/CLEAN_DATA
 
-amazonPath = &quot;AMAZON/&quot;
-write_csv(amazon,paste(filePath,amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonMovies,paste(filePath,amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonShows,paste(filePath,amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonGenres,paste(filePath,amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonRatingTypes,paste(filePath,amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonCountries,paste(filePath,amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonDirectors,paste(filePath,amazonPath,&quot;amazonDirectors.csv&quot;,sep=&quot;&quot;) )</code></pre>
+(amazonPath = paste(filePath,&quot;AMAZON/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/AMAZON/&quot;</code></pre>
+<pre class="r"><code>write_csv(amazon,paste(amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonMovies,paste(amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonShows,paste(amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonGenres,paste(amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonRatingTypes,paste(amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonCountries,paste(amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
+write_csv(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="disney-1" class="section level3">
 <h3>DISNEY</h3>
-<pre class="r"><code>disneyPath = &quot;DISNEY/&quot;
-write_csv(disney,paste(filePath,disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyMovies,paste(filePath,disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyShows,paste(filePath,disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyGenreTable,paste(filePath,disneyPath,&quot;disneyGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyRatingTypes,paste(filePath,disneyPath,&quot;disneyRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyCountries,paste(filePath,disneyPath,&quot;disneyCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(disneyPath = paste(filePath,&quot;DISNEY/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/DISNEY/&quot;</code></pre>
+<pre class="r"><code>write_csv(disney,paste(disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;) )
+write_csv(disneyMovies,paste(disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;) )
+write_csv(disneyShows,paste(disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;) )
+write_csv(disneyGenreTable,paste(disneyPath,&quot;disneyGenreTable.csv&quot;,sep=&quot;&quot;) )
+write_csv(disneyRatingTypes,paste(disneyPath,&quot;disneyRatingTypes.csv&quot;,sep=&quot;&quot;) )
+write_csv(disneyCountries,paste(disneyPath,&quot;disneyCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="high-gross" class="section level3">
 <h3>HIGH GROSS</h3>
-<pre class="r"><code>grossPath = &quot;GROSS/&quot;
-write_csv(HighestGrossers,paste(filePath,grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;) )
-write_csv(grossGenreTable,paste(filePath,grossPath,&quot;grossGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(grossDistributors,paste(filePath,grossPath,&quot;grossDistributors.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(grossPath = paste(filePath,&quot;GROSS/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/GROSS/&quot;</code></pre>
+<pre class="r"><code>write_csv(HighestGrossers,paste(grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;) )
+write_csv(grossGenreTable,paste(grossPath,&quot;grossGenreTable.csv&quot;,sep=&quot;&quot;) )
+write_csv(grossDistributors,paste(grossPath,&quot;grossDistributors.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="movielens-1" class="section level3">
 <h3>MOVIELENS</h3>
-<pre class="r"><code>movielensPath = &quot;MOVIELENS/&quot;
-write_csv(movies,paste(filePath,movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;) )
-write_csv(ratings,paste(filePath,movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;) )
-write_csv(users,paste(filePath,movielensPath,&quot;users.csv&quot;,sep=&quot;&quot;) )
-write_csv(workTable,paste(filePath,movielensPath,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(ageTable,paste(filePath,movielensPath,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(movieLensGenreTable,paste(filePath,movielensPath,&quot;movieLensGenreTable.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(movielensPath = paste(filePath,&quot;MOVIELENS/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/MOVIELENS/&quot;</code></pre>
+<pre class="r"><code>write_csv(movies,paste(movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;) )
+write_csv(ratings,paste(movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;) )
+write_csv(users,paste(movielensPath,&quot;users.csv&quot;,sep=&quot;&quot;) )
+write_csv(workTable,paste(movielensPath,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
+write_csv(ageTable,paste(movielensPath,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
+write_csv(movieLensGenreTable,paste(movielensPath,&quot;movieLensGenreTable.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="netflix-1" class="section level3">
 <h3>NETFLIX</h3>
-<pre class="r"><code>netflixPath = &quot;NETFLIX/&quot;
-write_csv(netflix,paste(filePath,netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixMovies,paste(filePath,netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixShows,paste(filePath,netflixPath,&quot;netflixShows.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixGenres,paste(filePath,netflixPath,&quot;netflixGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixRatingTypes,paste(filePath,netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixCountries,paste(filePath,netflixPath,&quot;netflixCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(netflixPath = paste(filePath,&quot;NETFLIX/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/NETFLIX/&quot;</code></pre>
+<pre class="r"><code>write_csv(netflix,paste(netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
+write_csv(netflixMovies,paste(netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;) )
+write_csv(netflixShows,paste(netflixPath,&quot;netflixShows.csv&quot;,sep=&quot;&quot;) )
+write_csv(netflixGenres,paste(netflixPath,&quot;netflixGenres.csv&quot;,sep=&quot;&quot;) )
+write_csv(netflixRatingTypes,paste(netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
+write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+</div>
+<div id="oscars" class="section level3">
+<h3>OSCARS</h3>
+<pre class="r"><code>(oscarPath = paste(filePath,&quot;OSCARS/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/OSCARS/&quot;</code></pre>
+<pre class="r"><code>write_csv(oscars,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="sequels-1" class="section level3">
 <h3>SEQUELS</h3>
-<pre class="r"><code>sequelPath = &quot;SEQUELS/&quot;
-write_csv(sequels,paste(filePath,sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;) )
-write_csv(sequelsGenreTable,paste(filePath,sequelPath,&quot;sequelsGenreTable.csv&quot;,sep=&quot;&quot;) )
-
-
-write_csv(sequelMovies,paste(filePath,sequelPath,&quot;sequelMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(sequelTVEpisodes,paste(filePath,sequelPath,&quot;sequelTVEpisodes.csv&quot;,sep=&quot;&quot;) )
-write_csv(sequelTVMovies,paste(filePath,sequelPath,&quot;sequelTVMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(sequelTVShorts,paste(filePath,sequelPath,&quot;sequelTVShorts.csv&quot;,sep=&quot;&quot;) )
-write_csv(sequelVideos,paste(filePath,sequelPath,&quot;sequelVideos.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(sequelPath = paste(filePath,&quot;SEQUELS/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/SEQUELS/&quot;</code></pre>
+<pre class="r"><code>write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot; )</code></pre>
 </div>
 <div id="tmdb-1" class="section level3">
 <h3>TMDB</h3>
-<pre class="r"><code>write_csv(tmdb,paste(filePath,&quot;TMDB/&quot;,&quot;tmdb.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>(tmdbPath = paste(filePath,&quot;TMDB/&quot;,sep=&quot;&quot;))</code></pre>
+<pre><code>## [1] &quot;../../CLEAN_DATA/TMDB/&quot;</code></pre>
+<pre class="r"><code>write_csv(tmdb,paste(tmdbPath,&quot;tmdb.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 </div>
 

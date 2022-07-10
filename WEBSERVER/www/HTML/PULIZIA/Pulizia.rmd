@@ -1,5 +1,5 @@
 ---
-title: "PULIZIA"
+title: "PULIZIA /DATASETS/"
 author: "Damiano Fumagalli"
 date: "`r Sys.Date()`"
 output: html_document
@@ -10,7 +10,7 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-source("../importData.R")
+source("../IMPORT/importData.R")
 ```
 
 # INDICE {#indice}
@@ -26,6 +26,8 @@ source("../importData.R")
 -   [NETFLIX](#netflix)
 
 -   [SEQUELS](#sequels)
+
+-   [OSCARS](#oscars)
 
 -   [TMDB](#tmdb)
 
@@ -43,9 +45,9 @@ levels(factor(amazon$type))
 # View(amazon)
 spec(amazon)
 
-amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description)
-colnames(amazon)[7] = "Year"
-colnames(amazon)[10] = "Genres"
+amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description,-show_id)
+colnames(amazon)[6] = "Year"
+colnames(amazon)[9] = "Genres"
 
 # CREA UNA COLONNA "Movie" LOGICA 
 amazon = amazon %>% mutate(Movie = (type=="Movie")) %>% select(-type)
@@ -59,14 +61,14 @@ head(amazon)
 amazonMovies = amazon %>% filter(Movie == TRUE)
 # ".{N}$" seleziona gli ultimi N caratteri della stringa
 # viene rimosso " min" da ogni campo duration
-amazonMovies = amazonMovies %>% mutate(duration = gsub(".{4}$","",duration)) %>% select(-Movie,-show_id)
+amazonMovies = amazonMovies %>% mutate(duration = gsub(".{4}$","",duration)) %>% select(-Movie)
 head(amazonMovies)
 
 
 
 amazonShows = amazon %>% filter(Movie == FALSE)
 # In Seasons vengono lasciati solo i primi 2 caratteri
-amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie,-show_id) %>% mutate(Seasons = gsub(" ","",Seasons))
+amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie) %>% mutate(Seasons = gsub(" ","",Seasons))
 # Se esiste un carattere " " viene rimosso
 head(amazonShows)
 ```
@@ -474,74 +476,75 @@ netCount = levels(factor(countries))
 ))
 ```
 
-# [SEQUELS](#indice) {#sequels}
+
+# SEQUELS
 
 ```{r}
-# View(sequels)
+spec(sequels)
+sequels = sequels %>% select(-Year,-Description,-URL)
+```
 
-
-
-if (all(is.na(sequels$Description))){
-  print("la tabella possiede una collona Description completamente vuota, di conseguenza è possibile rimuoverla")
-}
-
-# CREATED E MODIFIED NON CI INTERESSANO NELLA NOSTRA RICERCA
-sequels = sequels %>% select(-Description,-Created,-Modified,-`Release Date`,-Const,-URL)
-
-colnames(sequels)
-
-# FILM CON VOTAZIONE NON VALIDA
-head( sequels %>% filter(is.na(`IMDb Rating`)))
-
-# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %>% filter(!is.na(`IMDb Rating`))
-
-
-# RUNTIME NON VALIDO
-head(sequels %>% filter(is.na(`Runtime (mins)`)))
-
-# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %>% filter(!is.na(`Runtime (mins)`))
-
-
-# ANNO NON VALIDO
-sequels %>% filter(is.na(Year))
-# PER RIMUOVERE DECOMMENTARE IL SEGUENTE CODICE
-# sequels = sequels %>% sequels %>% filter(!is.na(Year))
-
-
-# View(sequels)
+```{r}
+Series = levels(factor(sequels$`Movie Series`))
+# Contiene tutte le Serie che possiedono dei sequels
+length(Series)
 ```
 
 ### GENERI
 
 ```{r}
 genres = vector(mode = "character")
+sequels = sequels %>% filter(!is.na(Genres))
 for (i in 1:nrow(sequels)){
   gen = unlist(str_split(sequels$Genres[i],", "))
   gen = gen[!(gen %in% genres)]
-  genres = append(genres, gen )
+  genres = append(genres,gen)
 }
-# LISTA CON TUTTI I GENERI
-(sequelsGenreTable = data.frame(
-  genreID = 1:length(levels(factor(genres))),
-  genre = levels(factor(genres))
-))
+(seqGen = levels(factor(genres)))
+
+#View(MoviesCleaned)
 ```
 
-### TITLE TYPES
+# [OSCARS](#indice) {#sondaggio}
 
 ```{r}
-(titleTypes = levels(factor(sequels$`Title Type`)))
-# SEPARAZIONE
-sequelMovies = sequels %>% filter(`Title Type`==titleTypes[1])
-sequelTVEpisodes = sequels %>% filter(`Title Type`==titleTypes[2])
-sequelTVMovies = sequels %>% filter(`Title Type`==titleTypes[3])
-sequelTVShorts = sequels %>% filter(`Title Type`==titleTypes[4])
-sequelVideos = sequels %>% filter(`Title Type`==titleTypes[5])
 
+# spec(oscars)
+# rimozione colonne inutili
 
+spec(oscars)
 
+```
+
+### GENDER
+
+```{r}
+levels(factor(oscars$gender))
+oscars = oscars %>% mutate(gender = ifelse(str_starts(gender,"f"),"Female",gender))
+levels(factor(oscars$gender))
+```
+
+-   Due valori possibili, è possibile sostituire con TRUE o FALSE
+
+```{r}
+oscars = oscars %>% mutate(Male = (gender == "Male")) %>% select(-gender)
+```
+
+```{r}
+
+oscars = oscars %>% mutate(winner = (winner == "VERO"))
+```
+
+### OSCAR YEARS
+
+```{r}
+
+oscars %>% filter(year_film == year_ceremony)
+
+if (all(oscars$year_ceremony == oscars$year_film+1)){
+  print("Nelle cerimonie degli oscar vengono premiati i film dell'anno precedente, perciò è possibile rimuovere la colonna relativa all'anno della cerimonia")
+  oscars = oscars %>% select(-year_ceremony)
+}
 ```
 
 # [TMDB](#indice) {#tmdb}
@@ -562,16 +565,16 @@ I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 ### AMAZON
 
 ```{r}
-filePath = "../../CLEAN_DATA/"
+filePath = "../../CLEAN_DATA/"  # www/CLEAN_DATA
 
-amazonPath = "AMAZON/"
-write_csv(amazon,paste(filePath,amazonPath,"amazon.csv",sep="") )
-write_csv(amazonMovies,paste(filePath,amazonPath,"amazonMovies.csv",sep="") )
-write_csv(amazonShows,paste(filePath,amazonPath,"amazonShows.csv",sep="") )
-write_csv(amazonGenres,paste(filePath,amazonPath,"amazonGenres.csv",sep="") )
-write_csv(amazonRatingTypes,paste(filePath,amazonPath,"amazonRatingTypes.csv",sep="") )
-write_csv(amazonCountries,paste(filePath,amazonPath,"amazonCountries.csv",sep="") )
-write_csv(amazonDirectors,paste(filePath,amazonPath,"amazonDirectors.csv",sep="") )
+(amazonPath = paste(filePath,"AMAZON/",sep=""))
+write_csv(amazon,paste(amazonPath,"amazon.csv",sep="") )
+write_csv(amazonMovies,paste(amazonPath,"amazonMovies.csv",sep="") )
+write_csv(amazonShows,paste(amazonPath,"amazonShows.csv",sep="") )
+write_csv(amazonGenres,paste(amazonPath,"amazonGenres.csv",sep="") )
+write_csv(amazonRatingTypes,paste(amazonPath,"amazonRatingTypes.csv",sep="") )
+write_csv(amazonCountries,paste(amazonPath,"amazonCountries.csv",sep="") )
+write_csv(amazonDirectors,paste(amazonPath,"amazonDirectors.csv",sep="") )
 
 ```
 
@@ -579,70 +582,71 @@ write_csv(amazonDirectors,paste(filePath,amazonPath,"amazonDirectors.csv",sep=""
 
 ```{r}
 
-disneyPath = "DISNEY/"
-write_csv(disney,paste(filePath,disneyPath,"disney.csv",sep="") )
-write_csv(disneyMovies,paste(filePath,disneyPath,"disneyMovies.csv",sep="") )
-write_csv(disneyShows,paste(filePath,disneyPath,"disneyShows.csv",sep="") )
-write_csv(disneyGenreTable,paste(filePath,disneyPath,"disneyGenreTable.csv",sep="") )
-write_csv(disneyRatingTypes,paste(filePath,disneyPath,"disneyRatingTypes.csv",sep="") )
-write_csv(disneyCountries,paste(filePath,disneyPath,"disneyCountries.csv",sep="") )
+(disneyPath = paste(filePath,"DISNEY/",sep=""))
+write_csv(disney,paste(disneyPath,"disney.csv",sep="") )
+write_csv(disneyMovies,paste(disneyPath,"disneyMovies.csv",sep="") )
+write_csv(disneyShows,paste(disneyPath,"disneyShows.csv",sep="") )
+write_csv(disneyGenreTable,paste(disneyPath,"disneyGenreTable.csv",sep="") )
+write_csv(disneyRatingTypes,paste(disneyPath,"disneyRatingTypes.csv",sep="") )
+write_csv(disneyCountries,paste(disneyPath,"disneyCountries.csv",sep="") )
 ```
 
 ### HIGH GROSS
 
 ```{r}
-grossPath = "GROSS/"
-write_csv(HighestGrossers,paste(filePath,grossPath,"gross.csv",sep="") )
-write_csv(grossGenreTable,paste(filePath,grossPath,"grossGenreTable.csv",sep="") )
-write_csv(grossDistributors,paste(filePath,grossPath,"grossDistributors.csv",sep="") )
+(grossPath = paste(filePath,"GROSS/",sep=""))
+write_csv(HighestGrossers,paste(grossPath,"gross.csv",sep="") )
+write_csv(grossGenreTable,paste(grossPath,"grossGenreTable.csv",sep="") )
+write_csv(grossDistributors,paste(grossPath,"grossDistributors.csv",sep="") )
 
 ```
 
 ### MOVIELENS
 
 ```{r}
-movielensPath = "MOVIELENS/"
-write_csv(movies,paste(filePath,movielensPath,"movies.csv",sep="") )
-write_csv(ratings,paste(filePath,movielensPath,"ratings.csv",sep="") )
-write_csv(users,paste(filePath,movielensPath,"users.csv",sep="") )
-write_csv(workTable,paste(filePath,movielensPath,"workTable.csv",sep="") )
-write_csv(ageTable,paste(filePath,movielensPath,"ageTable.csv",sep="") )
-write_csv(movieLensGenreTable,paste(filePath,movielensPath,"movieLensGenreTable.csv",sep="") )
+(movielensPath = paste(filePath,"MOVIELENS/",sep=""))
+write_csv(movies,paste(movielensPath,"movies.csv",sep="") )
+write_csv(ratings,paste(movielensPath,"ratings.csv",sep="") )
+write_csv(users,paste(movielensPath,"users.csv",sep="") )
+write_csv(workTable,paste(movielensPath,"workTable.csv",sep="") )
+write_csv(ageTable,paste(movielensPath,"ageTable.csv",sep="") )
+write_csv(movieLensGenreTable,paste(movielensPath,"movieLensGenreTable.csv",sep="") )
 ```
 
 ### NETFLIX
 
 ```{r}
-netflixPath = "NETFLIX/"
-write_csv(netflix,paste(filePath,netflixPath,"netflix.csv",sep="") )
-write_csv(netflixMovies,paste(filePath,netflixPath,"netflixMovies.csv",sep="") )
-write_csv(netflixShows,paste(filePath,netflixPath,"netflixShows.csv",sep="") )
-write_csv(netflixGenres,paste(filePath,netflixPath,"netflixGenres.csv",sep="") )
-write_csv(netflixRatingTypes,paste(filePath,netflixPath,"netflixRatingTypes.csv",sep="") )
-write_csv(netflixCountries,paste(filePath,netflixPath,"netflixCountries.csv",sep="") )
+(netflixPath = paste(filePath,"NETFLIX/",sep=""))
+write_csv(netflix,paste(netflixPath,"netflix.csv",sep="") )
+write_csv(netflixMovies,paste(netflixPath,"netflixMovies.csv",sep="") )
+write_csv(netflixShows,paste(netflixPath,"netflixShows.csv",sep="") )
+write_csv(netflixGenres,paste(netflixPath,"netflixGenres.csv",sep="") )
+write_csv(netflixRatingTypes,paste(netflixPath,"netflixRatingTypes.csv",sep="") )
+write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
 
+```
+
+### OSCARS {#oscars}
+
+```{r}
+(oscarPath = paste(filePath,"OSCARS/",sep=""))
+write_csv(oscars,paste(oscarPath,"oscars.csv",sep="") )
 ```
 
 ### SEQUELS
 
 ```{r}
-sequelPath = "SEQUELS/"
-write_csv(sequels,paste(filePath,sequelPath,"sequels.csv",sep="") )
-write_csv(sequelsGenreTable,paste(filePath,sequelPath,"sequelsGenreTable.csv",sep="") )
+(sequelPath = paste(filePath,"SEQUELS/",sep=""))
 
+write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";" )
 
-write_csv(sequelMovies,paste(filePath,sequelPath,"sequelMovies.csv",sep="") )
-write_csv(sequelTVEpisodes,paste(filePath,sequelPath,"sequelTVEpisodes.csv",sep="") )
-write_csv(sequelTVMovies,paste(filePath,sequelPath,"sequelTVMovies.csv",sep="") )
-write_csv(sequelTVShorts,paste(filePath,sequelPath,"sequelTVShorts.csv",sep="") )
-write_csv(sequelVideos,paste(filePath,sequelPath,"sequelVideos.csv",sep="") )
 
 ```
 
 ### TMDB
 
 ```{r}
-
-write_csv(tmdb,paste(filePath,"TMDB/","tmdb.csv",sep="") )
+(tmdbPath = paste(filePath,"TMDB/",sep=""))
+write_csv(tmdb,paste(tmdbPath,"tmdb.csv",sep="") )
 
 ```

@@ -9,7 +9,7 @@ disney <- read_csv("../../DATASETS/DISNEY/disney_plus_titles.csv")
 # View(disney)
 
 
-HighestGrossers <- read_csv("../../DATASETS/GROSS/prova.csv")
+HighestGrossers <- read_csv("../../DATASETS/GROSS/HighestGrossers.csv")
 # spec(HighestGrossers)
 # View(HighestGrossers)
 
@@ -37,11 +37,11 @@ netflix <- read_csv("../../DATASETS/NETFLIX/netflix_titles.csv")
 # View(netflix)
 
 
+oscars <- read_csv("../../DATASETS/OSCARS/oscars.csv")
 
 
-sequels <- read_csv("../../DATASETS/SEQUELS/sequels.csv")
+sequels <- read_delim("../../DATASETS/SEQUELS/sequels.csv",delim = ";")
 # View(sequels)
-
 
 tmdb <- read_csv("../../DATASETS/TMDB/tmdb.csv")
 
