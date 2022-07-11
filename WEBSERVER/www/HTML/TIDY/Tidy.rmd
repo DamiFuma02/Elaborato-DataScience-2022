@@ -1,10 +1,10 @@
 ---
-title: "PULIZIA /DATASETS/"
+title: "TIDYING /DATASETS/"
 author: "Damiano Fumagalli"
 date: "`r Sys.Date()`"
 output:
   html_document:
-    css: "../../STYLES/Pulizia.css"
+    css: "../../STYLES/Tidy.css"
 ---
 
 ```{r setup, include=FALSE}
@@ -754,3 +754,5 @@ for (let index = 0; index < buttons.length; index++) {
     })
 }
 ```
+
+Questo codice aggiunge un evento di ascolto a tutti i pulsanti "\>\>\>" , responsabili dell'apertura dei relativi subIndex

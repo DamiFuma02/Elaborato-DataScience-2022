@@ -17,13 +17,11 @@ dir()
 
 -   ![](images/rstudio.png){width="100"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
-    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} [(import data)](/IMPORT/Import.html)
+    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} --\> [(IMPORT DATA)](./IMPORT/Import.html)
 
-    -   [SPARKLYR](../CHEATSHEETS/sparklyr.pdf){target="_blank"}(big data) --\> collegamento con TMDB API
+    -   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"} --\> [(DATA TIDY)](./TIDY/Tidy.html)
 
-    -   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"}(tidy)
-
-    -   [DPLYR](../CHEATSHEETS/dplyr.pdf){target="_blank"}(transform)
+    -   [DPLYR](../CHEATSHEETS/dplyr.pdf){target="_blank"} --\> ([TRANSFORM DATA](./TRANSFORM/Transform.html))
 
     -   [MODELR](../CHEATSHEETS/modelr.pdf){target="_blank"}(model)
 
@@ -31,21 +29,23 @@ dir()
 
 ### FONTE DEI DATI
 
--   [MOVIELENS-userinfo + ZIPCODES](https://grouplens.org/datasets/movielens/1m/)
-
--   [Movie Sequels](https://data.world/priyankad0993/sequels)
-
 -   [AMAZON](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows)
-
--   [NETFLIX](https://www.kaggle.com/datasets/shivamb/netflix-shows)
-
--   [OSCARS](https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars)
 
 -   [DISNEY+](https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows)
 
 -   [HIGH GROSS](https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies)
 
--   [tmdb](https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies)
+-   [MOVIELENS-userinfo](https://grouplens.org/datasets/movielens/1m/)
+
+    -   [ZIPCODES](https://simplemaps.com/data/us-zips)
+
+-   [NETFLIX](https://www.kaggle.com/datasets/shivamb/netflix-shows)
+
+-   [OSCARS](https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars)
+
+-   [SEQUELS](https://data.world/priyankad0993/sequels)
+
+-   [The Movie DataBase](https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies)
 
 # DOMANDE
 
@@ -72,3 +72,7 @@ dir()
 -   correlazione sequel rating
 
 -   CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
+
+-   PREDIZIONE OSCAR
+
+# [TIDY DATA](./TIDY/Tidy.html)

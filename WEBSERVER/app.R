@@ -8,7 +8,9 @@ library(dplyr)
 # introdotti tutti i file presenti nella cartella R/
 
 
-
+mainUI = fluidPage(
+  a(id = "startLink","START", href="./HTML/Presentazione.html")
+)
 
 
 # Define UI for application that draws a histogram
@@ -26,6 +28,7 @@ ui <- fluidPage(
   div(id = "images",
     
     img(id = "flow" ,src = "./IMAGES/FLOWCHART.png"),
+    img(id = "flowW" ,src = "./IMAGES/flow.png"),
     h3("WORKFLOW"),
     img(src = "./IMAGES/TIMELINE.png"),
     img(src = "./IMAGES/TIMETABLE.png"),
@@ -65,4 +68,4 @@ server <-  function(input,output){
   }
 
 # Run the application 
-shinyApp(ui = MLgenOccUI, server = server)
+shinyApp(ui = mainUI, server = server)

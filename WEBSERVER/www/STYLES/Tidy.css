@@ -1,0 +1,14 @@
+.subindex {
+  display: none;
+}
+
+h1 {
+  font-weight: bold;
+  color: red;
+}
+
+.openSubIndex {
+  color: blue;
+  font-weight: bold;
+  cursor: pointer;
+}

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-06-28" />
+<meta name="date" content="2022-07-11" />
 
 <title>IMPORT DATA</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">IMPORT DATA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-06-28</h4>
+<h4 class="date">2022-07-11</h4>
 
 </div>
 
@@ -373,64 +373,83 @@ pre code {
 <div id="indice" class="section level2">
 <h2>INDICE</h2>
 <ul>
-<li><p><a href="#amazon">AMAZON</a></p>
+<li><p><a href="https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows">AMAZON</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#amazon">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#disney">DISNEY+</a></p>
+<li><p><a href="https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows">DISNEY+</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#disney">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#gross">GROSS</a></p>
+<li><p><a href="https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies">GROSS</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#gross">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#movielens">MOVIELENS</a></p>
+<li><p><a href="https://grouplens.org/datasets/movielens/1m/">MOVIELENS</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#movielens">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#netflix">NETFLIX</a></p>
+<li><p><a href="https://www.kaggle.com/datasets/shivamb/netflix-shows">NETFLIX</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#netflix">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#sequels">SEQUELS</a></p>
+<li><p><a href="https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars">OSCARS</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#oscars">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="#tmdb">TMDB</a></p>
+<li><p><a href="https://data.world/priyankad0993/sequels">SEQUELS</a></p>
 <ul>
-<li><p>pulizia</p></li>
+<li><p><a href="../TIDY/Tidy.html#sequels">pulizia</a></p></li>
+<li><p>trasformazione</p></li>
+</ul></li>
+<li><p><a href="https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies">TMDB</a></p>
+<ul>
+<li><p><a href="../TIDY/Tidy.html#tmdb">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
 </ul>
+<div id="r-code" class="section level3">
+<h3>R CODE</h3>
+<pre class="r"><code>#eval = FALSE indica che il chunk non viene compilato
+
+library(readr)
+
+amazon  &lt;- read_csv(&quot;../../DATASETS/AMAZON/amazon_prime_titles.csv&quot;)
+
+
+disney &lt;- read_csv(&quot;../../DATASETS/DISNEY/disney_plus_titles.csv&quot;)
+
+
+HighestGrossers &lt;- read_csv(&quot;../../DATASETS/GROSS/HighestGrossers.csv&quot;)
+
+
+movies &lt;- read_delim(&quot;../../DATASETS/MOVIELENS/ml-1m/movies.dat&quot;,delim = &#39;;&#39;, col_names = c(&quot;movieID&quot;,&quot;Title&quot;,&quot;Genres&quot;))
+
+ratings &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/ml-1m/ratings.csv&quot;, col_names = c(&quot;userID&quot;,&quot;movieID&quot;,&quot;Rating&quot;,&quot;Timestamp&quot;))
+
+users &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/ml-1m/users.csv&quot;, col_names = c(&quot;UserID&quot;,&quot;Gender&quot;,&quot;Age&quot;,&quot;Occupation&quot;,&quot;Zip&quot;), col_types = &quot;?&quot;)
+# USA ZIPCODES
+uszips &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/uszips.csv&quot;)
+
+
+
+netflix &lt;- read_csv(&quot;../../DATASETS/NETFLIX/netflix_titles.csv&quot;)
+
+
+oscars &lt;- read_csv(&quot;../../DATASETS/OSCARS/oscars.csv&quot;)
+
+
+sequels &lt;- read_delim(&quot;../../DATASETS/SEQUELS/sequels.csv&quot;,delim = &quot;;&quot;)
+
+
+tmdb &lt;- read_csv(&quot;../../DATASETS/TMDB/tmdb.csv&quot;)</code></pre>
 </div>
-<div id="amazon" class="section level1">
-<h1>AMAZON</h1>
-</div>
-<div id="disney" class="section level1">
-<h1>DISNEY</h1>
-</div>
-<div id="gross" class="section level1">
-<h1>GROSS</h1>
-</div>
-<div id="movielens" class="section level1">
-<h1>MOVIELENS</h1>
-<p>I 3 dataset sono reperibili in <a href="https://grouplens.org/datasets/movielens/1m/">questo link</a></p>
-<p>I file sono in formato DAT, perciò tramite il blocco note è possibile
-sostituire i separatori da “::” a “,” e successivamente salvare il file
-nel formato CSV</p>
-</div>
-<div id="netflix" class="section level1">
-<h1>NETFLIX</h1>
-</div>
-<div id="sequels" class="section level1">
-<h1>SEQUELS</h1>
 </div>
 
 
