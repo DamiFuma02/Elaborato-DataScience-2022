@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r}
+# source("../../../R/cleanedData.R")
 library(readr)
 library(dplyr)
 library(usmap)
@@ -82,17 +83,37 @@ print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
 -   Creare una tabella con ogni votazione associata al zipcode dell'utente
 
 ```{r}
-user_ratings = left_join(ratings,users,by = "userID")
+
+meanUserRatings = ratings %>% group_by(userID) %>% summarise(numOfRatings = n(),MeanRating = mean(Rating))
+head(meanUserRatings)
+
+meanUserRatings = left_join(meanUserRatings,users,by="userID")
+head(meanUserRatings)
+
+
+# aggiungere info geografiche per creare la mappa
+prova = left_join(meanUserRatings,uszips,by="zip") %>% select(MeanRating,zip,lat,lng,county_fips)
+colnames(prova)[5] = "fips"
+
+
+plot_usmap(data = prova, values = "MeanRating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Mean Rating", label = scales::comma ) + theme(legend.position = "right")
+
+
+# user_ratings = left_join(ratings,users,by = "userID")
 # View(user_ratings)
 
-ratingMap = left_join(user_ratings ,uszips %>% select(zip,lat,lng,county_fips),by = "zip")
+# ratingMap = left_join(user_ratings ,uszips %>% select(zip,lat,lng,county_fips),by = "zip")
 
-colnames(ratingMap)[10] = "fips"
+# colnames(ratingMap)[10] = "fips"
 
 
-ratingMap = ratingMap %>% filter(!is.na(Rating))
-colnames(ratingMap)
-plot_usmap(data = ratingMap, values = "Rating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Rating", label = scales::comma ) + theme(legend.position = "right")
+# ratingMap = ratingMap %>% filter(!is.na(Rating))
+# colnames(ratingMap)
+# View(ratingMap)
+
+
+
+# plot_usmap(data = ratingMap, values = "Rating", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Rating", label = scales::comma ) + theme(legend.position = "right")
 
 ```
 
@@ -106,7 +127,7 @@ str(userZips)
 countZips = left_join(userZips,uszips,by="zip") %>% select(zip,lng,lat,count,county_fips)
 colnames(countZips)[5] = "fips"
 
-plot_usmap(data = countZips, values = "count", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Number of Ratings", label = scales::comma ) + theme(legend.position = "right")
+# plot_usmap(data = countZips, values = "count", color = "red") +  scale_fill_continuous( low = "white", high = "red", name = "Number of Ratings", label = scales::comma ) + theme(legend.position = "right")
  
 
 

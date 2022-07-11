@@ -10,32 +10,30 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-source("../../../R/cleanedData.R")
+# source("../../../R/cleanedData.R")
 ```
 
 # INDICE
 
--   [AMAZON](#amazon)
+-   [FONTE DATI](../Presentation.html#fonte-dei-dati)
 
--   [DISNEY](#disney)
+-   [TIDY](../TIDY/Tidy.html)
 
--   [GROSS](#gross)
+-   [AMAZON](./Amazon.html)
 
--   [MOVIELENS](#movielens)
+-   [DISNEY](./Disney.html)
+
+-   [GROSS](./Gross.html)
+
+-   [MOVIELENS](./Movielens.html)
 
     -   [MAPS](./Maps.html)
 
--   [NETFLIX](#netflix)
+-   [NETFLIX](./Netflix.html)
 
--   [SEQUELS](#sequels)
+-   [SEQUELS](./Sequels.html)
 
--   [TMDB](#tmdb)
-
--   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
-
-
-
-
+-   [TMDB](./Tmdb.html)
 
 # MOVIELENS {#movielens}
 
@@ -53,5 +51,3 @@ View(amazon)
 
 
 ```
-
-

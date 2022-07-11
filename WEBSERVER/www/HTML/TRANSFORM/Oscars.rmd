@@ -7,7 +7,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("../../../R/oscarTransformed.R")
 ```
 
 Creare una mappa tra Possibile vincita dell'oscar correlata alla valutazione 
 per IMDB e RT
+
+

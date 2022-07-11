@@ -2,7 +2,9 @@
 title: "PULIZIA /DATASETS/"
 author: "Damiano Fumagalli"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    css: "../../STYLES/Pulizia.css"
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 source("../IMPORT/importData.R")
 ```
 
-# INDICE {#indice}
+# INDEX {#indice}
 
 -   [AMAZON](#amazon)
 
@@ -31,9 +33,31 @@ source("../IMPORT/importData.R")
 
 -   [TMDB](#tmdb)
 
--   [FONTE DATI](./Presentazione.html#fonte-dei-dati)
+-   [DATA SOURCE](../Presentazione.html#fonte-dei-dati)
+
+-   [UPDATE-DATA](#update-data)
 
 # [AMAZON](#indice) {#amazon}
+
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [MOVIE TYPE](#amaztypes)
+
+-   [SEPARATION](#amazseparation)
+
+-   [GENRES](#amazgenres)
+
+-   [RATINGS](#amazratings)
+
+-   [COUNTRIES](#amazcountries)
+
+-   [DIRECTORS](#amazdirectors)
+:::
+
+### TYPES {#amaztypes}
 
 ```{r}
 levels(factor(amazon$type))
@@ -49,31 +73,32 @@ amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description,-s
 colnames(amazon)[6] = "Year"
 colnames(amazon)[9] = "Genres"
 
+levels(factor(amazon$type))
 # CREA UNA COLONNA "Movie" LOGICA 
 amazon = amazon %>% mutate(Movie = (type=="Movie")) %>% select(-type)
 
 head(amazon)
 ```
 
-### SEPARAZIONE
+### SEPARATION {#amazseparation}
 
 ```{r}
 amazonMovies = amazon %>% filter(Movie == TRUE)
 # ".{N}$" seleziona gli ultimi N caratteri della stringa
 # viene rimosso " min" da ogni campo duration
-amazonMovies = amazonMovies %>% mutate(duration = gsub(".{4}$","",duration)) %>% select(-Movie)
+amazonMovies = amazonMovies %>% mutate(duration = strtoi(gsub(".{4}$","",duration))) %>% select(-Movie)
 head(amazonMovies)
 
 
 
 amazonShows = amazon %>% filter(Movie == FALSE)
 # In Seasons vengono lasciati solo i primi 2 caratteri
-amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie) %>% mutate(Seasons = gsub(" ","",Seasons))
+amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons)))
 # Se esiste un carattere " " viene rimosso
 head(amazonShows)
 ```
 
-### GENERI
+### GENRES {#amazgenres}
 
 ```{r}
 genres = vector(mode = "character")
@@ -90,7 +115,9 @@ amazonGenres = data.frame(
 )
 ```
 
-### RATING
+### RATINGS {#amazratings}
+
+[USA Amazon Rating](https://www.primevideo.com/help/ref=atv_hp_nd_cnt?nodeId=GFGQU3WYEG6FSJFJ)
 
 ```{r}
 
@@ -101,14 +128,14 @@ amazonRatTypes = levels(factor(amazon$rating))
 (amazonRatingTypes = data.frame(
   ratingID = 1:length(amazonRatTypes),
   rating = amazonRatTypes,
-  Movie = amazonRatTypes %in% amazonMovieRatings
+  Movie = (amazonRatTypes %in% amazonMovieRatings)
 ))
 # la colonna Movie indicherà se il rating type appartiene alla categoria Film o TV Show
 
 
 ```
 
-### COUNTRIES
+### COUNTRIES {#amazcountries}
 
 ```{r}
 countries = vector(mode = "character")
@@ -117,6 +144,10 @@ for (i in 1:nrow(amazon)){
   countr = countr[!(countr %in% countries)]
   countries = append(countries,countr)
 }
+
+# sbagliato perchè alcuni film possiedono più countries
+# amazon %>% group_by(country) %>% summarise(count = n())
+
 amazCountr = levels(factor(countries))
 (amazonCountries = data.frame(
   countryID = 1:length(amazCountr),
@@ -124,7 +155,7 @@ amazCountr = levels(factor(countries))
 ))
 ```
 
-### DIRECTORS
+### DIRECTORS {#amazdirectors}
 
 ```{r}
 directors = vector(mode = "character")
@@ -142,15 +173,29 @@ amazonDirectors = data.frame(
 
 # [DISNEY](#indice) {#disney}
 
--   Descrizione e Data di Aggiunta non necessarie
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [TYPES](#distypes)
+-   [SEPARATION](#disseparation)
+-   [DURATION](#disduration)
+-   [GENRES](#disgenres)
+-   [RATING](#disrating)
+-   [COUNTRIES](#discountries)
+:::
 
 ```{r}
 # View(disney)
+# Descrizione e Data di Aggiunta non necessarie
 disney = disney %>% select(-description,-date_added)
 colnames(disney)[7] = "Year"
 colnames(disney)[10] = "Genres"
 head(disney)
 ```
+
+### TYPES {#distypes}
 
 ```{r}
 levels(factor(disney$type))
@@ -164,27 +209,32 @@ disney = disney %>% mutate(Movie = (type == "Movie")) %>% select(-type)
 head(disney)
 ```
 
-### SEPARAZIONE
+### SEPARATION {#disseparation}
+
+```{r}
+disneyMovies = disney %>% filter(Movie == TRUE)
+disneyShows = disney %>% filter(Movie == FALSE)
+```
+
+### DURATION {#disduration}
 
 -   Il campo Duration va modificato per Film e Serie TV diversamente
 
 ```{r}
-disneyMovies = disney %>% filter(Movie == TRUE)
-# MODIFICARE IL CAMPO DURATION
-# rimuove " min" alla fine di ogni campo
-disneyMovies = disneyMovies %>% mutate(duration = gsub(".{4}$","",duration)) 
+
+# rimuove " min" alla fine di ogni campo e trasforma in numero intero
+disneyMovies = disneyMovies %>% mutate(duration = strtoi(gsub(".{4}$","",duration)))
 head(disneyMovies)
 
 
-
-disneyShows = disney %>% filter(Movie == FALSE)
-# rimuove tutti i caratteri superflui in modo da salvare solo il numero
-disneyShows = disneyShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = gsub(" ","",Seasons))
+# rimuove tutti i caratteri superflui in modo da salvare solo il numero delle stagioni
+disneyShows = disneyShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons)))
+# rimuove anche eventuali " " e trasforma in numero intero
 head(disneyShows)
 
 ```
 
-### GENERI
+### GENRES {#disgenres}
 
 ```{r}
 genres = vector(mode = "character")
@@ -193,24 +243,24 @@ for (i in 1:nrow(disney)){
   gen = gen[!(gen %in% genres)]
   genres = append(genres,gen  )
 }
-disGenre  = levels(factor(genres))
-(disneyGenreTable = data.frame(
+(disGenre  = levels(factor(genres)))
+disneyGenreTable = data.frame(
   genreID = 1:length(disGenre),
   genre = disGenre
-))
+)
 ```
 
-### RATING
+### RATING {#disrating}
 
 ```{r}
-disRats = levels(factor(disney$rating))
-(disneyRatingTypes = data.frame(
+(disRats = levels(factor(disney$rating)))
+disneyRatingTypes = data.frame(
   ratingID = 1:length(disRats),
   rating = disRats
-))
+)
 ```
 
-### COUNTRIES
+### COUNTRIES {#discountries}
 
 ```{r}
 countries = vector(mode = "character")
@@ -219,28 +269,51 @@ for (i in 1:nrow(disney)){
   countr = countr[!(countr %in% countries)]
   countries = append(countries,countr  )
 }
-disCount = levels(factor(countries))
-(disneyCountries = data.frame(
+(disCount = levels(factor(countries)))
+disneyCountries = data.frame(
   countryID = 1:length(disCount),
   country = disCount
-))
+)
 ```
 
 # [GROSS](#indice) {#gross}
 
--   Release_Date e Movie Info non sono necessari
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [SEPARATION TITLE-YEAR](#groseparation)
+
+-   [RUNTIME](#groruntime)
+
+-   [GENRES](#grogenres)
+
+-   [RATING](#groratings)
+
+-   [DISTRIBUTORS](#grodistributors)
+:::
 
 ```{r}
 # View(HighestGrossers)
 # spec(HighestGrossers)
+# Release_Date e Movie Info non sono necessari
 HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`)
+head(HighestGrossers)
 ```
 
-### SEPARAZIONE
+### SEPARATION {#groseparation}
 
 ```{r}
 # SEPARAZIONE TITLE YEAR
-HighestGrossers = separate(HighestGrossers,Title,into = c("Title","Year"),sep = -5) %>% mutate(Title = gsub('.{2}$', '', Title)) %>% mutate(Year = gsub('.{1}$', '', Year))
+HighestGrossers = separate(HighestGrossers,Title,into = c("Title","Year"),sep = -5) %>% mutate(Title = gsub('.{2}$', '', Title)) %>% mutate(Year = strtoi(gsub('.{1}$', '', Year)))
+head(HighestGrossers)
+```
+
+### RUNTIME {#groruntime}
+
+```{r}
+HighestGrossers$`Movie Runtime`[1]
 ```
 
 -   Convertire la notazione da "x hr y min" a "x min"
@@ -258,13 +331,14 @@ HighestGrossers = HighestGrossers %>% mutate("Duration (mins)" = ifelse(!is.na(M
 head(HighestGrossers)
 ```
 
-### GENERI
+### GENRES {#grogenres}
 
--   è necessario rimuovere le "[" "]" dal blocco note, al fine di rendere leggibile il contenuto del campo Genre
+-   Rlang non è in grado di interpretare il dato come vettore
+-   è necessario rimuovere le "[" "]" dal blocco note perchè il carattere "[" non viene riconosciuto dalle funzioni di Rlang
 
 ```{r}
 
-HighestGrossers = HighestGrossers %>% mutate(Genre = gsub("'","",Genre))
+HighestGrossers = HighestGrossers %>% mutate(Genre = gsub("'",'',Genre))
 
 
 genres = vector(mode = "character")
@@ -273,20 +347,20 @@ for (i in 1:nrow(HighestGrossers)){
   gen = gen[!(gen %in% genres)]
   genres = append(genres, gen )
 }
-grossGenre = levels(factor(genres))
-(grossGenreTable = data.frame(
+(grossGenre = levels(factor(genres)))
+grossGenreTable = data.frame(
   genreID = 1:length(grossGenre),
   genre = grossGenre
-))
+)
 ```
 
-### RATING
+### RATING {#groratings}
 
 ```{r}
 levels(factor(HighestGrossers$License))
 ```
 
-### DISTRIBUTORS
+### DISTRIBUTORS {#grodistributors}
 
 ```{r}
 grossDistr = levels(factor(HighestGrossers$Distributor))
@@ -298,44 +372,43 @@ grossDistr = levels(factor(HighestGrossers$Distributor))
 
 # [MOVIELENS](#indice) {#movielens}
 
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [MOVIES](#movmovies)
+
+    -   [GENRES](#movgenres)
+
+-   [RATINGS](#movratings)
+
+-   [USERS](#movusers)
+
+    -   [GENDER](#movgender)
+:::
+
 -   modificare i separatori da "::" a ";" direttamente dal blocco note
+-   per leggere correttamente il file è necessario usare read_delim( filePath , delim=";")
 
-## MOVIES
-
--   Separazione Titolo e Anno
-
-```{r}
-# rimuove l'ultimo carattere
-#View(movies)
-
-
-movies = separate(movies,Title,into = c("Title","Year"),sep = -5)
-# rimuove gli ultimi due caratteri
-movies$Title = gsub('.{2}$', '', movies$Title)
-
-movies$Year = gsub('.{1}$', '', movies$Year)
-```
-
--   errori nel campo Title
+## MOVIES {#movmovies}
 
 ```{r}
-# alcuni film possiedono una notazione errata
-head(movies %>% filter(grepl(",",Title)) %>% select(Title))
-# ciclo per risolvere la notazione
-for (i in 1:nrow(movies)){
-  if (grepl(",",movies$Title[i])){
-    arr = unlist(str_split(movies$Title[i],", "))
-    movies$Title[i] = paste(arr[2],arr[1])
-  }
-}
+head(movies)
+
+# "Titolo (1945)"  --separate--> "Titolo (" , "1945)"  --gsub--> "Titolo" , "1945"
+
+movies = separate(movies,Title,into = c("Title","Year"),sep = -5) %>% mutate(Title = gsub('.{2}$','',Title),Year = strtoi(gsub('.{1}$', '', Year)))
 
 head(movies)
+
 ```
 
-### GENERI
+#### GENRES {#movgenres}
 
 ```{r}
 # View(movies)
+
 arr = vector(mode = "character")
 for (i in 1:nrow(movies)){
   gen = unlist(strsplit(movies$Genres[i],"|",fixed = TRUE))
@@ -346,15 +419,9 @@ for (i in 1:nrow(movies)){
  genreID = 1:length(levels(factor(arr))),
  genre = levels(factor(arr))
 ))
-
-
-
-
-
-
 ```
 
-## RATINGS
+## RATINGS {#movratings}
 
 ```{r}
 spec(ratings)
@@ -363,7 +430,7 @@ head(ratings)
 (votiAmmessi = levels(factor(ratings$Rating)))
 ```
 
-## USERS
+## USERS {#movusers}
 
 ```{r}
 spec(users)
@@ -371,6 +438,8 @@ colnames(users)[1] = "userID"
 colnames(users)[5] = "zip"   # affinche coincida con uszips
 users = users %>% filter(!is.na(Gender) && !is.na(Age)  && !is.na(zip))
 ```
+
+#### GENDER {#movgender}
 
 ```{r}
 levels(factor(users$Gender))
@@ -399,28 +468,45 @@ head(users)
 
 # [NETFLIX](#indice) {#netflix}
 
--   Descrizione e Data di Aggiunta non necessarie
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [MOVIE TYPES](#nettypes)
+
+-   [SEPARATION](#netseparation)
+
+-   [GENRES](#netgenres)
+
+-   [RATINGS](#netratings)
+
+-   [COUNTRIES](#netcountries)
+:::
 
 ```{r}
 # View(netflix)
 spec(netflix)
+# Descrizione e Data di Aggiunta non necessarie
 netflix = netflix %>% select(-date_added,-description)
 colnames(netflix)[7] = "Year"
 colnames(netflix)[10] = "Genres"
 ```
 
--   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
+### TYPES {#nettypes}
 
 ```{r}
 levels(factor(netflix$type))
 ```
+
+-   siccome sono due i possibili valori, la colonna può essere sostituita con valori logici TRUE o FALSE
 
 ```{r}
 # MODIFICA TYPE
 netflix = netflix %>% mutate(Movie = (type == "Movie")) %>% select(-type)
 ```
 
-### SEPARAZIONE
+### SEPARATION {#netseparation}
 
 ```{r}
 netflixMovies = netflix %>% filter(Movie == TRUE)
@@ -430,11 +516,11 @@ netflixMovies = netflixMovies %>% mutate(duration = gsub(" min","",duration))
 
 netflixShows = netflix %>% filter(Movie == FALSE)
 # DURATION TO SEASONS
-netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = gsub(" ","",Seasons)) %>% select(-duration)
+netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons))) %>% select(-duration)
 
 ```
 
-### GENERI
+### GENRES {#netgenres}
 
 ```{r}
 genres = vector(mode = "character")
@@ -450,7 +536,7 @@ netGenr = levels(factor(genres))
 ))
 ```
 
-### RATING
+### RATINGS {#netratings}
 
 ```{r}
 netRat = levels(factor(netflix$rating))
@@ -460,28 +546,29 @@ netRat = levels(factor(netflix$rating))
 ))
 ```
 
-### COUNTRIES
+### COUNTRIES {#netcountries}
 
 ```{r}
 countries = vector(mode = "character")
-for (i in 1:nrow(netflix)){
-  countr = unlist(str_split(netflix$country[i],", "))
+netCountr = netflix %>% filter(!is.na(country))
+for (i in 1:nrow(netCountr)){
+  countr = unlist(str_split(netCountr$country[i],", "))
   countr = countr[!(countr %in% countries)]
   countries = append(countries, countr )
 }
 netCount = levels(factor(countries))
-(netflixCountries = data.frame(
+netflixCountries = data.frame(
   countryID = 1:length(netCount),
   country = netCount
-))
+)
+head(netflixCountries)
 ```
 
-
-# SEQUELS
+# SEQUELS {#sequels}
 
 ```{r}
 spec(sequels)
-sequels = sequels %>% select(-Year,-Description,-URL)
+sequels = sequels %>% select(-`Release Date`,-Description,-URL)
 ```
 
 ```{r}
@@ -490,7 +577,7 @@ Series = levels(factor(sequels$`Movie Series`))
 length(Series)
 ```
 
-### GENERI
+### GENRES {#seqgenres}
 
 ```{r}
 genres = vector(mode = "character")
@@ -505,18 +592,24 @@ for (i in 1:nrow(sequels)){
 #View(MoviesCleaned)
 ```
 
-# [OSCARS](#indice) {#sondaggio}
+# [OSCARS](#indice) {#oscars}
+
+::: openSubIndex
+\>\>\>
+:::
+
+::: subindex
+-   [GENDER](#oscgender)
+
+-   [OSCAR YEARS](#oscyears)
+:::
 
 ```{r}
-
-# spec(oscars)
-# rimozione colonne inutili
-
 spec(oscars)
 
 ```
 
-### GENDER
+### GENDER {#oscgender}
 
 ```{r}
 levels(factor(oscars$gender))
@@ -535,7 +628,7 @@ oscars = oscars %>% mutate(Male = (gender == "Male")) %>% select(-gender)
 oscars = oscars %>% mutate(winner = (winner == "VERO"))
 ```
 
-### OSCAR YEARS
+### YEARS {#oscyears}
 
 ```{r}
 
@@ -552,13 +645,13 @@ if (all(oscars$year_ceremony == oscars$year_film+1)){
 ```{r}
 # View(tmdb)
 spec(tmdb)
-tmdb = tmdb %>% select(-original_language,-overview,-...1) %>% mutate(Year = format(release_date,"%Y")) %>% select(-release_date)
+tmdb = tmdb %>% select(-overview,-...1) %>% mutate(Year = strtoi(format(release_date,"%Y"))) %>% select(-release_date)
 # MODIFICA LA DATA IN FORMATO SOLO ANNO
 head(tmdb)
-
+levels(factor(tmdb$original_language))
 ```
 
-# [AGGIORNAMENTO](#indice)
+# UPDATE DATA {#update-data}
 
 I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 
@@ -626,7 +719,7 @@ write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
 
 ```
 
-### OSCARS {#oscars}
+### OSCARS
 
 ```{r}
 (oscarPath = paste(filePath,"OSCARS/",sep=""))
@@ -649,4 +742,15 @@ write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";" )
 (tmdbPath = paste(filePath,"TMDB/",sep=""))
 write_csv(tmdb,paste(tmdbPath,"tmdb.csv",sep="") )
 
+```
+
+### SUBINDEX-CODE
+
+```{js}
+buttons = document.querySelectorAll(".openSubIndex")
+for (let index = 0; index < buttons.length; index++) {
+    buttons[index].addEventListener("click",()=>{
+    buttons[index].parentElement.children[2].style.display = "inline"
+    })
+}
 ```
