@@ -9,7 +9,10 @@ library(dplyr)
 
 
 mainUI = fluidPage(
-  a(id = "startLink","START", href="./HTML/Presentazione.html")
+  a(id = "startLink","START", href="./HTML/Presentazione.html"),
+  selectInput("genre","seleziona il genere",genreTable$genre),
+  actionButton("start","INVIA"),
+  plotOutput("plotOut")
 )
 
 
@@ -43,28 +46,22 @@ MLgenOccUI = fluidPage(
 )
 
 
-genreOcc = function(occType){
-  occID = workTable[workTable$workType == occType,]$workID
-  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID")
-  prec = 0
-  gen = ""
-  for (i in 1:length(genreTable$genre)){
-    a = nrow(mov %>% filter(grepl(genreTable$genre[i],Genres)))
-    if (a > prec) {
-      prec = a
-      gen = genreTable$genre[i]
-    }
-  }
-  return(gen)
-}
+
 
 
 
 
 server <-  function(input,output){
     #GENRE(WORKTYPE)
-    genOcc = eventReactive( input$genOcc, {genreOcc(input$occType)} )
-    output$genreOut = renderText({genOcc()})
+    #genOcc = eventReactive( input$genOcc, {genreOcc(input$occType)} )
+    #output$genreOut = renderText({genOcc()})
+    
+    genera = eventReactive(input$start,{userMapByGenre(input$genre)})
+    
+    output$plotOut = renderPlot({genera()})
+    
+    
+    
   }
 
 # Run the application 
