@@ -1,0 +1,49 @@
+---
+title: "NETFLIX"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(dplyr)
+library(readr)
+library(ggplot2)
+source("../IMPORT/dataScript/netflixData.r")
+```
+
+```{r}
+spec(netflixShows)
+spec(netflixMovies)
+```
+
+# COUNTRY GENRES
+
+```{r}
+spec(netflix)
+genreCountry = function(c){
+  countryData = netflix %>% filter(grepl(c,country))
+  prec = 0
+  genTop = ""
+  for (i in 1:length(netflixGenres$genre)){
+    a = nrow(countryData %>% filter(grepl(netflixGenres$genre[i],Genres)))
+    if (a > prec){
+      prec = a
+      genTop = netflixGenres$genre[i]
+    }
+  }
+  return(genTop)
+}
+
+
+(countryGenTable = data.frame(
+  country = netflixCountries$country,
+  FavGenre = unlist(lapply(netflixCountries$country,genreCountry))
+))
+
+
+
+
+
+
+```

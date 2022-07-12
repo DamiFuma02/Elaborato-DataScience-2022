@@ -15,7 +15,7 @@ dir()
 
 ### STRUMENTI
 
--   ![](images/rstudio.png){width="100"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
+-   ![](images/rstudio.png){width="115"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
     -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} --\> [(IMPORT DATA)](./IMPORT/Import.html)
 
@@ -73,6 +73,20 @@ dir()
 
 -   CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
 
+-   Gross in funzione di genre
+
+-   Sequel Gross
+
 -   PREDIZIONE OSCAR
+
+    -   Oscar %\>% winner == FALSE
+
+    -   Numero di film con più nominee
+
+    -   Ordine decrescente
+
+    -   Rating
+
+    -   Corrispondenza modelli RT e IMDB
 
 # [TIDY DATA](./TIDY/Tidy.html)

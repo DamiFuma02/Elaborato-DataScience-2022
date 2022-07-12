@@ -1,9 +1,10 @@
-source("./R/cleanedData.r")
-source("./R/MovielensTransformed.R")
-library(readr)
-library(dplyr)
-library(usmap)
-library(ggplot2)
+
+
+names = c("amazon","disney","gross","movielens","netflix","oscars","sequel","tmdb")
+for (i in 1:length(names)){
+  source(paste("./R/",names[i],"Data.r",sep=""))
+}
+
 genreOcc = function(occType){
   occID = workTable[workTable$workType == occType,]$workID
   mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID")
@@ -18,7 +19,7 @@ genreOcc = function(occType){
   }
   return(gen)
 }
-View(users)
+#View(users)
 
 
 userMapByGenre = function(genre){  # STRINGA

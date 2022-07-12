@@ -5,9 +5,9 @@ account: damiandmn
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 6612281
-bundleId: 6082300
+bundleId: 6091266
 url: https://damiandmn.shinyapps.io/WEBSERVER/
-when: 1657300890.23827
-lastSyncTime: 1657300890.23827
+when: 1657630988.93044
+lastSyncTime: 1657630988.93044
 asMultiple: FALSE
 asStatic: FALSE

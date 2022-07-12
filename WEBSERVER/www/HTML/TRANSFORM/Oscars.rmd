@@ -6,11 +6,56 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
-source("../../../R/oscarTransformed.R")
+source("../IMPORT/dataScript/oscarsData.r")
+source("../IMPORT/dataScript/grossData.r")
 ```
 
-Creare una mappa tra Possibile vincita dell'oscar correlata alla valutazione 
-per IMDB e RT
+# WINNERS
 
+```{r}
+bestWinners = oscars %>% filter(winner) %>% group_by(film) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
+head(bestWinners)
+```
 
+# NOMINEES
+
+```{r}
+colnames(oscars)[6] = "Title"
+bestFilmNominees = oscars %>% group_by(Title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
+hist(x = bestFilmNominees$nominees,xlab = "Nominees",main = "Nominees Frequency")
+```
+
+```{r}
+dati = left_join(bestFilmNominees,gross,by="Title") %>% filter(!is.na(Gross))
+str(dati)
+hist(x = dati$nominees,xlab = "Nominees",main = "Nominees Frequency")
+
+ggplot(dati) + geom_point(mapping = aes(nominees,Gross,color = License)) + scale_y_log10()
+```
+
+### GENRES
+
+```{r}
+grossGens = grossGenres$genre
+prec = 0
+genTop = ""
+for (i in 1:length(grossGens)){
+  a = nrow(dati %>% filter(grepl(grossGens[i],Genre)))
+  if (a > prec){
+    prec = a
+    genTop = grossGens[i]
+  }
+}
+print(paste("Genere Più occorrente nei migliori film",genTop,sep=" : "))
+
+```
+
+### LICENSE / NOMINEES
+
+```{r}
+ggplot(dati) + geom_bar(mapping = aes(x=nominees,fill=License),position = "dodge")  + scale_fill_discrete(labels=c("Tutti","Over 10","Over 13","Over 17","NA"))
+```

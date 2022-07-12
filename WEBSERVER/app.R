@@ -1,15 +1,15 @@
 # STRUTTURA LINK INTERNI
 # "./" == "./www/"
 # "./HTML" == "./www/HTML"
-library(shiny)
-library(dplyr)
+# library(shiny)
+
 
 # alla compilazione vengono 
 # introdotti tutti i file presenti nella cartella R/
 
 
 mainUI = fluidPage(
-  a(id = "startLink","START", href="./HTML/Presentazione.html"),
+  a(id = "startLink","START", href="./HTML/Presentation.html"),
   selectInput("genre","seleziona il genere",genreTable$genre),
   actionButton("start","INVIA"),
   plotOutput("plotOut")

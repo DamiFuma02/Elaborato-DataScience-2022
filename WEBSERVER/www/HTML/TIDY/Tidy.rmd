@@ -298,7 +298,7 @@ disneyCountries = data.frame(
 # View(HighestGrossers)
 # spec(HighestGrossers)
 # Release_Date e Movie Info non sono necessari
-HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`)
+HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`,-`International Sales (in $)`,-`Domestic Sales (in $)`)
 head(HighestGrossers)
 ```
 
@@ -329,6 +329,7 @@ HighestGrossers = HighestGrossers %>% mutate("Duration (mins)" = ifelse(!is.na(M
 
 
 head(HighestGrossers)
+colnames(HighestGrossers)[4] = "Gross"
 ```
 
 ### GENRES {#grogenres}
@@ -386,6 +387,7 @@ grossDistr = levels(factor(HighestGrossers$Distributor))
 -   [USERS](#movusers)
 
     -   [GENDER](#movgender)
+    -   [ZIPCODES](#zipcodes)
 :::
 
 -   modificare i separatori da "::" a ";" direttamente dal blocco note
@@ -466,6 +468,12 @@ head(users)
 ))
 ```
 
+## ZIPCODES {#zipcodes}
+
+```{r}
+uszips = uszips %>% select(lng,lat,zip,state_name,county_fips)
+```
+
 # [NETFLIX](#indice) {#netflix}
 
 ::: openSubIndex
@@ -503,20 +511,20 @@ levels(factor(netflix$type))
 
 ```{r}
 # MODIFICA TYPE
-netflix = netflix %>% mutate(Movie = (type == "Movie")) %>% select(-type)
+netflix = netflix %>% mutate(Movie = (type == "Movie")) %>% select(-type,-show_id)
 ```
 
 ### SEPARATION {#netseparation}
 
 ```{r}
-netflixMovies = netflix %>% filter(Movie == TRUE)
+netflixMovies = netflix %>% filter(Movie == TRUE) %>% select(-Movie)
 # MODIFICA AL CAMPO DURATION
 netflixMovies = netflixMovies %>% mutate(duration = gsub(" min","",duration))
 
 
-netflixShows = netflix %>% filter(Movie == FALSE)
+netflixShows = netflix %>% filter(Movie == FALSE) %>% select(-Movie)
 # DURATION TO SEASONS
-netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons))) %>% select(-duration)
+netflixShows = netflixShows %>% mutate(Seasons = substr(duration,1,2)) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons))) %>% select(-duration)
 
 ```
 
@@ -550,9 +558,19 @@ netRat = levels(factor(netflix$rating))
 
 ```{r}
 countries = vector(mode = "character")
-netCountr = netflix %>% filter(!is.na(country))
+netCountr = netflix %>% filter(!is.na(country)) 
+
+head(netCountr %>% filter(str_ends(country,",")))
+netCountr = netCountr %>% mutate(country = 
+                                   ifelse(str_ends(country,","),gsub(".{1}$","",country),country)
+                                   ) %>% mutate(country = 
+                                   ifelse(str_starts(country,","),substring(country,3),country)
+                                   )
+netCountr = netCountr %>% mutate(country = gsub(", ",",",country))
+
+head(netCountr)
 for (i in 1:nrow(netCountr)){
-  countr = unlist(str_split(netCountr$country[i],", "))
+  countr = unlist(str_split(netCountr$country[i],","))
   countr = countr[!(countr %in% countries)]
   countries = append(countries, countr )
 }
@@ -588,56 +606,53 @@ for (i in 1:nrow(sequels)){
   genres = append(genres,gen)
 }
 (seqGen = levels(factor(genres)))
+seqGenres = data.frame(
+  genID = 1:length(seqGen),
+  genre = seqGen
+)
 
 #View(MoviesCleaned)
 ```
 
 # [OSCARS](#indice) {#oscars}
 
-::: openSubIndex
-\>\>\>
-:::
-
-::: subindex
--   [GENDER](#oscgender)
-
--   [OSCAR YEARS](#oscyears)
-:::
-
 ```{r}
-spec(oscars)
-
+spec(awards)
 ```
 
-### GENDER {#oscgender}
+### WINNER
 
 ```{r}
-levels(factor(oscars$gender))
-oscars = oscars %>% mutate(gender = ifelse(str_starts(gender,"f"),"Female",gender))
-levels(factor(oscars$gender))
-```
-
--   Due valori possibili, è possibile sostituire con TRUE o FALSE
-
-```{r}
-oscars = oscars %>% mutate(Male = (gender == "Male")) %>% select(-gender)
-```
-
-```{r}
-
-oscars = oscars %>% mutate(winner = (winner == "VERO"))
-```
-
-### YEARS {#oscyears}
-
-```{r}
-
-oscars %>% filter(year_film == year_ceremony)
-
-if (all(oscars$year_ceremony == oscars$year_film+1)){
-  print("Nelle cerimonie degli oscar vengono premiati i film dell'anno precedente, perciò è possibile rimuovere la colonna relativa all'anno della cerimonia")
-  oscars = oscars %>% select(-year_ceremony)
+levels(factor(awards$winner))
+awards = awards %>% mutate(winner = (winner == "VERO"))
+#View(awards)
+if (all(awards$year_ceremony == awards$year_film+1)){
+  print("la cerimonia di un anno premia i fil dell'anno precedente")
+  awards = awards %>% select(-year_ceremony)
 }
+
+```
+
+### GENDER
+
+```{r}
+levels(factor(awards$gender))
+awards = awards %>% mutate(gender = 
+                             ifelse(str_starts(gender,"f"),
+                                    gsub("f","F",gender),
+                                    gender
+                                    )
+                             )
+levels(factor(awards$gender))
+```
+
+-   Due valori possibili sostituibili con valori logici TRUE o FALSE
+
+```{r}
+awards = awards %>% mutate(Male = (gender == "Male")) %>% select(-gender)
+head(awards %>% select(Male))
+awards = awards %>% filter(!is.na(film))
+
 ```
 
 # [TMDB](#indice) {#tmdb}
@@ -704,6 +719,7 @@ write_csv(users,paste(movielensPath,"users.csv",sep="") )
 write_csv(workTable,paste(movielensPath,"workTable.csv",sep="") )
 write_csv(ageTable,paste(movielensPath,"ageTable.csv",sep="") )
 write_csv(movieLensGenreTable,paste(movielensPath,"movieLensGenreTable.csv",sep="") )
+write_csv(uszips,paste(movielensPath,"uszips.csv",sep="") )
 ```
 
 ### NETFLIX
@@ -723,7 +739,9 @@ write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
 
 ```{r}
 (oscarPath = paste(filePath,"OSCARS/",sep=""))
-write_csv(oscars,paste(oscarPath,"oscars.csv",sep="") )
+write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
+
+
 ```
 
 ### SEQUELS
@@ -732,6 +750,7 @@ write_csv(oscars,paste(oscarPath,"oscars.csv",sep="") )
 (sequelPath = paste(filePath,"SEQUELS/",sep=""))
 
 write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";" )
+write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
 
 
 ```

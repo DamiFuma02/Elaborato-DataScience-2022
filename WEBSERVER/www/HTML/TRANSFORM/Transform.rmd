@@ -10,7 +10,6 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
-# source("../../../R/cleanedData.R")
 ```
 
 # INDICE
@@ -27,27 +26,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [MOVIELENS](./Movielens.html)
 
-    -   [MAPS](./Maps.html)
-
 -   [NETFLIX](./Netflix.html)
+
+-   [OSCARS](./Oscars.html)
 
 -   [SEQUELS](./Sequels.html)
 
 -   [TMDB](./Tmdb.html)
-
-# MOVIELENS {#movielens}
-
-```{r}
-colnames(ratings)
-
-user_ratings = left_join(users,ratings,by = "userID")
-# View(user_ratings)
-# View(workTable)
-# View(ageTable)
-
-View(sequels)
-View(amazon)
-
-
-
-```
