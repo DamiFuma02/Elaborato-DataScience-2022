@@ -25,7 +25,7 @@ head(bestWinners)
 
 ```{r}
 colnames(oscars)[6] = "Title"
-bestFilmNominees = oscars %>% group_by(Title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
+bestFilmNominees = oscars %>% group_by(Title) %>% summarise(nominees = n(), year = year_film) %>% arrange(desc(nominees))
 hist(x = bestFilmNominees$nominees,xlab = "Nominees",main = "Nominees Frequency")
 ```
 

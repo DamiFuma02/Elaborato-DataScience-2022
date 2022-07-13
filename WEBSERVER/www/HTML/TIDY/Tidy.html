@@ -1429,9 +1429,12 @@ ricerca.</p>
 
 (amazonPath = paste(filePath,&quot;AMAZON/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/AMAZON/&quot;</code></pre>
-<pre class="r"><code>write_csv(amazon,paste(amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonMovies,paste(amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonShows,paste(amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code>colnames(amazon) = tolower(colnames(amazon))
+write_csv(amazon,paste(amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
+colnames(amazonMovies)  = tolower(colnames(amazonMovies))
+write_csv(amazonMovies,paste(amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;)  )
+colnames(amazonShows)  = tolower(colnames(amazonShows))
+write_csv(amazonShows,paste(amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;)  )
 write_csv(amazonGenres,paste(amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
 write_csv(amazonRatingTypes,paste(amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
 write_csv(amazonCountries,paste(amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
@@ -1441,9 +1444,12 @@ write_csv(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.csv&quot;,sep=&
 <h3>DISNEY</h3>
 <pre class="r"><code>(disneyPath = paste(filePath,&quot;DISNEY/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/DISNEY/&quot;</code></pre>
-<pre class="r"><code>write_csv(disney,paste(disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyMovies,paste(disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyShows,paste(disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code>colnames(disney) = tolower(colnames(disney))
+write_csv(disney,paste(disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;)  )
+colnames(disneyMovies) = tolower(colnames(disneyMovies) )
+write_csv(disneyMovies,paste(disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;)  )
+colnames(disneyShows) = tolower(colnames(disneyShows))
+write_csv(disneyShows,paste(disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;)  )
 write_csv(disneyGenreTable,paste(disneyPath,&quot;disneyGenreTable.csv&quot;,sep=&quot;&quot;) )
 write_csv(disneyRatingTypes,paste(disneyPath,&quot;disneyRatingTypes.csv&quot;,sep=&quot;&quot;) )
 write_csv(disneyCountries,paste(disneyPath,&quot;disneyCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
@@ -1452,7 +1458,8 @@ write_csv(disneyCountries,paste(disneyPath,&quot;disneyCountries.csv&quot;,sep=&
 <h3>HIGH GROSS</h3>
 <pre class="r"><code>(grossPath = paste(filePath,&quot;GROSS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/GROSS/&quot;</code></pre>
-<pre class="r"><code>write_csv(HighestGrossers,paste(grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code>colnames(HighestGrossers) = tolower(colnames(HighestGrossers))
+write_csv(HighestGrossers,paste(grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;)  )
 write_csv(grossGenreTable,paste(grossPath,&quot;grossGenreTable.csv&quot;,sep=&quot;&quot;) )
 write_csv(grossDistributors,paste(grossPath,&quot;grossDistributors.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
@@ -1460,8 +1467,11 @@ write_csv(grossDistributors,paste(grossPath,&quot;grossDistributors.csv&quot;,se
 <h3>MOVIELENS</h3>
 <pre class="r"><code>(movielensPath = paste(filePath,&quot;MOVIELENS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/MOVIELENS/&quot;</code></pre>
-<pre class="r"><code>write_csv(movies,paste(movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;) )
-write_csv(ratings,paste(movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code>colnames(movies) = tolower(colnames(movies))
+write_csv(movies,paste(movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;)  )
+colnames(ratings) = tolower(colnames(ratings))
+write_csv(ratings,paste(movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;)  )
+colnames(users) = tolower(colnames(users))
 write_csv(users,paste(movielensPath,&quot;users.csv&quot;,sep=&quot;&quot;) )
 write_csv(workTable,paste(movielensPath,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
 write_csv(ageTable,paste(movielensPath,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
@@ -1472,8 +1482,11 @@ write_csv(uszips,paste(movielensPath,&quot;uszips.csv&quot;,sep=&quot;&quot;) )<
 <h3>NETFLIX</h3>
 <pre class="r"><code>(netflixPath = paste(filePath,&quot;NETFLIX/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/NETFLIX/&quot;</code></pre>
-<pre class="r"><code>write_csv(netflix,paste(netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixMovies,paste(netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;) )
+<pre class="r"><code>colnames(netflix) = tolower(colnames(netflix))
+write_csv(netflix,paste(netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
+colnames(netflixMovies) = tolower(colnames(netflixMovies))
+write_csv(netflixMovies,paste(netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;)  )
+colnames(netflixShows) = tolower(colnames(netflixShows))
 write_csv(netflixShows,paste(netflixPath,&quot;netflixShows.csv&quot;,sep=&quot;&quot;) )
 write_csv(netflixGenres,paste(netflixPath,&quot;netflixGenres.csv&quot;,sep=&quot;&quot;) )
 write_csv(netflixRatingTypes,paste(netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
@@ -1483,13 +1496,14 @@ write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,se
 <h3>OSCARS</h3>
 <pre class="r"><code>(oscarPath = paste(filePath,&quot;OSCARS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/OSCARS/&quot;</code></pre>
-<pre class="r"><code>write_csv(awards,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</code></pre>
+<pre class="r"><code>colnames(awards) = tolower(colnames(awards))
+write_csv(awards,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="sequels-1" class="section level3">
 <h3>SEQUELS</h3>
 <pre class="r"><code>(sequelPath = paste(filePath,&quot;SEQUELS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/SEQUELS/&quot;</code></pre>
-<pre class="r"><code>write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot; )
+<pre class="r"><code>write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot;  )
 write_csv(seqGenres,paste(sequelPath,&quot;sequelGenres.csv&quot;,sep=&quot;&quot;))</code></pre>
 </div>
 <div id="subindex-code" class="section level3">

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-13" />
+<meta name="date" content="2022-07-14" />
 
 <title>MOVIELENS</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">MOVIELENS</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-13</h4>
+<h4 class="date">2022-07-14</h4>
 
 </div>
 
@@ -399,16 +399,24 @@ library(readr)</code></pre>
 <pre class="r"><code>source(&quot;../IMPORT/dataScript/movielensData.r&quot;)
 # DATASETS = movies, ratings, users, uszips, workTable, ageTable, MLGenres</code></pre>
 </div>
-<div id="rating-per-occupation" class="section level1">
-<h1>RATING PER OCCUPATION</h1>
-<pre class="r"><code>genreOcc = function(occID){
-
-  mov = left_join(left_join(users %&gt;% filter(Occupation == occID),ratings, by = &quot;userID&quot;),movies,by = &quot;movieID&quot;)
-  head(mov)
+<div id="occupation" class="section level1">
+<h1>OCCUPATION</h1>
+<pre class="r"><code>workTable$workType</code></pre>
+<pre><code>##  [1] &quot;other&quot;                &quot;academic/educator&quot;    &quot;artist&quot;              
+##  [4] &quot;clerical/admin&quot;       &quot;college/grad student&quot; &quot;customer service&quot;    
+##  [7] &quot;doctor/health care&quot;   &quot;executive/managerial&quot; &quot;farmer&quot;              
+## [10] &quot;homemaker&quot;            &quot;K-12 student&quot;         &quot;lawyer&quot;              
+## [13] &quot;programmer&quot;           &quot;retired&quot;              &quot;sales/marketing&quot;     
+## [16] &quot;scientist&quot;            &quot;self-employed&quot;        &quot;technician/engineer&quot; 
+## [19] &quot;tradesman/craftsman&quot;  &quot;unemployed&quot;           &quot;writer&quot;</code></pre>
+<pre class="r"><code>genreOcc = function(occType){
+  occID = workTable[workTable$workType == occType,]$workID
+  userRatings = left_join(left_join(users %&gt;% filter(occupation == occID),ratings, by = &quot;userid&quot;),movies,by = &quot;movieid&quot;)
   prec = 0
   gen = &quot;&quot;
   for (i in 1:length(MLGenres$genre)){
-    a = nrow(mov %&gt;% filter(Rating&gt;=4) %&gt;% filter(grepl(MLGenres$genre[i],Genres)))
+    a = nrow(userRatings %&gt;% filter(rating &gt;= 4) %&gt;% filter(grepl(MLGenres$genre[i],genres)) )
+     
     if (a &gt; prec) {
       prec = a
       gen = MLGenres$genre[i]
@@ -417,29 +425,32 @@ library(readr)</code></pre>
   return(gen)
 }
 
-# stampa la workTable
-workTable</code></pre>
-<pre><code>## # A tibble: 21 x 2
-##    workID workType            
-##     &lt;dbl&gt; &lt;chr&gt;               
-##  1      0 other               
-##  2      1 academic/educator   
-##  3      2 artist              
-##  4      3 clerical/admin      
-##  5      4 college/grad student
-##  6      5 customer service    
-##  7      6 doctor/health care  
-##  8      7 executive/managerial
-##  9      8 farmer              
-## 10      9 homemaker           
-## # ... with 11 more rows</code></pre>
-<pre class="r"><code># genera un numero casuale tra [1:nrow(workTable)]
-(id = floor( runif(1) * nrow(workTable))+1)</code></pre>
-<pre><code>## [1] 11</code></pre>
-<pre class="r"><code>(randomWork = workTable$workType[id])</code></pre>
-<pre><code>## [1] &quot;K-12 student&quot;</code></pre>
-<pre class="r"><code>print(paste(&quot;Genere preferito da &quot;,randomWork,&quot;: &quot;,genreOcc(id),sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;Genere preferito da K-12 student: Drama&quot;</code></pre>
+data.frame(
+  workType = workTable$workType,
+  favGen = unlist(lapply(workTable$workType, genreOcc))
+)</code></pre>
+<pre><code>##                workType favGen
+## 1                 other  Drama
+## 2     academic/educator  Drama
+## 3                artist  Drama
+## 4        clerical/admin  Drama
+## 5  college/grad student  Drama
+## 6      customer service Comedy
+## 7    doctor/health care  Drama
+## 8  executive/managerial  Drama
+## 9                farmer Comedy
+## 10            homemaker Comedy
+## 11         K-12 student Comedy
+## 12               lawyer  Drama
+## 13           programmer  Drama
+## 14              retired  Drama
+## 15      sales/marketing  Drama
+## 16            scientist  Drama
+## 17        self-employed  Drama
+## 18  technician/engineer  Drama
+## 19  tradesman/craftsman  Drama
+## 20           unemployed  Drama
+## 21               writer  Drama</code></pre>
 </div>
 <div id="userLocation" class="section level1">
 <h1>USER-LOCATIONS</h1>
@@ -447,10 +458,10 @@ workTable</code></pre>
 <li>Creare una tabella con ogni votazione associata al zipcode
 dell’utente</li>
 </ul>
-<pre class="r"><code>meanUserRatings = ratings %&gt;% group_by(userID) %&gt;% summarise(numOfRatings = n(),MeanRating = mean(Rating))
+<pre class="r"><code>meanUserRatings = ratings %&gt;% group_by(userid) %&gt;% summarise(numOfRatings = n(),MeanRating = mean(rating))
 head(meanUserRatings)</code></pre>
 <pre><code>## # A tibble: 6 x 3
-##   userID numOfRatings MeanRating
+##   userid numOfRatings MeanRating
 ##    &lt;dbl&gt;        &lt;int&gt;      &lt;dbl&gt;
 ## 1      1           53       4.19
 ## 2      2          129       3.71
@@ -458,10 +469,10 @@ head(meanUserRatings)</code></pre>
 ## 4      4           21       4.19
 ## 5      5          198       3.15
 ## 6      6           71       3.90</code></pre>
-<pre class="r"><code>meanUserRatings = left_join(meanUserRatings,users,by=&quot;userID&quot;)
+<pre class="r"><code>meanUserRatings = left_join(meanUserRatings,users,by=&quot;userid&quot;)
 head(meanUserRatings)</code></pre>
 <pre><code>## # A tibble: 6 x 7
-##   userID numOfRatings MeanRating   Age Occupation zip   Male 
+##   userid numOfRatings MeanRating   age occupation zip   male 
 ##    &lt;dbl&gt;        &lt;int&gt;      &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
 ## 1      1           53       4.19     1         10 48067 FALSE
 ## 2      2          129       3.71    56         16 70072 TRUE 

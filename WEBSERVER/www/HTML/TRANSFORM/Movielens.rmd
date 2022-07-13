@@ -26,21 +26,24 @@ source("../IMPORT/dataScript/movielensData.r")
 # DATASETS = movies, ratings, users, uszips, workTable, ageTable, MLGenres
 ```
 
-# RATING PER OCCUPATION
+# OCCUPATION {#occupation}
+
+```{r}
+workTable$workType
+```
 
 ```{r}
 
 
 
-genreOcc = function(occID){
-
-  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID") %>% filter(Rating>=4) # filtra i film che hanno un voto >= 4
-  head(mov)
+genreOcc = function(occType){
+  occID = workTable[workTable$workType == occType,]$workID
+  userRatings = left_join(left_join(users %>% filter(occupation == occID),ratings, by = "userid"),movies,by = "movieid")
   prec = 0
   gen = ""
   for (i in 1:length(MLGenres$genre)){
+    a = nrow(userRatings %>% filter(rating >= 4) %>% filter(grepl(MLGenres$genre[i],genres)) )
      
-    a = nrow(mov  %>% filter(grepl(MLGenres$genre[i],Genres)))
     if (a > prec) {
       prec = a
       gen = MLGenres$genre[i]
@@ -49,18 +52,10 @@ genreOcc = function(occID){
   return(gen)
 }
 
-# stampa la workTable
-workTable
-
-
-# genera un numero casuale tra [1:nrow(workTable)]
-(id = floor( runif(1) * nrow(workTable))+1)
-(randomWork = workTable$workType[id])
-print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
-
-
-
-
+data.frame(
+  workType = workTable$workType,
+  favGen = unlist(lapply(workTable$workType, genreOcc))
+)
 
 
 ```
@@ -71,10 +66,10 @@ print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
 
 ```{r}
 
-meanUserRatings = ratings %>% group_by(userID) %>% summarise(numOfRatings = n(),MeanRating = mean(Rating))
+meanUserRatings = ratings %>% group_by(userid) %>% summarise(numOfRatings = n(),MeanRating = mean(rating))
 head(meanUserRatings)
 
-meanUserRatings = left_join(meanUserRatings,users,by="userID")
+meanUserRatings = left_join(meanUserRatings,users,by="userid")
 head(meanUserRatings)
 
 

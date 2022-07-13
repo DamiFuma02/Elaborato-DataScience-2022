@@ -14,14 +14,15 @@ spec(netflixMovies)
 
 mainUI = fluidPage(
   tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "./STYLES/main.css")),
-  h1(id = "title","CINEMATOGRAPHIC ANALYSIS"),
+  h1(id = "title","ANALISI CINEMATOGRAFICA"),
   p(id = "info","Fumagalli Damiano --- IBML 6 CFU"),
-  a(id = "startLink","START PRESENTATION", href="./HTML/Presentation.html"),
+  p(id="c",a(id = "startLink","START PRESENTATION", href="./HTML/Presentation.html")),
   
   h3(id = "indexTitle","INDEX"),
   radioButtons("chosenAPP","CHOOSE THE APP",choiceNames = c("Reccomendation System","genreOccAPP","genreMAP"), choiceValues = c("RS","GO","GM")),
   actionButton("invia","INVIA"),
-  uiOutput("outUI")
+  uiOutput("outUI"),
+  tags$img(src = "./IMAGES/flow.png")
 )
 
 genreMap_UI = fluidPage(
@@ -35,9 +36,9 @@ genreMap_UI = fluidPage(
 
 reccomendAPP_UI = fluidPage(
   h2(id = "","Reccomendation System"),
-  checkboxGroupInput("platform",label = "Choose your straming services", choiceNames = c("Amazon Prime Video","Disney +","Netflix"),choiceValues = c("amazon","disney","netflix")),
-  checkboxGroupInput("movieType",label = "Choose the movie Type",choiceNames = c("Movie","TV-Shows","Both"), choiceValues = c("M","T","B")),
-  selectInput("arrangeBy","Arrange BY",choices = c("Year","duration")),
+  checkboxGroupInput("platform",label = "Choose your straming services", choiceNames = c("None","Amazon Prime Video","Disney +","Netflix"),choiceValues = c("none","amazon","disney","netflix")),
+  radioButtons("movieType",label = "Choose the movie Type",choiceNames = c("Movie","TV-Shows","Both"), choiceValues = c("M","T","B")),
+  selectInput("arrangeBy","Arrange BY",choices = c("year","duration")),
   radioButtons("order","Select Order",choiceNames  = c("Ascending","Descending"), choiceValues = c("A","D")),
   actionButton("print","SEND"),
   textOutput("printout"),
@@ -53,6 +54,7 @@ reccomendAPP_UI = fluidPage(
 
 # APP per genere in funzione di occupation per MOVIELENS
 genreOccAPP_UI = fluidPage(
+  a("workTable INFO",href="./HTML/TRANSFORM/Movielens.html#occupation"),
   selectInput("occType","Scegli il lavoro",workTable$workType),
   actionButton("genOcc","Mostra genere preferito"),
   textOutput("genreOut")

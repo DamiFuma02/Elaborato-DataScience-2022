@@ -618,6 +618,7 @@ seqGenres = data.frame(
 
 ```{r}
 spec(awards)
+colnames(awards)[8] = "title"
 ```
 
 ### WINNER
@@ -630,6 +631,8 @@ if (all(awards$year_ceremony == awards$year_film+1)){
   print("la cerimonia di un anno premia i fil dell'anno precedente")
   awards = awards %>% select(-year_ceremony)
 }
+awards %>% group_by(title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
+View(awards)
 
 ```
 
@@ -666,9 +669,12 @@ I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
 filePath = "../../CLEAN_DATA/"  # www/CLEAN_DATA
 
 (amazonPath = paste(filePath,"AMAZON/",sep=""))
+colnames(amazon) = tolower(colnames(amazon))
 write_csv(amazon,paste(amazonPath,"amazon.csv",sep="") )
-write_csv(amazonMovies,paste(amazonPath,"amazonMovies.csv",sep="") )
-write_csv(amazonShows,paste(amazonPath,"amazonShows.csv",sep="") )
+colnames(amazonMovies)  = tolower(colnames(amazonMovies))
+write_csv(amazonMovies,paste(amazonPath,"amazonMovies.csv",sep="")  )
+colnames(amazonShows)  = tolower(colnames(amazonShows))
+write_csv(amazonShows,paste(amazonPath,"amazonShows.csv",sep="")  )
 write_csv(amazonGenres,paste(amazonPath,"amazonGenres.csv",sep="") )
 write_csv(amazonRatingTypes,paste(amazonPath,"amazonRatingTypes.csv",sep="") )
 write_csv(amazonCountries,paste(amazonPath,"amazonCountries.csv",sep="") )
@@ -681,9 +687,12 @@ write_csv(amazonDirectors,paste(amazonPath,"amazonDirectors.csv",sep="") )
 ```{r}
 
 (disneyPath = paste(filePath,"DISNEY/",sep=""))
-write_csv(disney,paste(disneyPath,"disney.csv",sep="") )
-write_csv(disneyMovies,paste(disneyPath,"disneyMovies.csv",sep="") )
-write_csv(disneyShows,paste(disneyPath,"disneyShows.csv",sep="") )
+colnames(disney) = tolower(colnames(disney))
+write_csv(disney,paste(disneyPath,"disney.csv",sep="")  )
+colnames(disneyMovies) = tolower(colnames(disneyMovies) )
+write_csv(disneyMovies,paste(disneyPath,"disneyMovies.csv",sep="")  )
+colnames(disneyShows) = tolower(colnames(disneyShows))
+write_csv(disneyShows,paste(disneyPath,"disneyShows.csv",sep="")  )
 write_csv(disneyGenreTable,paste(disneyPath,"disneyGenreTable.csv",sep="") )
 write_csv(disneyRatingTypes,paste(disneyPath,"disneyRatingTypes.csv",sep="") )
 write_csv(disneyCountries,paste(disneyPath,"disneyCountries.csv",sep="") )
@@ -693,7 +702,8 @@ write_csv(disneyCountries,paste(disneyPath,"disneyCountries.csv",sep="") )
 
 ```{r}
 (grossPath = paste(filePath,"GROSS/",sep=""))
-write_csv(HighestGrossers,paste(grossPath,"gross.csv",sep="") )
+colnames(HighestGrossers) = tolower(colnames(HighestGrossers))
+write_csv(HighestGrossers,paste(grossPath,"gross.csv",sep="")  )
 write_csv(grossGenreTable,paste(grossPath,"grossGenreTable.csv",sep="") )
 write_csv(grossDistributors,paste(grossPath,"grossDistributors.csv",sep="") )
 
@@ -703,8 +713,11 @@ write_csv(grossDistributors,paste(grossPath,"grossDistributors.csv",sep="") )
 
 ```{r}
 (movielensPath = paste(filePath,"MOVIELENS/",sep=""))
-write_csv(movies,paste(movielensPath,"movies.csv",sep="") )
-write_csv(ratings,paste(movielensPath,"ratings.csv",sep="") )
+colnames(movies) = tolower(colnames(movies))
+write_csv(movies,paste(movielensPath,"movies.csv",sep="")  )
+colnames(ratings) = tolower(colnames(ratings))
+write_csv(ratings,paste(movielensPath,"ratings.csv",sep="")  )
+colnames(users) = tolower(colnames(users))
 write_csv(users,paste(movielensPath,"users.csv",sep="") )
 write_csv(workTable,paste(movielensPath,"workTable.csv",sep="") )
 write_csv(ageTable,paste(movielensPath,"ageTable.csv",sep="") )
@@ -716,8 +729,11 @@ write_csv(uszips,paste(movielensPath,"uszips.csv",sep="") )
 
 ```{r}
 (netflixPath = paste(filePath,"NETFLIX/",sep=""))
+colnames(netflix) = tolower(colnames(netflix))
 write_csv(netflix,paste(netflixPath,"netflix.csv",sep="") )
-write_csv(netflixMovies,paste(netflixPath,"netflixMovies.csv",sep="") )
+colnames(netflixMovies) = tolower(colnames(netflixMovies))
+write_csv(netflixMovies,paste(netflixPath,"netflixMovies.csv",sep="")  )
+colnames(netflixShows) = tolower(colnames(netflixShows))
 write_csv(netflixShows,paste(netflixPath,"netflixShows.csv",sep="") )
 write_csv(netflixGenres,paste(netflixPath,"netflixGenres.csv",sep="") )
 write_csv(netflixRatingTypes,paste(netflixPath,"netflixRatingTypes.csv",sep="") )
@@ -729,6 +745,7 @@ write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
 
 ```{r}
 (oscarPath = paste(filePath,"OSCARS/",sep=""))
+colnames(awards) = tolower(colnames(awards))
 write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
 
 
@@ -739,7 +756,7 @@ write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
 ```{r}
 (sequelPath = paste(filePath,"SEQUELS/",sep=""))
 
-write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";" )
+write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";"  )
 write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
 
 

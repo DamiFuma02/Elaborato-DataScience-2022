@@ -3,7 +3,6 @@ names = c("amazon","disney","gross","movielens","netflix","oscars","sequel")
 for (i in 1:length(names)){
   source(paste("./R/",names[i],"Data.r",sep=""))
 }
-
 # APP FUNCTIONS
 
 
@@ -11,39 +10,60 @@ for (i in 1:length(names)){
 
 importData = function(movieType,platform){
   l = length(platform)
-  if (movieType == "M"){   #MOVIE
+  if ( "none" %in% platform){
+    data = read_csv("./www/CLEAN_DATA/GROSS/gross.csv") %>% select(-license,-distributor)
+    colnames(data)[5] = "duration"
+    return (data)
+  } else if (movieType == "M"){   #MOVIE
    if (l==1){
      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform),"/",platform,"Movies.csv",sep=""))
-     return (data %>% select(title,Year,rating,duration))
+     return (data %>% select(title,year,rating,duration))
     } else {
-      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],"Movies.csv",sep=""))  %>% select(title,Year,rating,duration)
+      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],"Movies.csv",sep=""))  %>% select(title,year,duration)
       for (i in 1:(l-1)){
-        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],"Movies.csv",sep=""))  %>% select(title,Year,rating,duration),by="title")
-        data = data %>% filter((`Year.x` == `Year.y`) && (`duration.x` == `duration.y`))      %>% mutate(Year = `Year.x`,rating = `rating.x`,duration = `duration.x`) %>% select(title,Year,duration,rating)
+        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],"Movies.csv",sep=""))  %>% select(title,year,duration),by="title")
+        test = data %>% filter((`year.x` == `year.y`) && (`duration.x` == `duration.y`))      %>% mutate(year = `year.x` ,duration = `duration.x`) %>% select(title,year,duration )
+        if( nrow(test) == 0){
+          return (NULL)
+        } else {
+          data = test
+        }
       }
+      
+      inner_join(data,gross,)
       return (data)
     }
   } else if (movieType == "T") {   #TV-SHOW
     if (l==1){
       data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform),"/",platform,"Shows.csv",sep=""))
-      return (data %>% select(title,Year,rating,Seasons))
+      return (data %>% select(title,year,seasons))
     } else {
-      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],"Shows.csv",sep=""))  %>% select(title,Year,rating,Seasons)
+      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],"Shows.csv",sep=""))  %>% select(title,year,seasons)
       for (i in 1:(l-1)){
-        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],"Shows.csv",sep=""))  %>% select(title,Year,rating,Seasons),by="title")
-        data = data %>% filter((`Year.x` == `Year.y`) && (`Seasons.x` == `Seasons.y`))      %>% mutate(Year = `Year.x`,rating = `rating.x`,Seasons = `Seasons.x`) %>% select(title,Year,Seasons,rating)
+        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],"Shows.csv",sep=""))  %>% select(title,year ,seasons),by="title")
+        test = data %>% filter((`year.x` == `year.y`) && (`seasons.x` == `seasons.y`))      %>% mutate(year = `year.x` ,seasons = `seasons.x`) %>% select(title,year,seasons )
+        if( nrow(test) == 0){
+          return (NULL)
+        } else {
+          data = test
+        }
       }
       return (data)
     }
   } else {  #  BOTH
     if (l==1){
       data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform),"/",platform,".csv",sep=""))
-      return (data %>% select(title,Year,rating,duration))
+      return (data %>% select(title,year, duration))
     } else {
-      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],".csv",sep=""))  %>% select(title,Year,rating,duration)
+      data = read_csv(paste("./www/CLEAN_DATA/",toupper(platform[1]),"/",platform[1],".csv",sep=""))  %>% select(title,year ,duration)
       for (i in 1:(l-1)){
-        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],".csv",sep=""))  %>% select(title,Year,rating,duration),by="title")
-        data = data %>% filter((`Year.x` == `Year.y`) && (`duration.x` == `duration.y`))      %>% mutate(Year = `Year.x`,rating = `rating.x`,duration = `duration.x`) %>% select(title,Year,duration,rating)
+        data = inner_join(data,  read_csv(paste("./www/CLEAN_DATA/",toupper(platform[i+1]),"/",platform[i+1],".csv",sep=""))  %>% select(title,year,duration),by="title")
+        test = data %>% filter((`year.x` == `year.y`) && (`duration.x` == `duration.y`)) %>% mutate(year = `year.x`,duration = `duration.x`) %>% select(title,year,duration)
+       if( nrow(test) == 0){
+         return (NULL)
+       } else {
+         data = test
+       }
       }
       return (data)
     }
@@ -55,11 +75,42 @@ reccomendAPP = function(compiledList){
   movieType = compiledList$movieType
   chosenArr = compiledList$arrange
   order = compiledList$order
-  dataFrame = importData(movieType,platform) %>% select(title,chosenArr)
+  dataFrame = importData(movieType,platform) 
+  if (is.null(dataFrame)){
+    errorData = data.frame(
+      id = -1,
+      error = "NOT FOUND"
+    )
+    return (errorData)
+  }
+  # MOVIELENS RATING
+  
+  
+   test = inner_join(movies,dataFrame,by="title") %>% filter(`year.x` == `year.y`)  %>% mutate(year = `year.y`) %>% select(-`year.x`,-`year.y`,-movieid)
+   if (nrow(test) == 0){
+      errorData = data.frame(
+        id = -1,
+        error = "NOT FOUND"
+      )
+      return (errorData)
+    }
+   dataFrame = test
+   
+  if( (platform != "none") && (movieType == "T") && (chosenArr == "duration")){
+    chosenArr = "seasons"
+  }
+  
+  
+  # OSCARS
+   colnames(oscars)[6] = "title"
+   bestOscars = oscars %>% group_by(title) %>% summarise(nominees = n(),year_film = year_film) %>% arrange(desc(nominees))
+   dataFrame = left_join(dataFrame,bestOscars,by="title")
+  
+  
   if (order == "A"){
-    return(head(dataFrame %>% arrange(dataFrame[chosenArr])))
+   return(head(dataFrame %>% arrange(dataFrame[chosenArr])  ))
   } else {
-    return(head(dataFrame %>% arrange(desc(dataFrame[chosenArr]))))
+   return(head(dataFrame %>% arrange(desc(dataFrame[chosenArr]) )    ))
   }
   
 }
@@ -71,11 +122,11 @@ reccomendAPP = function(compiledList){
 # MOVIELENS
 genreOcc = function(occType){
   occID = workTable[workTable$workType == occType,]$workID
-  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID")
+  userRatings = left_join(left_join(users %>% filter(occupation == occID),ratings, by = "userid"),movies,by = "movieid")
   prec = 0
   gen = ""
   for (i in 1:length(MLGenres$genre)){
-    a = nrow(mov %>% filter(Rating >= 4) %>% filter(grepl(MLGenres$genre[i],Genres)))
+    a = nrow(userRatings %>% filter(rating >= 4) %>% filter(grepl(MLGenres$genre[i],genres)))
     if (a > prec) {
       prec = a
       gen = MLGenres$genre[i]
@@ -85,11 +136,11 @@ genreOcc = function(occType){
 }
 
 userMapByGenre = function(genre){  # STRINGA
-  movieGenreID = (movies %>% filter(grepl(genre,Genres)))$movieID
-  meanUserRatings = ratings %>% filter(movieID %in% movieGenreID)  %>% group_by(userID) %>% summarise(numOfRatings = n(),MeanRating = mean(Rating))
+  movieGenreID = (movies %>% filter(grepl(genre,genres)))$movieid
+  meanUserRatings = ratings %>% filter(movieid %in% movieGenreID)  %>% group_by(userid) %>% summarise(numOfRatings = n(),MeanRating = mean(rating))
   head(meanUserRatings)
   
-  meanUserRatings = left_join(meanUserRatings,users,by="userID")
+  meanUserRatings = left_join(meanUserRatings,users,by="userid")
   head(meanUserRatings)
   
   
