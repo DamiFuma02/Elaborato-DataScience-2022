@@ -22,41 +22,28 @@ library(ggplot2)
 # IMPORT
 
 ```{r}
-ageTable = read_csv("../../CLEAN_DATA/MOVIELENS/ageTable.csv", col_types = "?")
-spec(ageTable)
-genreTable = read_csv("../../CLEAN_DATA/MOVIELENS/movieLensGenreTable.csv", col_types = "?")
-spec(genreTable)
-movies = read_csv("../../CLEAN_DATA/MOVIELENS/movies.csv", col_types = "?")
-spec(movies)
-ratings = read_csv("../../CLEAN_DATA/MOVIELENS/ratings.csv", col_types = "?")
-spec(ratings)
-users = read_csv("../../CLEAN_DATA/MOVIELENS/users.csv", col_types = "?")
-spec(users)
-uszips = read_csv("../../DATASETS/MOVIELENS/uszips.csv", col_types = "?") 
-spec(uszips)
-workTable = read_csv("../../CLEAN_DATA/MOVIELENS/workTable.csv", col_types = "?")
-spec(workTable)
+source("../IMPORT/dataScript/movielensData.r")
+# DATASETS = movies, ratings, users, uszips, workTable, ageTable, MLGenres
 ```
 
 # RATING PER OCCUPATION
 
 ```{r}
-# View(users)
-# View(ratings)
-# View(workTable)
-# View(genreTable)
-# View(workTable)
+
+
 
 genreOcc = function(occID){
-  # occID = workTable[workTable$workType == occType,]$workID
-  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID")
+
+  mov = left_join(left_join(users %>% filter(Occupation == occID),ratings, by = "userID"),movies,by = "movieID") %>% filter(Rating>=4) # filtra i film che hanno un voto >= 4
+  head(mov)
   prec = 0
   gen = ""
-  for (i in 1:length(genreTable$genre)){
-    a = nrow(mov %>% filter(grepl(genreTable$genre[i],Genres)))
+  for (i in 1:length(MLGenres$genre)){
+     
+    a = nrow(mov  %>% filter(grepl(MLGenres$genre[i],Genres)))
     if (a > prec) {
       prec = a
-      gen = genreTable$genre[i]
+      gen = MLGenres$genre[i]
     }
   }
   return(gen)
@@ -78,7 +65,7 @@ print(paste("Genere preferito da ",randomWork,": ",genreOcc(id),sep=""))
 
 ```
 
-# MAPS
+# USER-LOCATIONS {#userLocation}
 
 -   Creare una tabella con ogni votazione associata al zipcode dell'utente
 
@@ -101,7 +88,6 @@ plot_usmap(data = prova, values = "MeanRating") +  scale_fill_continuous( low = 
 
 
 ```
-
 
 # GGPLOT
 
@@ -140,30 +126,3 @@ plot_usmap(data = countZips, values = "count") +  scale_fill_continuous( low = "
 
 
 ```
-
-
-```{r}
-library(maps)
-library(mapdata)
-usa <- map_data('usa')
-state <- map_data("state")
-
-state = state %>% select(-subregion,-order)
-colnames(state)[1] = "lng"
-
-colnames(uszips)[6] = "region"
-
-
-View(meanUserRatings)
-
-
-ggplot(data=state, aes(x=long, y=lat, fill=region, group=group)) + 
-  geom_polygon(color = "white") + 
-  guides(fill=FALSE) + 
-  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + 
-  ggtitle('U.S. Map with States') + 
-  coord_fixed(1.3)
-```
-
-

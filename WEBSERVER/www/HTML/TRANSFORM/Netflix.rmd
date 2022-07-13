@@ -10,14 +10,16 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 source("../IMPORT/dataScript/netflixData.r")
+source("../IMPORT/dataScript/grossData.r")
 ```
 
 ```{r}
 spec(netflixShows)
+View(netflix)
 spec(netflixMovies)
 ```
 
-# COUNTRY GENRES
+# COUNTRY-GENRES {#genreAPP}
 
 ```{r}
 spec(netflix)
@@ -40,10 +42,6 @@ genreCountry = function(c){
   country = netflixCountries$country,
   FavGenre = unlist(lapply(netflixCountries$country,genreCountry))
 ))
-
-
-
-
 
 
 ```

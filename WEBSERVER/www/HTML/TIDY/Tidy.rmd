@@ -655,16 +655,6 @@ awards = awards %>% filter(!is.na(film))
 
 ```
 
-# [TMDB](#indice) {#tmdb}
-
-```{r}
-# View(tmdb)
-spec(tmdb)
-tmdb = tmdb %>% select(-overview,-...1) %>% mutate(Year = strtoi(format(release_date,"%Y"))) %>% select(-release_date)
-# MODIFICA LA DATA IN FORMATO SOLO ANNO
-head(tmdb)
-levels(factor(tmdb$original_language))
-```
 
 # UPDATE DATA {#update-data}
 
@@ -755,13 +745,6 @@ write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
 
 ```
 
-### TMDB
-
-```{r}
-(tmdbPath = paste(filePath,"TMDB/",sep=""))
-write_csv(tmdb,paste(tmdbPath,"tmdb.csv",sep="") )
-
-```
 
 ### SUBINDEX-CODE
 

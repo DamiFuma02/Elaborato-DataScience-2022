@@ -37,7 +37,7 @@ hist(x = dati$nominees,xlab = "Nominees",main = "Nominees Frequency")
 ggplot(dati) + geom_point(mapping = aes(nominees,Gross,color = License)) + scale_y_log10()
 ```
 
-### GENRES
+### GENRE()
 
 ```{r}
 grossGens = grossGenres$genre
@@ -58,4 +58,17 @@ print(paste("Genere Più occorrente nei migliori film",genTop,sep=" : "))
 
 ```{r}
 ggplot(dati) + geom_bar(mapping = aes(x=nominees,fill=License),position = "dodge")  + scale_fill_discrete(labels=c("Tutti","Over 10","Over 13","Over 17","NA"))
+```
+
+### GENRES / NOMINEES
+
+```{r}
+head(dati %>% select(Title,Genre,nominees))
+allgen = grossGenres$genre
+genCounts = vector(mode = "integer",length = length(allgen))
+for (i in 1:length(allgen)){
+  genCounts[i] = nrow(dati %>% filter(grepl(allgen[i],Genre)))
+}
+# generi in ordine decrescente per nominees
+allgen[rev(order(genCounts))]
 ```

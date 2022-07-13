@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-11" />
+<meta name="date" content="2022-07-13" />
 
 <title>IMPORT DATA</title>
 
@@ -365,7 +365,7 @@ pre code {
 
 <h1 class="title toc-ignore">IMPORT DATA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-11</h4>
+<h4 class="date">2022-07-13</h4>
 
 </div>
 
@@ -408,11 +408,6 @@ pre code {
 <li><p><a href="../TIDY/Tidy.html#sequels">pulizia</a></p></li>
 <li><p>trasformazione</p></li>
 </ul></li>
-<li><p><a href="https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies">TMDB</a></p>
-<ul>
-<li><p><a href="../TIDY/Tidy.html#tmdb">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
-</ul></li>
 </ul>
 <div id="r-code" class="section level3">
 <h3>R CODE</h3>
@@ -420,26 +415,26 @@ pre code {
 
 library(readr)
 
-amazon  &lt;- read_csv(&quot;../../DATASETS/AMAZON/amazon_prime_titles.csv&quot;)
+amazon  &lt;- read_csv(&quot;../../DATASETS/AMAZON/amazon.csv&quot;)
 
 
-disney &lt;- read_csv(&quot;../../DATASETS/DISNEY/disney_plus_titles.csv&quot;)
+disney &lt;- read_csv(&quot;../../DATASETS/DISNEY/disney.csv&quot;)
 
 
 HighestGrossers &lt;- read_csv(&quot;../../DATASETS/GROSS/HighestGrossers.csv&quot;)
 
 
-movies &lt;- read_delim(&quot;../../DATASETS/MOVIELENS/ml-1m/movies.dat&quot;,delim = &#39;;&#39;, col_names = c(&quot;movieID&quot;,&quot;Title&quot;,&quot;Genres&quot;))
+movies &lt;- read_delim(&quot;../../DATASETS/MOVIELENS/movies.dat&quot;,delim = &#39;;&#39;, col_names = c(&quot;movieID&quot;,&quot;Title&quot;,&quot;Genres&quot;))
 
-ratings &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/ml-1m/ratings.csv&quot;, col_names = c(&quot;userID&quot;,&quot;movieID&quot;,&quot;Rating&quot;,&quot;Timestamp&quot;))
+ratings &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/ratings.csv&quot;, col_names = c(&quot;userID&quot;,&quot;movieID&quot;,&quot;Rating&quot;,&quot;Timestamp&quot;))
 
-users &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/ml-1m/users.csv&quot;, col_names = c(&quot;UserID&quot;,&quot;Gender&quot;,&quot;Age&quot;,&quot;Occupation&quot;,&quot;Zip&quot;), col_types = &quot;?&quot;)
+users &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/users.csv&quot;, col_names = c(&quot;UserID&quot;,&quot;Gender&quot;,&quot;Age&quot;,&quot;Occupation&quot;,&quot;Zip&quot;), col_types = &quot;?&quot;)
 # USA ZIPCODES
 uszips &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/uszips.csv&quot;)
 
 
 
-netflix &lt;- read_csv(&quot;../../DATASETS/NETFLIX/netflix_titles.csv&quot;)
+netflix &lt;- read_csv(&quot;../../DATASETS/NETFLIX/netflix.csv&quot;)
 
 
 oscars &lt;- read_csv(&quot;../../DATASETS/OSCARS/oscars.csv&quot;)

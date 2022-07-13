@@ -1419,39 +1419,6 @@ head(awards %&gt;% select(Male))</code></pre>
 <pre class="r"><code>awards = awards %&gt;% filter(!is.na(film))</code></pre>
 </div>
 </div>
-<div id="tmdb" class="section level1">
-<h1><a href="#indice">TMDB</a></h1>
-<pre class="r"><code># View(tmdb)
-spec(tmdb)</code></pre>
-<pre><code>## cols(
-##   ...1 = col_double(),
-##   adult = col_logical(),
-##   original_language = col_character(),
-##   overview = col_character(),
-##   popularity = col_double(),
-##   release_date = col_date(format = &quot;&quot;),
-##   vote_average = col_double(),
-##   vote_count = col_double(),
-##   title = col_character()
-## )</code></pre>
-<pre class="r"><code>tmdb = tmdb %&gt;% select(-overview,-...1) %&gt;% mutate(Year = strtoi(format(release_date,&quot;%Y&quot;))) %&gt;% select(-release_date)
-# MODIFICA LA DATA IN FORMATO SOLO ANNO
-head(tmdb)</code></pre>
-<pre><code>## # A tibble: 6 x 7
-##   adult original_language popularity vote_average vote_count title          Year
-##   &lt;lgl&gt; &lt;chr&gt;                  &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;         &lt;int&gt;
-## 1 FALSE en                    10277.          7.3       3218 Eternals       2021
-## 2 FALSE en                     9886.          7.7        835 Hotel Transy~  2022
-## 3 FALSE en                     6034.          8.4       4572 Spider-Man: ~  2021
-## 4 FALSE en                     5236.          8.3       1167 Sing 2         2021
-## 5 FALSE en                     4974.          7.8       3211 Encanto        2021
-## 6 FALSE en                     3911.          7.7       1403 Ghostbusters~  2021</code></pre>
-<pre class="r"><code>levels(factor(tmdb$original_language))</code></pre>
-<pre><code>##  [1] &quot;ar&quot; &quot;bn&quot; &quot;ca&quot; &quot;cn&quot; &quot;cs&quot; &quot;da&quot; &quot;de&quot; &quot;el&quot; &quot;en&quot; &quot;es&quot; &quot;eu&quot; &quot;fa&quot; &quot;fi&quot; &quot;fr&quot; &quot;he&quot;
-## [16] &quot;hi&quot; &quot;hu&quot; &quot;id&quot; &quot;is&quot; &quot;it&quot; &quot;ja&quot; &quot;ko&quot; &quot;la&quot; &quot;lv&quot; &quot;mk&quot; &quot;ml&quot; &quot;ms&quot; &quot;mt&quot; &quot;nb&quot; &quot;nl&quot;
-## [31] &quot;no&quot; &quot;pl&quot; &quot;pt&quot; &quot;ro&quot; &quot;ru&quot; &quot;sr&quot; &quot;sv&quot; &quot;ta&quot; &quot;te&quot; &quot;th&quot; &quot;tl&quot; &quot;tr&quot; &quot;uk&quot; &quot;vi&quot; &quot;xx&quot;
-## [46] &quot;zh&quot;</code></pre>
-</div>
 <div id="update-data" class="section level1">
 <h1>UPDATE DATA</h1>
 <p>I datasets sono stati riformati togliendo eventuali dati inutili alla
@@ -1524,12 +1491,6 @@ write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,se
 <pre><code>## [1] &quot;../../CLEAN_DATA/SEQUELS/&quot;</code></pre>
 <pre class="r"><code>write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot; )
 write_csv(seqGenres,paste(sequelPath,&quot;sequelGenres.csv&quot;,sep=&quot;&quot;))</code></pre>
-</div>
-<div id="tmdb-1" class="section level3">
-<h3>TMDB</h3>
-<pre class="r"><code>(tmdbPath = paste(filePath,&quot;TMDB/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/TMDB/&quot;</code></pre>
-<pre class="r"><code>write_csv(tmdb,paste(tmdbPath,&quot;tmdb.csv&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="subindex-code" class="section level3">
 <h3>SUBINDEX-CODE</h3>

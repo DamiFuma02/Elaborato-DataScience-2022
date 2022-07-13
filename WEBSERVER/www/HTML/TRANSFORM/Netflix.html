@@ -383,7 +383,8 @@ pre code {
 <pre class="r"><code>library(readr)</code></pre>
 <pre><code>## Warning: il pacchetto &#39;readr&#39; è stato creato con R versione 4.1.3</code></pre>
 <pre class="r"><code>library(ggplot2)
-source(&quot;../IMPORT/dataScript/netflixData.r&quot;)</code></pre>
+source(&quot;../IMPORT/dataScript/netflixData.r&quot;)
+source(&quot;../IMPORT/dataScript/grossData.r&quot;)</code></pre>
 <pre class="r"><code>spec(netflixShows)</code></pre>
 <pre><code>## cols(
 ##   title = col_character(),
@@ -395,7 +396,8 @@ source(&quot;../IMPORT/dataScript/netflixData.r&quot;)</code></pre>
 ##   Genres = col_character(),
 ##   Seasons = col_double()
 ## )</code></pre>
-<pre class="r"><code>spec(netflixMovies)</code></pre>
+<pre class="r"><code>View(netflix)
+spec(netflixMovies)</code></pre>
 <pre><code>## cols(
 ##   title = col_character(),
 ##   director = col_character(),
@@ -406,8 +408,8 @@ source(&quot;../IMPORT/dataScript/netflixData.r&quot;)</code></pre>
 ##   duration = col_double(),
 ##   Genres = col_character()
 ## )</code></pre>
-<div id="country-genres" class="section level1">
-<h1>COUNTRY GENRES</h1>
+<div id="genreAPP" class="section level1">
+<h1>COUNTRY-GENRES</h1>
 <pre class="r"><code>spec(netflix)</code></pre>
 <pre><code>## cols(
 ##   title = col_character(),

@@ -45,13 +45,25 @@ dir()
 
 -   [SEQUELS](https://data.world/priyankad0993/sequels)
 
--   [The Movie DataBase](https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies)
-
 # DOMANDE
+
+-   [NETLFIX](./TRANSFORM/Netflix.html#genreAPP): Per ogni Stato Mondiale individuare il genere di film più occorrente
 
 -   i film con più alto gross sono più presenti nelle varie piattaforme netflix, amazon?
 
--   categorizzare i film in base alla location degli user
+-   [APP](./): creare un sistema di raccomandazione dinamico
+
+    -   FILM,SERIE TV o entrambi
+
+    -   GENERE
+
+    -   ANNO
+
+    -   AMAZON, DISNEY, NETFLIX
+
+    -   RATING
+
+-   [MOVIELENS](./TRANSFORM/Movielens.html#userLocation): categorizzare i film in base alla location degli user
 
 -   numero di film in base al genere prevalente
 
@@ -71,13 +83,13 @@ dir()
 
 -   correlazione sequel rating
 
--   CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
+-   [GROSS](./TRANSFORM/Gross.html#unitingData): CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
 
 -   Gross in funzione di genre
 
 -   Sequel Gross
 
--   PREDIZIONE OSCAR
+-   PREDIZIONE [OSCAR](./TRANSFORM/Oscars.html)
 
     -   Oscar %\>% winner == FALSE
 

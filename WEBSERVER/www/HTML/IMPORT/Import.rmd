@@ -53,12 +53,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
     -   trasformazione
 
--   [TMDB](https://www.kaggle.com/datasets/rakeshsahni/tmdb-popular-movies)
-
-    -   [pulizia](../TIDY/Tidy.html#tmdb)
-
-    -   trasformazione
-
 ### R CODE
 
 ```{r, eval=FALSE}

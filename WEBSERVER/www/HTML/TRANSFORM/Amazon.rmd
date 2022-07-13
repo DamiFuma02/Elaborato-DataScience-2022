@@ -15,32 +15,18 @@ library(dplyr)
 # IMPORT
 
 ```{r}
-amazon = read_csv("../../CLEAN_DATA/AMAZON/amazon.csv", col_types = "?")
-
-amazonShows = read_csv("../../CLEAN_DATA/AMAZON/amazonShows.csv", col_types = "?")
-
-amazonMovies = read_csv("../../CLEAN_DATA/AMAZON/amazonMovies.csv", col_types = "?")
-
-# ---------------
-
-amazonCountries = read_csv("../../CLEAN_DATA/AMAZON/amazonCountries.csv", col_types = "?")
-
-
-amazonGenres = read_csv("../../CLEAN_DATA/AMAZON/amazonGenres.csv", col_types = "?")
-
-amazonRatingTypes = read_csv("../../CLEAN_DATA/AMAZON/amazonRatingTypes.csv", col_types = "?")
-
+source("../IMPORT/dataScript/amazonData.r")
+spec(amazon)
 ```
 
 [RatingTypesTable](https://www.primevideo.com/help/ref=atv_hp_nd_cnt?nodeId=GFGQU3WYEG6FSJFJ)
 
+# RATING PLOT
+
 ```{r}
-View(amazonRatingTypes)
-A = (amazonRatingTypes %>% filter(Movie == TRUE))$rating
-B = levels(factor(amazonMovies$rating))
-if (all(A == B)){
-  print("A e B rappresentano i possibili rating types per i film amazon")
-}
+(allTypes= amazonRatingTypes$rating)
+dati = amazon %>% filter(!is.na(rating))
+
 ```
 
 ## MOVIES

@@ -28,7 +28,6 @@ awards <- read_delim("../../DATASETS/OSCARS/database.csv",delim=";")
 sequels <- read_delim("../../DATASETS/SEQUELS/sequels.csv",delim = ";")
 
 
-tmdb <- read_csv("../../DATASETS/TMDB/tmdb.csv")
 
 
 
