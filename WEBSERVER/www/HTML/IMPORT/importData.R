@@ -22,7 +22,7 @@ uszips <- read_csv("../../DATASETS/MOVIELENS/uszips.csv")
 netflix <- read_csv("../../DATASETS/NETFLIX/netflix.csv")
 
 
-awards <- read_delim("../../DATASETS/OSCARS/database.csv",delim=";")
+awards <- read_delim("../../DATASETS/OSCARS/oscars.csv",delim=";")
 
 
 sequels <- read_delim("../../DATASETS/SEQUELS/sequels.csv",delim = ";")

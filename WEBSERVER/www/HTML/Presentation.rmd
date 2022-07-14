@@ -7,27 +7,37 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-dir()
+
 # source("../../app.R")
 ```
 
-# **INTRODUZIONE**
+# INDEX
 
-### STRUMENTI
+-   [ENVIRONMENT]
 
--   ![](images/rstudio.png){width="115"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
+-   [IMPORT DATA](./IMPORT/Import.html)
 
-    -   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} --\> [(IMPORT DATA)](./IMPORT/Import.html)
+-   [DATA TIDY](./TIDY/Tidy.html)
 
-    -   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"} --\> [(DATA TIDY)](./TIDY/Tidy.html)
+-   [TRANSFORM + VISUALIZE](./TRANSFORM/Transform.html)
 
-    -   [DPLYR](../CHEATSHEETS/dplyr.pdf){target="_blank"} --\> ([TRANSFORM DATA](./TRANSFORM/Transform.html))
+-   [CONCLUSIONS](./CONCLUSIONS/Conclusions.html)
 
-    -   [MODELR](../CHEATSHEETS/modelr.pdf){target="_blank"}(model)
+# ENVIRONMENT
 
-    -   [SHINY](../CHEATSHEETS/shiny.pdf){target="_blank"}; [GGPLOT](../CHEATSHEETS/ggplot.pdf){target="_blank"} (visualize)
+![](images/rstudio.png){width="115"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
 
-### FONTE DEI DATI
+-   [READR](../CHEATSHEETS/readr.pdf){target="_blank"} --\> (IMPORT DATA)
+
+-   [TIDYR](../CHEATSHEETS/tidyr.pdf){target="_blank"} --\> (DATA TIDY)
+
+-   [DPLYR](../CHEATSHEETS/dplyr.pdf){target="_blank"} --\> (TRANSFORM)
+
+-   [SHINY](../CHEATSHEETS/shiny.pdf){target="_blank"}; [GGPLOT](../CHEATSHEETS/ggplot.pdf){target="_blank"} (VISUALIZE)
+
+![](images/flow.png)
+
+# DATA SOURCES
 
 -   [AMAZON](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows)
 
@@ -45,31 +55,45 @@ dir()
 
 -   [SEQUELS](https://data.world/priyankad0993/sequels)
 
-# DOMANDE
+# SUBTOPICS
 
--   [NETLFIX](./TRANSFORM/Netflix.html#genreAPP): Per ogni Stato Mondiale individuare il genere di film più occorrente
+-   [INFO](./TIDY/FileDim.html): CLEANING DATA --\> LESS PC RESOURCES
 
--   i film con più alto gross sono più presenti nelle varie piattaforme netflix, amazon?
+-   [APP](./): Reccomendation System
 
--   [APP](./): creare un sistema di raccomandazione dinamico
+    -   MOVIES / TV-SHOWS
 
-    -   FILM,SERIE TV o entrambi
+    -   GENRE
 
-    -   GENERE
-
-    -   ANNO
+    -   YEAR
 
     -   AMAZON, DISNEY, NETFLIX
 
     -   RATING
 
--   [MOVIELENS](./TRANSFORM/Movielens.html#userLocation): categorizzare i film in base alla location degli user
+-   [MOVIELENS-APP](./TRANSFORM/Movielens.html#userLocation)
+
+    -   MAPPING USER LOCATIONS BY...
+
+        -   OCCUPATION
+
+        -   MOVIE GENRE
+
+-   [GROSS](./TRANSFORM/Gross.html#unitingData): CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
+
+-   PREDIZIONE [OSCAR](./TRANSFORM/Oscars.html)
+
+    -   Oscar %\>% winner == FALSE
+
+    -   Numero di film con più nominee
+
+    -   Ordine decrescente
+
+    -   Rating
+
+    -   Corrispondenza modelli RT e IMDB
 
 -   numero di film in base al genere prevalente
-
--   mappe con zipcodes
-
--   numero di voti da varie regioni
 
 -   gross / avarage rating
 
@@ -83,22 +107,10 @@ dir()
 
 -   correlazione sequel rating
 
--   [GROSS](./TRANSFORM/Gross.html#unitingData): CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
+-   
 
 -   Gross in funzione di genre
 
 -   Sequel Gross
-
--   PREDIZIONE [OSCAR](./TRANSFORM/Oscars.html)
-
-    -   Oscar %\>% winner == FALSE
-
-    -   Numero di film con più nominee
-
-    -   Ordine decrescente
-
-    -   Rating
-
-    -   Corrispondenza modelli RT e IMDB
 
 # [TIDY DATA](./TIDY/Tidy.html)

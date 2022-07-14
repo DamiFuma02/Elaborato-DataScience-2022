@@ -9,54 +9,54 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## INDICE
+# INDEX
 
 -   [AMAZON](https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows)
 
-    -   [pulizia](../TIDY/Tidy.html#amazon)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [DISNEY+](https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows)
 
-    -   [pulizia](../TIDY/Tidy.html#disney)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [GROSS](https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies)
 
-    -   [pulizia](../TIDY/Tidy.html#gross)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [MOVIELENS](https://grouplens.org/datasets/movielens/1m/)
 
-    -   [pulizia](../TIDY/Tidy.html#movielens)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [NETFLIX](https://www.kaggle.com/datasets/shivamb/netflix-shows)
 
-    -   [pulizia](../TIDY/Tidy.html#netflix)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [OSCARS](https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars)
 
-    -   [pulizia](../TIDY/Tidy.html#oscars)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 -   [SEQUELS](https://data.world/priyankad0993/sequels)
 
-    -   [pulizia](../TIDY/Tidy.html#sequels)
+    -   TIDY
 
-    -   trasformazione
+    -   TRANSFORM
 
 ### R CODE
 
 ```{r, eval=FALSE}
-#eval = FALSE indica che il chunk non viene compilato
+#eval = FALSE --> THE CODE CHUNK ISN'T EVALUATED
 
 library(readr)
 

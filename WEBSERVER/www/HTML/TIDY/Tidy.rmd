@@ -13,6 +13,7 @@ library(tidyr)
 library(stringr)
 knitr::opts_chunk$set(echo = TRUE)
 source("../IMPORT/importData.R")
+
 ```
 
 # INDEX {#indice}
@@ -30,8 +31,6 @@ source("../IMPORT/importData.R")
 -   [SEQUELS](#sequels)
 
 -   [OSCARS](#oscars)
-
--   [TMDB](#tmdb)
 
 -   [DATA SOURCE](../Presentazione.html#fonte-dei-dati)
 
@@ -472,6 +471,7 @@ head(users)
 
 ```{r}
 uszips = uszips %>% select(lng,lat,zip,state_name,county_fips)
+colnames(uszips)[5] = "fips"
 ```
 
 # [NETFLIX](#indice) {#netflix}
@@ -617,7 +617,7 @@ seqGenres = data.frame(
 # [OSCARS](#indice) {#oscars}
 
 ```{r}
-spec(awards)
+View(awards)
 colnames(awards)[8] = "title"
 ```
 
@@ -628,7 +628,7 @@ levels(factor(awards$winner))
 awards = awards %>% mutate(winner = (winner == "VERO"))
 #View(awards)
 if (all(awards$year_ceremony == awards$year_film+1)){
-  print("la cerimonia di un anno premia i fil dell'anno precedente")
+  print("la cerimonia di un anno premia i film dell'anno precedente")
   awards = awards %>% select(-year_ceremony)
 }
 awards %>% group_by(title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
@@ -654,7 +654,7 @@ levels(factor(awards$gender))
 ```{r}
 awards = awards %>% mutate(Male = (gender == "Male")) %>% select(-gender)
 head(awards %>% select(Male))
-awards = awards %>% filter(!is.na(film))
+awards = awards %>% filter(!is.na(title))
 
 ```
 
@@ -755,6 +755,7 @@ write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
 
 ```{r}
 (sequelPath = paste(filePath,"SEQUELS/",sep=""))
+colnames(sequels) = c("title","year","rating","duration","genres","votes","directors","seriesTitle","order")
 
 write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";"  )
 write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
@@ -768,6 +769,7 @@ write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
 ```{js}
 buttons = document.querySelectorAll(".openSubIndex")
 for (let index = 0; index < buttons.length; index++) {
+    buttons[index].innerText = "Drop INDEX"
     buttons[index].addEventListener("click",()=>{
     buttons[index].parentElement.children[2].style.display = "inline"
     })

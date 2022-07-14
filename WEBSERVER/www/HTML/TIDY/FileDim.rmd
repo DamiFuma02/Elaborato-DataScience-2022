@@ -1,0 +1,80 @@
+---
+title: "FILES DIMENSIONS"
+author: "Damiano Fumagalli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(dplyr)
+```
+
+# AMAZON DATASETS
+
+```{r}
+amazDirty = read_csv("../../DATASETS/AMAZON/amazon.csv")
+amazClean = read_csv("../../CLEAN_DATA/AMAZON/amazon.csv")
+spec(amazDirty)
+spec(amazClean)
+
+write_csv(amazDirty %>% select(title,type),"./amazDirt.csv")
+write_csv(amazClean %>% select(title,movie),"./amazClean.csv")
+write_csv(amazClean %>% select(title,movie) %>% mutate(movie = ifelse(movie == TRUE,"M","T"))       ,"./amazCleanMore.csv")
+
+paste("ALL FILES HAVE"  , nrow(amazClean) , "ROWS")
+nMovies = nrow(amazClean %>% filter(movie)) 
+paste("THERE ARE",nMovies,"MOVIES, THE OTHERS ARE TV-SHOWS") 
+
+"1 CHARACTER = 1 BYTE"
+```
+
+### DIRTY
+
+![](images/amazDirt.png)
+
+
+-   TOTAL DIMENSION = 260442 Bytes
+
+-   "Movie" = 5char \* 1Byte/char = 5Bytes --\> 5Bytes \* 7814 = 39070Bytes
+
+-   "Tv Show" = 7char \* 1Byte/char = 7 Bytes --\> 7 Bytes \* (9668-7814) = 12978 Bytes
+
+-   TYPE = 39070Bytes + 12978 Bytes = 52048 Bytes
+
+-   REMAINING = 260442 - 52048 = 208394 Bytes
+
+    -   208395 - 208394 = 1Byte --\> the difference between "MOVIE" and "TYPE" is 1 character
+
+### CLEAN
+
+![](images/amazClean.png)
+
+-   TOTAL DIMENSION = 244 KBytes = 248921 Bytes
+
+-   "TRUE" = 4char \* 1Byte/char = 4Bytes --\> 4Bytes \* 7814 = 31256 Bytes
+
+-   "FALSE" = 5char \* 1Byte/char = 5Bytes --\> 5Bytes \* (9668-7814) = 9270 Bytes
+
+-   MOVIE = 31256 Bytes + 9270 Bytes = 40526 Bytes
+
+-   REMAINING = 248921 - 40526 = 208395 Bytes
+
+### CLEAN MORE
+
+![](images/amazCleanMore.png)
+
+-   TOTAL DIMENSION = 218063 Bytes
+
+-   "M" and "T" have 1 char
+
+-   1char \* 1Byte/char = 1Byte --\> 1\*9668 = 9668 Bytes
+
+-   REMAINING = 218063 - 9668 = 208395
+
+# CONCLUSIONS
+
+-   Saving the files according to the CLEAN format allows the data to be interpreted as logical by RSTUDIO, so accessing and checking the values ​​is faster and easier
+
+-   the three datasets provide the same amount of information, so the larger the file size, the greater the redundancy will be

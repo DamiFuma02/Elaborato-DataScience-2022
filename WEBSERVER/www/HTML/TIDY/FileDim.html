@@ -13,7 +13,7 @@
 
 <meta name="date" content="2022-07-15" />
 
-<title>TIDYING /DATASETS/</title>
+<title>FILES DIMENSIONS</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -254,7 +254,6 @@ if (window.hljs) {
 
 
 
-<style type="text/css">.subindex {display: none;}h1 {font-weight: bold;color: red;}.openSubIndex {color: blue;font-weight: bold;cursor: pointer;}</style>
 
 
 
@@ -364,53 +363,35 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">TIDYING /DATASETS/</h1>
+<h1 class="title toc-ignore">FILES DIMENSIONS</h1>
 <h4 class="author">Damiano Fumagalli</h4>
 <h4 class="date">2022-07-15</h4>
 
 </div>
 
 
-<div id="indice" class="section level1">
-<h1>INDEX</h1>
-<ul>
-<li><p><a href="#amazon">AMAZON</a></p></li>
-<li><p><a href="#disney">DISNEY</a></p></li>
-<li><p><a href="#gross">GROSS</a></p></li>
-<li><p><a href="#movielens">MOVIELENS</a></p></li>
-<li><p><a href="#netflix">NETFLIX</a></p></li>
-<li><p><a href="#sequels">SEQUELS</a></p></li>
-<li><p><a href="#oscars">OSCARS</a></p></li>
-<li><p><a href="../Presentazione.html#fonte-dei-dati">DATA
-SOURCE</a></p></li>
-<li><p><a href="#update-data">UPDATE-DATA</a></p></li>
-</ul>
-</div>
-<div id="amazon" class="section level1">
-<h1><a href="#indice">AMAZON</a></h1>
-<div class="openSubIndex">
-<p>&gt;&gt;&gt;</p>
-</div>
-<div class="subindex">
-<ul>
-<li><p><a href="#amaztypes">MOVIE TYPE</a></p></li>
-<li><p><a href="#amazseparation">SEPARATION</a></p></li>
-<li><p><a href="#amazgenres">GENRES</a></p></li>
-<li><p><a href="#amazratings">RATINGS</a></p></li>
-<li><p><a href="#amazcountries">COUNTRIES</a></p></li>
-<li><p><a href="#amazdirectors">DIRECTORS</a></p></li>
-</ul>
-</div>
-<div id="amaztypes" class="section level3">
-<h3>TYPES</h3>
-<pre class="r"><code>levels(factor(amazon$type))</code></pre>
-<pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
-<ul>
-<li>siccome sono due i possibili valori, la colonna può essere
-sostituita con valori logici TRUE o FALSE</li>
-</ul>
-<pre class="r"><code># View(amazon)
-spec(amazon)</code></pre>
+<div id="amazon-datasets" class="section level1">
+<h1>AMAZON DATASETS</h1>
+<pre class="r"><code>amazDirty = read_csv(&quot;../../DATASETS/AMAZON/amazon.csv&quot;)</code></pre>
+<pre><code>## Rows: 9668 Columns: 12
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (11): show_id, type, title, director, cast, country, date_added, rating,...
+## dbl  (1): release_year
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>amazClean = read_csv(&quot;../../CLEAN_DATA/AMAZON/amazon.csv&quot;)</code></pre>
+<pre><code>## Rows: 9668 Columns: 9
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr (7): title, director, cast, country, rating, duration, genres
+## dbl (1): year
+## lgl (1): movie
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>spec(amazDirty)</code></pre>
 <pre><code>## cols(
 ##   show_id = col_character(),
 ##   type = col_character(),
@@ -425,1116 +406,79 @@ spec(amazon)</code></pre>
 ##   listed_in = col_character(),
 ##   description = col_character()
 ## )</code></pre>
-<pre class="r"><code>amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description,-show_id)
-colnames(amazon)[6] = &quot;Year&quot;
-colnames(amazon)[9] = &quot;Genres&quot;
-
-levels(factor(amazon$type))</code></pre>
-<pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
-<pre class="r"><code># CREA UNA COLONNA &quot;Movie&quot; LOGICA 
-amazon = amazon %&gt;% mutate(Movie = (type==&quot;Movie&quot;)) %&gt;% select(-type)
-
-head(amazon)</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   title                director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 The Grand Seduction  Don McK~ Bren~ Canada   2014 &lt;NA&gt;   113 min  Comed~ TRUE 
-## 2 Take Care Good Night Girish ~ Mahe~ India    2018 13+    110 min  Drama~ TRUE 
-## 3 Secrets of Deception Josh We~ Tom ~ United~  2017 &lt;NA&gt;   74 min   Actio~ TRUE 
-## 4 Pink: Staying True   Sonia A~ Inte~ United~  2014 &lt;NA&gt;   69 min   Docum~ TRUE 
-## 5 Monster Maker        Giles F~ Harr~ United~  1989 &lt;NA&gt;   45 min   Drama~ TRUE 
-## 6 Living With Dinosau~ Paul We~ Greg~ United~  1989 &lt;NA&gt;   52 min   Fanta~ TRUE</code></pre>
-</div>
-<div id="amazseparation" class="section level3">
-<h3>SEPARATION</h3>
-<pre class="r"><code>amazonMovies = amazon %&gt;% filter(Movie == TRUE)
-# &quot;.{N}$&quot; seleziona gli ultimi N caratteri della stringa
-# viene rimosso &quot; min&quot; da ogni campo duration
-amazonMovies = amazonMovies %&gt;% mutate(duration = strtoi(gsub(&quot;.{4}$&quot;,&quot;&quot;,duration))) %&gt;% select(-Movie)
-head(amazonMovies)</code></pre>
-<pre><code>## # A tibble: 6 x 8
-##   title                 director      cast  country  Year rating duration Genres
-##   &lt;chr&gt;                 &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt; 
-## 1 The Grand Seduction   Don McKellar  Bren~ Canada   2014 &lt;NA&gt;        113 Comed~
-## 2 Take Care Good Night  Girish Joshi  Mahe~ India    2018 13+         110 Drama~
-## 3 Secrets of Deception  Josh Webber   Tom ~ United~  2017 &lt;NA&gt;         74 Actio~
-## 4 Pink: Staying True    Sonia Anders~ Inte~ United~  2014 &lt;NA&gt;         69 Docum~
-## 5 Monster Maker         Giles Foster  Harr~ United~  1989 &lt;NA&gt;         45 Drama~
-## 6 Living With Dinosaurs Paul Weiland  Greg~ United~  1989 &lt;NA&gt;         52 Fanta~</code></pre>
-<pre class="r"><code>amazonShows = amazon %&gt;% filter(Movie == FALSE)
-# In Seasons vengono lasciati solo i primi 2 caratteri
-amazonShows = amazonShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration,-Movie) %&gt;% mutate(Seasons = strtoi(gsub(&quot; &quot;,&quot;&quot;,Seasons)))
-# Se esiste un carattere &quot; &quot; viene rimosso
-head(amazonShows)</code></pre>
-<pre><code>## # A tibble: 6 x 8
-##   title                       director cast  country  Year rating Genres Seasons
-##   &lt;chr&gt;                       &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
-## 1 Zoo Babies                  &lt;NA&gt;     Narr~ &lt;NA&gt;     2008 ALL    Kids,~       1
-## 2 Zoë Coombs Marr: Bossy Bot~ &lt;NA&gt;     Zoë ~ &lt;NA&gt;     2020 18+    Comed~       1
-## 3 Zoboomafoo                  &lt;NA&gt;     &lt;NA&gt;  &lt;NA&gt;     2001 TV-Y   Kids         1
-## 4 Zo Zo Zombie: Mini-Series   &lt;NA&gt;     Alex~ &lt;NA&gt;     2020 TV-Y7  Actio~       1
-## 5 ZeroZeroZero                &lt;NA&gt;     ANDR~ Italy    2020 18+    TV Sh~       1
-## 6 Zahara: The Return          &lt;NA&gt;     Nata~ &lt;NA&gt;     2020 16+    TV Sh~       1</code></pre>
-</div>
-<div id="amazgenres" class="section level3">
-<h3>GENRES</h3>
-<pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(amazon)){
-  gen = unlist(str_split(amazon$Genres[i],&quot;, &quot;))
-  # vengono selezionati solo i generi che NON sono presenti in genres
-  gen = gen[!(gen %in% genres)]
-  genres = append(genres, gen )
-}
-(amazGenres = levels(factor(genres)))</code></pre>
-<pre><code>##  [1] &quot;Action&quot;                    &quot;Adventure&quot;                
-##  [3] &quot;and Culture&quot;               &quot;Animation&quot;                
-##  [5] &quot;Anime&quot;                     &quot;Arthouse&quot;                 
-##  [7] &quot;Arts&quot;                      &quot;Comedy&quot;                   
-##  [9] &quot;Documentary&quot;               &quot;Drama&quot;                    
-## [11] &quot;Entertainment&quot;             &quot;Faith and Spirituality&quot;   
-## [13] &quot;Fantasy&quot;                   &quot;Fitness&quot;                  
-## [15] &quot;Historical&quot;                &quot;Horror&quot;                   
-## [17] &quot;International&quot;             &quot;Kids&quot;                     
-## [19] &quot;LGBTQ&quot;                     &quot;Military and War&quot;         
-## [21] &quot;Music Videos and Concerts&quot; &quot;Romance&quot;                  
-## [23] &quot;Science Fiction&quot;           &quot;Special Interest&quot;         
-## [25] &quot;Sports&quot;                    &quot;Suspense&quot;                 
-## [27] &quot;Talk Show and Variety&quot;     &quot;TV Shows&quot;                 
-## [29] &quot;Unscripted&quot;                &quot;Western&quot;                  
-## [31] &quot;Young Adult Audience&quot;</code></pre>
-<pre class="r"><code>amazonGenres = data.frame(
-  genreID = 1:length(amazGenres),
-  genre = amazGenres
-)</code></pre>
-</div>
-<div id="amazratings" class="section level3">
-<h3>RATINGS</h3>
-<p><a href="https://www.primevideo.com/help/ref=atv_hp_nd_cnt?nodeId=GFGQU3WYEG6FSJFJ">USA
-Amazon Rating</a></p>
-<pre class="r"><code>amazonMovieRatings = levels(factor(amazonMovies$rating))
-amazonTVRatings = levels(factor(amazonShows$rating))
-
-amazonRatTypes = levels(factor(amazon$rating))
-(amazonRatingTypes = data.frame(
-  ratingID = 1:length(amazonRatTypes),
-  rating = amazonRatTypes,
-  Movie = (amazonRatTypes %in% amazonMovieRatings)
-))</code></pre>
-<pre><code>##    ratingID   rating Movie
-## 1         1      13+  TRUE
-## 2         2       16  TRUE
-## 3         3      16+  TRUE
-## 4         4      18+  TRUE
-## 5         5       7+  TRUE
-## 6         6 AGES_16_  TRUE
-## 7         7 AGES_18_  TRUE
-## 8         8      ALL  TRUE
-## 9         9 ALL_AGES  TRUE
-## 10       10        G  TRUE
-## 11       11    NC-17  TRUE
-## 12       12 NOT_RATE  TRUE
-## 13       13       NR  TRUE
-## 14       14       PG  TRUE
-## 15       15    PG-13  TRUE
-## 16       16        R  TRUE
-## 17       17    TV-14 FALSE
-## 18       18     TV-G FALSE
-## 19       19    TV-MA FALSE
-## 20       20    TV-NR FALSE
-## 21       21    TV-PG FALSE
-## 22       22     TV-Y FALSE
-## 23       23    TV-Y7 FALSE
-## 24       24  UNRATED  TRUE</code></pre>
-<pre class="r"><code># la colonna Movie indicherà se il rating type appartiene alla categoria Film o TV Show</code></pre>
-</div>
-<div id="amazcountries" class="section level3">
-<h3>COUNTRIES</h3>
-<pre class="r"><code>countries = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(amazon)){
-  countr = unlist(str_split(amazon$country[i],&quot;, &quot;))
-  countr = countr[!(countr %in% countries)]
-  countries = append(countries,countr)
-}
-
-# sbagliato perchè alcuni film possiedono più countries
-# amazon %&gt;% group_by(country) %&gt;% summarise(count = n())
-
-amazCountr = levels(factor(countries))
-(amazonCountries = data.frame(
-  countryID = 1:length(amazCountr),
-  country = amazCountr
-))</code></pre>
-<pre><code>##    countryID              country
-## 1          1          Afghanistan
-## 2          2              Albania
-## 3          3            Argentina
-## 4          4            Australia
-## 5          5              Austria
-## 6          6              Belgium
-## 7          7               Brazil
-## 8          8               Canada
-## 9          9                Chile
-## 10        10                China
-## 11        11             Colombia
-## 12        12       Czech Republic
-## 13        13              Denmark
-## 14        14                Egypt
-## 15        15               France
-## 16        16              Georgia
-## 17        17              Germany
-## 18        18            Hong Kong
-## 19        19              Hungary
-## 20        20                India
-## 21        21                 Iran
-## 22        22              Ireland
-## 23        23                Italy
-## 24        24                Japan
-## 25        25           Kazakhstan
-## 26        26               Kosovo
-## 27        27           Luxembourg
-## 28        28             Malaysia
-## 29        29               Mexico
-## 30        30               Monaco
-## 31        31          Netherlands
-## 32        32          New Zealand
-## 33        33               Norway
-## 34        34               Poland
-## 35        35             Portugal
-## 36        36            Singapore
-## 37        37         South Africa
-## 38        38          South Korea
-## 39        39                Spain
-## 40        40               Sweden
-## 41        41          Switzerland
-## 42        42             Thailand
-## 43        43 United Arab Emirates
-## 44        44       United Kingdom
-## 45        45        United States</code></pre>
-</div>
-<div id="amazdirectors" class="section level3">
-<h3>DIRECTORS</h3>
-<pre class="r"><code>directors = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(amazon)){
-  dir = unlist(str_split(amazon$director[i],&quot;, &quot;))
-  dir = dir[!(dir %in% directors)]
-  directors = append(directors,dir)
-}
-dirs = levels(factor(directors))
-amazonDirectors = data.frame(
-  dirID = 1:length(dirs),
-  director = dirs
-)</code></pre>
-</div>
-</div>
-<div id="disney" class="section level1">
-<h1><a href="#indice">DISNEY</a></h1>
-<div class="openSubIndex">
-<p>&gt;&gt;&gt;</p>
-</div>
-<div class="subindex">
-<ul>
-<li><a href="#distypes">TYPES</a></li>
-<li><a href="#disseparation">SEPARATION</a></li>
-<li><a href="#disduration">DURATION</a></li>
-<li><a href="#disgenres">GENRES</a></li>
-<li><a href="#disrating">RATING</a></li>
-<li><a href="#discountries">COUNTRIES</a></li>
-</ul>
-</div>
-<pre class="r"><code># View(disney)
-# Descrizione e Data di Aggiunta non necessarie
-disney = disney %&gt;% select(-description,-date_added)
-colnames(disney)[7] = &quot;Year&quot;
-colnames(disney)[10] = &quot;Genres&quot;
-head(disney)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id type    title      director cast  country  Year rating duration Genres
-##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
-## 1 s1      Movie   Duck the ~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   23 min   Anima~
-## 2 s2      Movie   Ernest Sa~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     91 min   Comedy
-## 3 s3      Movie   Ice Age: ~ Karen D~ Raym~ United~  2011 TV-G   23 min   Anima~
-## 4 s4      Movie   The Queen~ Hamish ~ Darr~ &lt;NA&gt;     2021 TV-PG  41 min   Music~
-## 5 s5      TV Show The Beatl~ &lt;NA&gt;     John~ &lt;NA&gt;     2021 &lt;NA&gt;   1 Season Docus~
-## 6 s6      Movie   Becoming ~ Liz Gar~ Jacq~ United~  2021 PG-13  94 min   Biogr~</code></pre>
-<div id="distypes" class="section level3">
-<h3>TYPES</h3>
-<pre class="r"><code>levels(factor(disney$type))</code></pre>
-<pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
-<ul>
-<li>siccome sono due i possibili valori, la colonna può essere
-sostituita con valori logici TRUE o FALSE</li>
-</ul>
-<pre class="r"><code># MODIFICA TYPE
-disney = disney %&gt;% mutate(Movie = (type == &quot;Movie&quot;)) %&gt;% select(-type)
-head(disney)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title        director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;   &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 s1      Duck the Ha~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   23 min   Anima~ TRUE 
-## 2 s2      Ernest Save~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     91 min   Comedy TRUE 
-## 3 s3      Ice Age: A ~ Karen D~ Raym~ United~  2011 TV-G   23 min   Anima~ TRUE 
-## 4 s4      The Queen F~ Hamish ~ Darr~ &lt;NA&gt;     2021 TV-PG  41 min   Music~ TRUE 
-## 5 s5      The Beatles~ &lt;NA&gt;     John~ &lt;NA&gt;     2021 &lt;NA&gt;   1 Season Docus~ FALSE
-## 6 s6      Becoming Co~ Liz Gar~ Jacq~ United~  2021 PG-13  94 min   Biogr~ TRUE</code></pre>
-</div>
-<div id="disseparation" class="section level3">
-<h3>SEPARATION</h3>
-<pre class="r"><code>disneyMovies = disney %&gt;% filter(Movie == TRUE)
-disneyShows = disney %&gt;% filter(Movie == FALSE)</code></pre>
-</div>
-<div id="disduration" class="section level3">
-<h3>DURATION</h3>
-<ul>
-<li>Il campo Duration va modificato per Film e Serie TV
-diversamente</li>
-</ul>
-<pre class="r"><code># rimuove &quot; min&quot; alla fine di ogni campo e trasforma in numero intero
-disneyMovies = disneyMovies %&gt;% mutate(duration = strtoi(gsub(&quot;.{4}$&quot;,&quot;&quot;,duration)))
-head(disneyMovies)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title        director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;   &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;  &lt;lgl&gt;
-## 1 s1      Duck the Ha~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G         23 Anima~ TRUE 
-## 2 s2      Ernest Save~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG           91 Comedy TRUE 
-## 3 s3      Ice Age: A ~ Karen D~ Raym~ United~  2011 TV-G         23 Anima~ TRUE 
-## 4 s4      The Queen F~ Hamish ~ Darr~ &lt;NA&gt;     2021 TV-PG        41 Music~ TRUE 
-## 5 s6      Becoming Co~ Liz Gar~ Jacq~ United~  2021 PG-13        94 Biogr~ TRUE 
-## 6 s10     A Muppets C~ Kirk R.~ Stev~ United~  2008 G            45 Comed~ TRUE</code></pre>
-<pre class="r"><code># rimuove tutti i caratteri superflui in modo da salvare solo il numero delle stagioni
-disneyShows = disneyShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% select(-duration) %&gt;% mutate(Seasons = strtoi(gsub(&quot; &quot;,&quot;&quot;,Seasons)))
-# rimuove anche eventuali &quot; &quot; e trasforma in numero intero
-head(disneyShows)</code></pre>
-<pre><code>## # A tibble: 6 x 10
-##   show_id title         director cast  country  Year rating Genres Movie Seasons
-##   &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  &lt;lgl&gt;   &lt;int&gt;
-## 1 s5      The Beatles:~ &lt;NA&gt;     John~ &lt;NA&gt;     2021 &lt;NA&gt;   Docus~ FALSE       1
-## 2 s7      Hawkeye       &lt;NA&gt;     Jere~ &lt;NA&gt;     2021 TV-14  Actio~ FALSE       1
-## 3 s8      Port Protect~ &lt;NA&gt;     Gary~ United~  2015 TV-14  Docus~ FALSE       2
-## 4 s9      Secrets of t~ &lt;NA&gt;     Dr. ~ United~  2019 TV-PG  Anima~ FALSE       2
-## 5 s14     Dr. Oakley, ~ &lt;NA&gt;     Dr. ~ United~  2013 TV-PG  Actio~ FALSE      10
-## 6 s18     Disney Fancy~ &lt;NA&gt;     Mia ~ United~  2018 TV-PG  Anima~ FALSE       3</code></pre>
-</div>
-<div id="disgenres" class="section level3">
-<h3>GENRES</h3>
-<pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(disney)){
-  gen = unlist(str_split(disney$Genres[i],&quot;, &quot;))
-  gen = gen[!(gen %in% genres)]
-  genres = append(genres,gen  )
-}
-(disGenre  = levels(factor(genres)))</code></pre>
-<pre><code>##  [1] &quot;Action-Adventure&quot;        &quot;Animals &amp; Nature&quot;       
-##  [3] &quot;Animation&quot;               &quot;Anime&quot;                  
-##  [5] &quot;Anthology&quot;               &quot;Biographical&quot;           
-##  [7] &quot;Buddy&quot;                   &quot;Comedy&quot;                 
-##  [9] &quot;Coming of Age&quot;           &quot;Concert Film&quot;           
-## [11] &quot;Crime&quot;                   &quot;Dance&quot;                  
-## [13] &quot;Disaster&quot;                &quot;Documentary&quot;            
-## [15] &quot;Docuseries&quot;              &quot;Drama&quot;                  
-## [17] &quot;Family&quot;                  &quot;Fantasy&quot;                
-## [19] &quot;Game Show / Competition&quot; &quot;Historical&quot;             
-## [21] &quot;Kids&quot;                    &quot;Lifestyle&quot;              
-## [23] &quot;Medical&quot;                 &quot;Movies&quot;                 
-## [25] &quot;Music&quot;                   &quot;Musical&quot;                
-## [27] &quot;Mystery&quot;                 &quot;Parody&quot;                 
-## [29] &quot;Police/Cop&quot;              &quot;Reality&quot;                
-## [31] &quot;Romance&quot;                 &quot;Romantic Comedy&quot;        
-## [33] &quot;Science Fiction&quot;         &quot;Series&quot;                 
-## [35] &quot;Soap Opera / Melodrama&quot;  &quot;Sports&quot;                 
-## [37] &quot;Spy/Espionage&quot;           &quot;Superhero&quot;              
-## [39] &quot;Survival&quot;                &quot;Talk Show&quot;              
-## [41] &quot;Thriller&quot;                &quot;Travel&quot;                 
-## [43] &quot;Variety&quot;                 &quot;Western&quot;</code></pre>
-<pre class="r"><code>disneyGenreTable = data.frame(
-  genreID = 1:length(disGenre),
-  genre = disGenre
-)</code></pre>
-</div>
-<div id="disrating" class="section level3">
-<h3>RATING</h3>
-<pre class="r"><code>(disRats = levels(factor(disney$rating)))</code></pre>
-<pre><code>## [1] &quot;G&quot;        &quot;PG&quot;       &quot;PG-13&quot;    &quot;TV-14&quot;    &quot;TV-G&quot;     &quot;TV-PG&quot;    &quot;TV-Y&quot;    
-## [8] &quot;TV-Y7&quot;    &quot;TV-Y7-FV&quot;</code></pre>
-<pre class="r"><code>disneyRatingTypes = data.frame(
-  ratingID = 1:length(disRats),
-  rating = disRats
-)</code></pre>
-</div>
-<div id="discountries" class="section level3">
-<h3>COUNTRIES</h3>
-<pre class="r"><code>countries = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(disney)){
-  countr = unlist(str_split(disney$country[i],&quot;, &quot;))
-  countr = countr[!(countr %in% countries)]
-  countries = append(countries,countr  )
-}
-(disCount = levels(factor(countries)))</code></pre>
-<pre><code>##  [1] &quot;Angola&quot;               &quot;Argentina&quot;            &quot;Australia&quot;           
-##  [4] &quot;Austria&quot;              &quot;Belgium&quot;              &quot;Botswana&quot;            
-##  [7] &quot;Brazil&quot;               &quot;Canada&quot;               &quot;China&quot;               
-## [10] &quot;Czech Republic&quot;       &quot;Denmark&quot;              &quot;Egypt&quot;               
-## [13] &quot;France&quot;               &quot;Germany&quot;              &quot;Guatemala&quot;           
-## [16] &quot;Hong Kong&quot;            &quot;Hungary&quot;              &quot;India&quot;               
-## [19] &quot;Iran&quot;                 &quot;Ireland&quot;              &quot;Japan&quot;               
-## [22] &quot;Kazakhstan&quot;           &quot;Luxembourg&quot;           &quot;Malaysia&quot;            
-## [25] &quot;Mexico&quot;               &quot;Namibia&quot;              &quot;New Zealand&quot;         
-## [28] &quot;Norway&quot;               &quot;Pakistan&quot;             &quot;Panama&quot;              
-## [31] &quot;Philippines&quot;          &quot;Poland&quot;               &quot;Russia&quot;              
-## [34] &quot;Singapore&quot;            &quot;Slovenia&quot;             &quot;South Africa&quot;        
-## [37] &quot;South Korea&quot;          &quot;Spain&quot;                &quot;Sweden&quot;              
-## [40] &quot;Switzerland&quot;          &quot;Syria&quot;                &quot;Taiwan&quot;              
-## [43] &quot;Tanzania&quot;             &quot;Thailand&quot;             &quot;United Arab Emirates&quot;
-## [46] &quot;United Kingdom&quot;       &quot;United States&quot;</code></pre>
-<pre class="r"><code>disneyCountries = data.frame(
-  countryID = 1:length(disCount),
-  country = disCount
-)</code></pre>
-</div>
-</div>
-<div id="gross" class="section level1">
-<h1><a href="#indice">GROSS</a></h1>
-<div class="openSubIndex">
-<p>&gt;&gt;&gt;</p>
-</div>
-<div class="subindex">
-<ul>
-<li><p><a href="#groseparation">SEPARATION TITLE-YEAR</a></p></li>
-<li><p><a href="#groruntime">RUNTIME</a></p></li>
-<li><p><a href="#grogenres">GENRES</a></p></li>
-<li><p><a href="#groratings">RATING</a></p></li>
-<li><p><a href="#grodistributors">DISTRIBUTORS</a></p></li>
-</ul>
-</div>
-<pre class="r"><code># View(HighestGrossers)
-# spec(HighestGrossers)
-# Release_Date e Movie Info non sono necessari
-HighestGrossers = HighestGrossers %&gt;% filter(!is.na(`Movie Runtime`)) %&gt;% select(-...1,-`Movie Info`,-`Release Date`,-`International Sales (in $)`,-`Domestic Sales (in $)`)
-head(HighestGrossers)</code></pre>
-<pre><code>## # A tibble: 6 x 6
-##   Title               Distributor `World Sales (~` Genre `Movie Runtime` License
-##   &lt;chr&gt;               &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;  
-## 1 Star Wars: Episode~ Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13  
-## 2 Avengers: Endgame ~ Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13  
-## 3 Avatar (2009)       Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13  
-## 4 Black Panther (201~ Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;   
-## 5 Avengers: Infinity~ Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;   
-## 6 Spider-Man: No Way~ Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
-<div id="groseparation" class="section level3">
-<h3>SEPARATION</h3>
-<pre class="r"><code># SEPARAZIONE TITLE YEAR
-HighestGrossers = separate(HighestGrossers,Title,into = c(&quot;Title&quot;,&quot;Year&quot;),sep = -5) %&gt;% mutate(Title = gsub(&#39;.{2}$&#39;, &#39;&#39;, Title)) %&gt;% mutate(Year = strtoi(gsub(&#39;.{1}$&#39;, &#39;&#39;, Year)))
-head(HighestGrossers)</code></pre>
-<pre><code>## # A tibble: 6 x 7
-##   Title          Year Distributor `World Sales (~` Genre `Movie Runtime` License
-##   &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;  
-## 1 Star Wars: E~  2015 Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13  
-## 2 Avengers: En~  2019 Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13  
-## 3 Avatar         2009 Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13  
-## 4 Black Panther  2018 Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;   
-## 5 Avengers: In~  2018 Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;   
-## 6 Spider-Man: ~  2021 Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
-</div>
-<div id="groruntime" class="section level3">
-<h3>RUNTIME</h3>
-<pre class="r"><code>HighestGrossers$`Movie Runtime`[1]</code></pre>
-<pre><code>## [1] &quot;2 hr 18 min&quot;</code></pre>
-<ul>
-<li>Convertire la notazione da “x hr y min” a “x min”</li>
-</ul>
-<pre class="r"><code># DURATION
-HighestGrossers = HighestGrossers  %&gt;% separate(`Movie Runtime`,into = c(&quot;Hour&quot;,&quot;Min&quot;),sep = &quot; hr &quot;)</code></pre>
-<pre><code>## Warning: Expected 2 pieces. Missing pieces filled with `NA` in 18 rows [156,
-## 243, 282, 286, 358, 410, 413, 425, 437, 481, 566, 605, 668, 694, 702, 740, 819,
-## 903].</code></pre>
-<pre class="r"><code># toglie &quot; min&quot; da ogni campo
-HighestGrossers = HighestGrossers %&gt;% mutate(Min = gsub(&quot; min&quot;,&quot;&quot;,Min))
-
-# HOUR e MIN SONO CHARACTER, PERCIò BISOGNA CONVERTIRE IN INTERO
-HighestGrossers = HighestGrossers %&gt;% mutate(&quot;Duration (mins)&quot; = ifelse(!is.na(Min), strtoi( Min)+(strtoi(Hour)*60),strtoi(Hour)*60 )) %&gt;% select(-Min, -Hour)
-
-
-head(HighestGrossers)</code></pre>
-<pre><code>## # A tibble: 6 x 7
-##   Title         Year Distributor `World Sales (~` Genre License `Duration (min~`
-##   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;
-## 1 Star Wars: ~  2015 Walt Disne~       2069521700 &#39;Act~ PG-13                138
-## 2 Avengers: E~  2019 Walt Disne~       2797501328 &#39;Act~ PG-13                181
-## 3 Avatar        2009 Twentieth ~       2847246203 &#39;Act~ PG-13                162
-## 4 Black Panth~  2018 Walt Disne~       1347597973 &#39;Act~ &lt;NA&gt;                 134
-## 5 Avengers: I~  2018 Walt Disne~       2048359754 &#39;Act~ &lt;NA&gt;                 149
-## 6 Spider-Man:~  2021 Sony Pictu~       1544455963 &#39;Act~ &lt;NA&gt;                 148</code></pre>
-<pre class="r"><code>colnames(HighestGrossers)[4] = &quot;Gross&quot;</code></pre>
-</div>
-<div id="grogenres" class="section level3">
-<h3>GENRES</h3>
-<ul>
-<li>Rlang non è in grado di interpretare il dato come vettore</li>
-<li>è necessario rimuovere le “[” ”]” dal blocco note perchè il
-carattere “[” non viene riconosciuto dalle funzioni di Rlang</li>
-</ul>
-<pre class="r"><code>HighestGrossers = HighestGrossers %&gt;% mutate(Genre = gsub(&quot;&#39;&quot;,&#39;&#39;,Genre))
-
-
-genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(HighestGrossers)){
-  gen = unlist(str_split(HighestGrossers$Genre[i],&quot;, &quot;))
-  gen = gen[!(gen %in% genres)]
-  genres = append(genres, gen )
-}
-(grossGenre = levels(factor(genres)))</code></pre>
-<pre><code>##  [1] &quot;Action&quot;      &quot;Adventure&quot;   &quot;Animation&quot;   &quot;Biography&quot;   &quot;Comedy&quot;     
-##  [6] &quot;Crime&quot;       &quot;Documentary&quot; &quot;Drama&quot;       &quot;Family&quot;      &quot;Fantasy&quot;    
-## [11] &quot;History&quot;     &quot;Horror&quot;      &quot;Music&quot;       &quot;Musical&quot;     &quot;Mystery&quot;    
-## [16] &quot;Romance&quot;     &quot;Sci-Fi&quot;      &quot;Sport&quot;       &quot;Thriller&quot;    &quot;War&quot;        
-## [21] &quot;Western&quot;</code></pre>
-<pre class="r"><code>grossGenreTable = data.frame(
-  genreID = 1:length(grossGenre),
-  genre = grossGenre
-)</code></pre>
-</div>
-<div id="groratings" class="section level3">
-<h3>RATING</h3>
-<pre class="r"><code>levels(factor(HighestGrossers$License))</code></pre>
-<pre><code>## [1] &quot;G&quot;     &quot;PG&quot;    &quot;PG-13&quot; &quot;R&quot;</code></pre>
-</div>
-<div id="grodistributors" class="section level3">
-<h3>DISTRIBUTORS</h3>
-<pre class="r"><code>grossDistr = levels(factor(HighestGrossers$Distributor))
-(grossDistributors = data.frame(
-  distrID = 1:length(grossDistr),
-  distributor = grossDistr
-))</code></pre>
-<pre><code>##    distrID                         distributor
-## 1        1                20th Century Studios
-## 2        2               Artisan Entertainment
-## 3        3                   Columbia Pictures
-## 4        4                     Dimension Films
-## 5        5                          DreamWorks
-## 6        6             DreamWorks Distribution
-## 7        7                        FilmDistrict
-## 8        8                      Focus Features
-## 9        9            Fox Searchlight Pictures
-## 10      10                           IFC Films
-## 11      11                           Lionsgate
-## 12      12           Metro-Goldwyn-Mayer (MGM)
-## 13      13                             Miramax
-## 14      14                     New Line Cinema
-## 15      15                     Newmarket Films
-## 16      16                      Orion Pictures
-## 17      17                  Paramount Pictures
-## 18      18                    Relativity Media
-## 19      19                  Revolution Studios
-## 20      20                Roadside Attractions
-## 21      21                         Screen Gems
-## 22      22              Sony Pictures Classics
-## 23      23   Sony Pictures Entertainment (SPE)
-## 24      24                   STX Entertainment
-## 25      25                Summit Entertainment
-## 26      26               The Weinstein Company
-## 27      27                    TriStar Pictures
-## 28      28               Twentieth Century Fox
-## 29      29                      United Artists
-## 30      30            United Artists Releasing
-## 31      31                  Universal Pictures
-## 32      32                           USA Films
-## 33      33 Walt Disney Studios Motion Pictures
-## 34      34                        Warner Bros.</code></pre>
-</div>
-</div>
-<div id="movielens" class="section level1">
-<h1><a href="#indice">MOVIELENS</a></h1>
-<div class="openSubIndex">
-<p>&gt;&gt;&gt;</p>
-</div>
-<div class="subindex">
-<ul>
-<li><p><a href="#movmovies">MOVIES</a></p>
-<ul>
-<li><a href="#movgenres">GENRES</a></li>
-</ul></li>
-<li><p><a href="#movratings">RATINGS</a></p></li>
-<li><p><a href="#movusers">USERS</a></p>
-<ul>
-<li><a href="#movgender">GENDER</a></li>
-<li><a href="#zipcodes">ZIPCODES</a></li>
-</ul></li>
-</ul>
-</div>
-<ul>
-<li>modificare i separatori da “::” a “;” direttamente dal blocco
-note</li>
-<li>per leggere correttamente il file è necessario usare read_delim(
-filePath , delim=“;”)</li>
-</ul>
-<div id="movmovies" class="section level2">
-<h2>MOVIES</h2>
-<pre class="r"><code>head(movies)</code></pre>
-<pre><code>## # A tibble: 6 x 3
-##   movieID Title                              Genres                      
-##     &lt;dbl&gt; &lt;chr&gt;                              &lt;chr&gt;                       
-## 1       1 Toy Story (1995)                   Animation|Children&#39;s|Comedy 
-## 2       2 Jumanji (1995)                     Adventure|Children&#39;s|Fantasy
-## 3       3 Grumpier Old Men (1995)            Comedy|Romance              
-## 4       4 Waiting to Exhale (1995)           Comedy|Drama                
-## 5       5 Father of the Bride Part II (1995) Comedy                      
-## 6       6 Heat (1995)                        Action|Crime|Thriller</code></pre>
-<pre class="r"><code># &quot;Titolo (1945)&quot;  --separate--&gt; &quot;Titolo (&quot; , &quot;1945)&quot;  --gsub--&gt; &quot;Titolo&quot; , &quot;1945&quot;
-
-movies = separate(movies,Title,into = c(&quot;Title&quot;,&quot;Year&quot;),sep = -5) %&gt;% mutate(Title = gsub(&#39;.{2}$&#39;,&#39;&#39;,Title),Year = strtoi(gsub(&#39;.{1}$&#39;, &#39;&#39;, Year)))
-
-head(movies)</code></pre>
-<pre><code>## # A tibble: 6 x 4
-##   movieID Title                        Year Genres                      
-##     &lt;dbl&gt; &lt;chr&gt;                       &lt;int&gt; &lt;chr&gt;                       
-## 1       1 Toy Story                    1995 Animation|Children&#39;s|Comedy 
-## 2       2 Jumanji                      1995 Adventure|Children&#39;s|Fantasy
-## 3       3 Grumpier Old Men             1995 Comedy|Romance              
-## 4       4 Waiting to Exhale            1995 Comedy|Drama                
-## 5       5 Father of the Bride Part II  1995 Comedy                      
-## 6       6 Heat                         1995 Action|Crime|Thriller</code></pre>
-<div id="movgenres" class="section level4">
-<h4>GENRES</h4>
-<pre class="r"><code># View(movies)
-
-arr = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(movies)){
-  gen = unlist(strsplit(movies$Genres[i],&quot;|&quot;,fixed = TRUE))
-  gen = gen[!(gen %in% arr)]
-  arr = append(arr, gen )
-}
-(movieLensGenreTable = data.frame(
- genreID = 1:length(levels(factor(arr))),
- genre = levels(factor(arr))
-))</code></pre>
-<pre><code>##    genreID       genre
-## 1        1      Action
-## 2        2   Adventure
-## 3        3   Animation
-## 4        4  Children&#39;s
-## 5        5      Comedy
-## 6        6       Crime
-## 7        7 Documentary
-## 8        8       Drama
-## 9        9     Fantasy
-## 10      10   Film-Noir
-## 11      11      Horror
-## 12      12     Musical
-## 13      13     Mystery
-## 14      14     Romance
-## 15      15      Sci-Fi
-## 16      16    Thriller
-## 17      17         War
-## 18      18     Western</code></pre>
-</div>
-</div>
-<div id="movratings" class="section level2">
-<h2>RATINGS</h2>
-<pre class="r"><code>spec(ratings)</code></pre>
+<pre class="r"><code>spec(amazClean)</code></pre>
 <pre><code>## cols(
-##   userID = col_double(),
-##   movieID = col_double(),
-##   Rating = col_double(),
-##   Timestamp = col_double()
-## )</code></pre>
-<pre class="r"><code>ratings = ratings %&gt;% filter(!is.na(movieID) &amp;&amp; !is.na(Rating)) %&gt;% select(-Timestamp) 
-head(ratings)</code></pre>
-<pre><code>## # A tibble: 6 x 3
-##   userID movieID Rating
-##    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1      1    1193      5
-## 2      1     661      3
-## 3      1     914      3
-## 4      1    3408      4
-## 5      1    2355      5
-## 6      1    1197      3</code></pre>
-<pre class="r"><code>(votiAmmessi = levels(factor(ratings$Rating)))</code></pre>
-<pre><code>## [1] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; &quot;5&quot;</code></pre>
-</div>
-<div id="movusers" class="section level2">
-<h2>USERS</h2>
-<pre class="r"><code>spec(users)</code></pre>
-<pre><code>## cols(
-##   UserID = col_double(),
-##   Gender = col_character(),
-##   Age = col_double(),
-##   Occupation = col_double(),
-##   Zip = col_character()
-## )</code></pre>
-<pre class="r"><code>colnames(users)[1] = &quot;userID&quot;
-colnames(users)[5] = &quot;zip&quot;   # affinche coincida con uszips
-users = users %&gt;% filter(!is.na(Gender) &amp;&amp; !is.na(Age)  &amp;&amp; !is.na(zip))</code></pre>
-<div id="movgender" class="section level4">
-<h4>GENDER</h4>
-<pre class="r"><code>levels(factor(users$Gender))</code></pre>
-<pre><code>## [1] &quot;F&quot; &quot;M&quot;</code></pre>
-<ul>
-<li>siccome sono due i possibili valori, la colonna può essere
-sostituita con valori logici TRUE o FALSE</li>
-</ul>
-<pre class="r"><code># MODIFICA
-users = users %&gt;% mutate(Male = (Gender == &quot;M&quot;)) %&gt;% select(-Gender)
-head(users)</code></pre>
-<pre><code>## # A tibble: 6 x 5
-##   userID   Age Occupation zip   Male 
-##    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt; &lt;lgl&gt;
-## 1      1     1         10 48067 FALSE
-## 2      2    56         16 70072 TRUE 
-## 3      3    25         15 55117 TRUE 
-## 4      4    45          7 02460 TRUE 
-## 5      5    25         20 55455 TRUE 
-## 6      6    50          9 55117 FALSE</code></pre>
-<pre class="r"><code>(workTable = data.frame(
-  workID = 0:20,
-  workType = c(&quot;other&quot;,&quot;academic/educator&quot;,&quot;artist&quot;,&quot;clerical/admin&quot;,&quot;college/grad student&quot;,&quot;customer service&quot;,&quot;doctor/health care&quot;,&quot;executive/managerial&quot;,&quot;farmer&quot;,&quot;homemaker&quot;,&quot;K-12 student&quot;,&quot;lawyer&quot;,&quot;programmer&quot;,&quot;retired&quot;,&quot;sales/marketing&quot;,&quot;scientist&quot;,&quot;self-employed&quot;,&quot;technician/engineer&quot;,&quot;tradesman/craftsman&quot;,&quot;unemployed&quot;,&quot;writer&quot;)
-))</code></pre>
-<pre><code>##    workID             workType
-## 1       0                other
-## 2       1    academic/educator
-## 3       2               artist
-## 4       3       clerical/admin
-## 5       4 college/grad student
-## 6       5     customer service
-## 7       6   doctor/health care
-## 8       7 executive/managerial
-## 9       8               farmer
-## 10      9            homemaker
-## 11     10         K-12 student
-## 12     11               lawyer
-## 13     12           programmer
-## 14     13              retired
-## 15     14      sales/marketing
-## 16     15            scientist
-## 17     16        self-employed
-## 18     17  technician/engineer
-## 19     18  tradesman/craftsman
-## 20     19           unemployed
-## 21     20               writer</code></pre>
-<pre class="r"><code>(ageTable = data.frame(
-  ageID = levels(factor(users$Age)),
-  age = c(&quot;Under 18&quot;,&quot;18-24&quot;,&quot;25-34&quot;,&quot;35-44&quot;,&quot;45-49&quot;,&quot;50-55&quot;,&quot;Over 56&quot;)
-))</code></pre>
-<pre><code>##   ageID      age
-## 1     1 Under 18
-## 2    18    18-24
-## 3    25    25-34
-## 4    35    35-44
-## 5    45    45-49
-## 6    50    50-55
-## 7    56  Over 56</code></pre>
-</div>
-</div>
-<div id="zipcodes" class="section level2">
-<h2>ZIPCODES</h2>
-<pre class="r"><code>uszips = uszips %&gt;% select(lng,lat,zip,state_name,county_fips)
-colnames(uszips)[5] = &quot;fips&quot;</code></pre>
-</div>
-</div>
-<div id="netflix" class="section level1">
-<h1><a href="#indice">NETFLIX</a></h1>
-<div class="openSubIndex">
-<p>&gt;&gt;&gt;</p>
-</div>
-<div class="subindex">
-<ul>
-<li><p><a href="#nettypes">MOVIE TYPES</a></p></li>
-<li><p><a href="#netseparation">SEPARATION</a></p></li>
-<li><p><a href="#netgenres">GENRES</a></p></li>
-<li><p><a href="#netratings">RATINGS</a></p></li>
-<li><p><a href="#netcountries">COUNTRIES</a></p></li>
-</ul>
-</div>
-<pre class="r"><code># View(netflix)
-spec(netflix)</code></pre>
-<pre><code>## cols(
-##   show_id = col_character(),
-##   type = col_character(),
 ##   title = col_character(),
 ##   director = col_character(),
 ##   cast = col_character(),
 ##   country = col_character(),
-##   date_added = col_character(),
-##   release_year = col_double(),
+##   year = col_double(),
 ##   rating = col_character(),
 ##   duration = col_character(),
-##   listed_in = col_character(),
-##   description = col_character()
+##   genres = col_character(),
+##   movie = col_logical()
 ## )</code></pre>
-<pre class="r"><code># Descrizione e Data di Aggiunta non necessarie
-netflix = netflix %&gt;% select(-date_added,-description)
-colnames(netflix)[7] = &quot;Year&quot;
-colnames(netflix)[10] = &quot;Genres&quot;</code></pre>
-<div id="nettypes" class="section level3">
-<h3>TYPES</h3>
-<pre class="r"><code>levels(factor(netflix$type))</code></pre>
-<pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
+<pre class="r"><code>write_csv(amazDirty %&gt;% select(title,type),&quot;./amazDirt.csv&quot;)
+write_csv(amazClean %&gt;% select(title,movie),&quot;./amazClean.csv&quot;)
+write_csv(amazClean %&gt;% select(title,movie) %&gt;% mutate(movie = ifelse(movie == TRUE,&quot;M&quot;,&quot;T&quot;))       ,&quot;./amazCleanMore.csv&quot;)
+
+paste(&quot;ALL FILES HAVE&quot;  , nrow(amazClean) , &quot;ROWS&quot;)</code></pre>
+<pre><code>## [1] &quot;ALL FILES HAVE 9668 ROWS&quot;</code></pre>
+<pre class="r"><code>nMovies = nrow(amazClean %&gt;% filter(movie)) 
+paste(&quot;THERE ARE&quot;,nMovies,&quot;MOVIES, THE OTHERS ARE TV-SHOWS&quot;) </code></pre>
+<pre><code>## [1] &quot;THERE ARE 7814 MOVIES, THE OTHERS ARE TV-SHOWS&quot;</code></pre>
+<pre class="r"><code>&quot;1 CHARACTER = 1 BYTE&quot;</code></pre>
+<pre><code>## [1] &quot;1 CHARACTER = 1 BYTE&quot;</code></pre>
+<div id="dirty" class="section level3">
+<h3>DIRTY</h3>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAboAAADYCAYAAACdvCZgAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAhdEVYdENyZWF0aW9uIFRpbWUAMjAyMjowNzoxNCAyMzozNDozNi7ocJUAADVaSURBVHhe7Z1rbFvpmd//1P3i+9hz80zmElIeK3J3u5ltViR2ZyfZzZbyYKtMWm0RdEfToBU/bSUH8IfBapAG1iJFDcQUArSQPgxG3iIo+CFQUZtsg26CyVZ0N5ddbKzIscnMJZnMxR5bd97J0+c9F/KQIinJlmT56P+bea1zzvue533P9X+e533Poev69etaV1cXCCGEECfSYP4lhBBCHAmFjhBCiKOh0BFCCHE0FDpCCCGOhkJHCCHE0VDoCCGEOBoKHSGEEEdDoSOEEOJoKHSEEEIcDYWOEEKIo6HQEUIIcTQUOkIIIY6GQkcIIcTRUOgIIYQ4GgodIYQQR0OhI4QQ4mh2hdDlCzncvPMJfvner/HLX/0KtxZvYTW9jHQuhYL8RwghhNwtu+IXxu+s3EIqmcU/XPsZ5m/ehpZrEJHLo1valc5l0dbehsNHDsAlsryvsw2dbZ3oaOlES1OraYEQQgipzq4Quh/O3UBbNolrv4xjaWkBBRG5X77zNv74hRfwo5/+CMcffRjJ5SRcTW3oetaNRDaDjo52Eb9DWEks48knHkF7e6sugK0trSKC+9HY0GhaJ4QQspe570L33uIKHhaP7Xt/831kChqWVxM4tL8Tt1M5HGhrArQCFhYXkckk8N57v8QXf/9F/DD6t/A8e0KWJZHL5vH0p57C+x9/DFehgIcfPQo0anjx93zY13FQvEB2QxJCyF7mvgpdIpvDfDKNhzvbsLiyirSaX1xAIplCKp3Rhe/W7dtIJJLQclncWk6gralBvDUXkpkcOlqbsSpCd/yh/ZifX0BzSwvaG7JYWVnGc888jiP7OnHyM59De+cBs0ZCCCF7jfsmdJqm4eZKEm3NjWhvbkbeXCb/y7SGnIicSolMFilJiysrWBHxm19aFk8ug08WFnRvb35pFRBvr4AGLN++g6OHD6H5KQ8eW7qJD/7hv+OlL/17dP/OHxqVEkII2XPcN6FL5fL4SDy0ox1tWBCPraGhUR9s4pJ/GsRj0+BCtmCMuczkNUkFSXndg0vIugn5mynIvHh26VRSF8EF8f4KmRT2HziCYx+9jff//iJOfymA5/+g36h0D/GXf/mX5hQhhOxt7pvQqZDlioiU8uiS4rEpccvlRNByIlySxJkT0ROnraFBF72CuHqid0iJ2K2IyK1mc0iK4CWzBWS1PNKSmZT8Rin/TGYZi9d+hl///V/jpZcD+Nzn/5VZ695BCd1f/dVfmXOEELJ3uS8jNZSYvb2wjENtzeKZZXWvLCGCVRCxU6MnD+7rQKd4es0tzbrIJTIZzCdSuLm8gvnVJBKpFFKptB7SzOWyyIjwZcVOVpY/1gR0HerQX09IJ5f1d/QIIYTsXe6L0F27tYDjBzr0MKQoGXL5AhbTGdxcSeDDpVV8spLEaiqjD1ZRgqW5GtDU3ISWlhY0NjXBpYc5xdMTLy8r+TkROZUaJD3W0oSEiGJe8pIrS8iLqBJCCNm77LjQvTu/rL/jtprJY1W8MdUP1yCipQakNDY2yTxkeR7LkrLmgJSUCJ4SPpVWkmmsSlIjNAuyruYC8uIJ5sVGq4jhs0cPIZFOiycnHl1CCV3WrJkQQsheZMeF7uZqUrwzETrx5pLpAlbSWaTE61LilE6lsZxKYUkEbSGZwifimSXzeTQ0NerJ1ShJ/kLWV6M0c2qwiuRrInou8Qg7VRgzI56g2FAhzVwmjYKmShJCCNmr7KjQ/eLWvIhVA5YzWaTzOaREhNQISpEpvT9Ofe3koCTl4aVzIoIifB8uLOE3txewoIczRfhE0LL5ggidCwXxDPOSGttakZN1nn/2OB7a16733eVzGTS6xCNMp8zayf0lgoDLBVdZ8sEXGEckbhbRUeV8GC9bRgghd8+OCZ0+/F8EKKtpxkCRvPzNFrCYyuLm0io+XFzBQiKhj7hUIzFbWprQ0NiMxhYRsaZmrIr3llLryLqJZBrJZBJp8fqy2QzS4vm15LM40taCvAhoWurRREQb5Waqwptkt+BFMKbelbTSFEa7Q+jz2IXNjwltBsNuc7YMiiAhZPPsiNCpwSa/EjFbyRT099/S+jtxBaRFhOQPtAaXTGuYF9FbEBFbEgHLZHIiWiq8mUFSPLtkOofldBYJETvlveWbGpEV79DV0IRPlpfhfeJhWS+Nm3cW9PClS3OJbU2EMG22guw+3PAPzyAWBEYGx0H9IoRsBzsidOrdt/dXUvp7b2mZVl5bRnleOfVqQQarSszEC1MvkSdyIoCaiJ94YxAha1J9ciJs4qPpL4in9D64tHhzaRRknYR4gU91duCRA504emAfmlAQYc1BtFM2rgEFmSZCfBwBny1s6AvYPCPTUxoPwGfm+yQzHimfL1LHVnzcV1puprJ1q+A+PQBvdA4xfc7utRnTgYCy6YPP14dJRDFS5gFaSNlim2QdWzzUvh1GnrlctdVnF9g4xsXGeu0lhDxY7IjQxW8vYV7ELKOJiOkvhSvRculfPFHvzhVcImSaWp7HqojYneUEbi+LB7ia0D06fXSl2FGSpby5jNywUpIy0vybSyv4nccfwmIihdiHt/DB7QX1ZTDkCuIRykoFEUciIuAZAUZjxbBhbGBWBCMgORYiIHP9mFL5uovlweC0ff68Wba+Lbd4aNZyLTwkS7wYOF01DlnC3YUezOJGVX2JYrZ7SuzNYGYmjCE9/FkZ2lQCJSLYE0ZMb+8AZvsGi2J5vk8112xrsAeTY4a4uYdHMRQN4bJVb/wyQtEhjFaPmxJCHlC2XejUiMpfzC8iK56a+oSXeu8trQQvK95YNifemXhz8le9ZqBeEyg0NqIgXlxavDk1jER92DmjBpeI4GmS8iKEmuqDyxf0EZq/96lH4D52BI8c2o/PPPEw2hrFlRMRzGeS+qfBVJ8dUf1eGib8pRu47kWZ0wYiIGf90EvowiMCVTZvCdFGbAni9fn6JjEUrtXftlE2IJTiC85F7e0fxkxZP98kxi5HEJf2u4cnoM0MG+VkW/qHogiZShe/HEJ0qF+WEkKcxLYKnfLErvz6FpayGnJyc8yJi5UVkVOjJtU7crrwybz+ekEqq3tw6mXvlIhfWvXHqVcQVH+eCFdWBDDf3Cwi2IS8aJk8nqNTy+OweHi/vrOI9++I1yhe4PLKiuhcAxq0LFJiS+NgFIN4BOMBXymEJ15Z1MzaNOvaEg9rUJYNhUUQzUX1iN8QGe1B190KYt31RZhjYfSExuDxmKFLW2jS3z+EaOiytDiOy6Eohvopc4Q4jW0VuncWVjB3W7w5ETQlamoQijEQJSeeWgEJEbOk+nyXEkApn1MhTLlxZkTE1GCVrHh66ud69J/skZSTVBBRVHFM1c/35KF9+MzxY3j04D4c7GhDe1MD0pmM/vWUTHpVvDlNF7qcWmdPo8KNfZjrnzJCkSrFgmu9sA2xvq1IwIMRBBHbkMqJTt2rJ1U39Cm4RexmjJBqLCwlR6ywpuDvN8KXESNsSZ0jxHlsm9Cp0ZM//PXHWEjn9NCkHqbMKmFT8wXx1HJYFgFS3pxapsRMiVQmnUY2o75haX4ZRWypwSkqZWRa/YRPXrzAVkmPt7fp3758f34JS6vqN+zUS+cpqF9CyCSXlNMnqH/o1akQYLfHbYbs4ogocdGn74Y6tiIB9E16EZyywoP1kHXHfVBdfirsePd40O2NYuR8RCwKKmwqnpsuZmq6bMCJwu79GeHLkT7lgTJsSYgT2Tahuyae3C/nV8RbUyFISZkcVvVwpAhbJo9ESuZVmFI8uoSIXUI8OD2JuKlwpfLYclK2IOIHlXKqX06Jn4iWeH2PHezEiUcfwkP7O3Cosx0dLU36h53VqEzxMZBYmUeDlFOfAiuIaO5t/DgrnkxID92pNIjpOdULdzfUtxWZnpR/1chIK1+SNcyxcrmsOzY3gPCawSW1EEFToiQ2AuNKzKzBNG4Mq4Eqs33wKLueEHrCU4ZN9zCmBuYwaNbp6ZuVvIkyQfOfVR6p0cdHCHEe2/IzPbfEy/pvV9/G+8uraG1Ug/xd+tdOLNQvhDfK8vnlFbRInibiptC/Wyk3o4L66ok5rxwy9et0jTLZIF5cg8w3itidOLwf3Y8eRWtzo/49zANtLcitLuFvf/xTFBpb8OPv/mesvvsT/OmfD+PLX/2PaGnrUFXsGfgzPYQQYrDlHp363bi520t4bzmhf49S9cmp9+jUL4Un1FdMJCXF81IfZk6Kl7ck3tai5Ku0okZkKi9O8l2SGmQdiGenPDL16kEipyGt+vEaXfidTz2KNvHiVNjzlgjqO7fu4NeS1IAX9e5cYvEW2jvakRePUr1XRwghZG+y5UK3lM7gyofzSDc0Q5OUa2gSj8sYYJLNu5ASsVJidGtpRR9Yor5ikhdRU9OqX06FLFdEmJQAql8wUEKWkZSX1KAGtCST+MzB/SJgBX1UZ0tTIw53tuOZIwfQ4iro/Xf5TArJ2x+jc1+HeIs5jrwkhJA9zJYLnYo2qm9Vtre0oKmtDQ2trdBa26A1t+qvBuQaGyH+mvHNS82lfwlF/ZLBqvL40upHVMX7kvkmEbVGSerXCdTXVBZl+ZJaJvZ/91OPoKmxAXkRsIQI63IipXt1SyurUD/UmlpZBLQc9u3vNEYFivgRQgjZm2y50B1oa8WXP/0YTj++H93tLhxtdmF/ayM6OjrQ2t6B5vZ9yDa1oLG5BS3Nzdgvqb25CU3i+alQpxqQokTtjgjYooifEr7GQh4HXBo6ROj+4MmH0dzQIJ5cAzpbmtDZ2iweXSselrS4vCxeHkTo5iHVonN/h/4rBnxpnBBC9i7b4tE9eXAf/vCZ4xj87S4M9TyNP33yIfiO7YPncAeOtDSiSTysA/v2oaFzHzKSci3taGxtEUFslfwWHBTha1MviIutJRGpm6k0boroNYgX98xDB/DJcgLv317Cx0urmBdvTnl9LuXdJVNq7AoyyWWI84hWsaU+DM3QJSGE7F22XOgsGsXrapJ0rLMD/+yJR/Cnn34cge5P4d+6j+HLjx+E73AbPI0FPNmo4Yn9bdi/fx+wrxOZjk7kxfNrFQ/wSGc7HpHpo2q+oRF//OnjOCLL1W/OPXKgA/tEHF0FDSupLG589AmSqZRsUYPh0bU0oLmtDcvLq1hYmEc6ndb79AghhOwttk3oanGwuRGffeJh/P5jR/BHjx3Al599GF966hj6jx+G71A7nutsxvH2VhwQkYJ4epn2Tmht7eg5dggPd7TjzmpCf0l8Wf10jxqg0uASMW3FQRFNNWJTeZTZxCJaWlrR2tqOAlr1nwJSqPeoCCGE7C12XOgOHDiATvHcVJ/d8aNH8NSRg2heXgA+fB/eY/vxr08+ha+cfBL+Jw/D+1A7utsb8HRrI04+dAAHRQA7Wpr1d+daGlXTNfVBTf1F9DuLC+YoTPEk9x2Hu/cVaId+F889/yd47PhTInzi/VHoCCFkz7EtL4xvBjUqMpVK6a8LqNGRP7s6h+WVJRx/4jgef+QRoKlZ9+DUj7EmMnn9nTw1GKW1qVH33jqbXOhsBH74ox/jk+VVdIqAzv/qPXzhD/8Azz77LDo7O9Em3uFeEzm+ME4IIQY77tFVogSovb0d+8TL279/P3p/73fxxT/6Ak643Xj7nXfwf/7393DzV+/i+IEO/NaTj+C3jx/DI/vaxXvL444I4K2VFG4uLmI+kdSFb+GDX+Nffulf4Pnnn8fRo0d12/TkCCFk73LfPbqNsLKygmu/+AU++vhjtIvH9uTxx9HW0al/OiynNeDdD36Ff/zZz/DEQw/hi1/4Ag4fPmyuuXdRHh0hhJAHROgq+eCDD0T0PkJzSyuamprw8a1beFS8t+eee84sQQghhBg8kEJnoQafLC0tYd++fbrgEUIIIZXc9z66e0H9IsKhQ4cocoQQQmryQAsdIYQQsh4UOkIIIY6GQkcIIcTRUOgIIYQ4GgodIYQQR0OhI4QQ4mgodIQQQhwNhY4QQoijodARQghxNBQ6QgghjoZCRwghxNFs+Uedp6amzClCCCHk/vNA/3oBIYQQsh4MXRJCCHE0FDpCCCGOhkJHCCHE0VDoCCGEOBoKHSGEEEdDoSOEEOJoKHSEEEIcDYWOEEKIo6HQEUIIcTQUOkIIIY6GQkcIIcTRUOgIIYQ4GgodIYQQR0OhI4QQ4mgodIQQQhwNhY4QQoijodARQghxNNsgdBEEXC64qiYvgnGrjDW93djrql1vPBiAV7XR65W/96OdW03t4xCIWPk+jBe305rePPHIOAI+y74PPqmg3FQckYAst9rg80kbrBJxjMu6vhqVx8d9Un68wp6Byqu13lai6jH2GSHkgeT69eva9hHWhtCrXYiZs/eFjbRBlYE2FDZni+yG9t8tqu1eLbihtm+mbAXhIQ1q3bC1ckwWQUNxZ8a0oNeYL5aIGfvba1YYC3rFxpC0opLycuVInrfaOtvBTtZFCNlqGLos0ouTHnOSbBDxxsYmRcNmMOx3m8vc8J8Nwjs5ZnqIMcxFxSs+65ccA7fbjwlRw2josu6puYdHMYRJTFd6TZFpWTqE0WFrzRLx8THMDpyF35zfXvw4OzCLsR3wHgkhW899Ejp7SNCYDgTM0KFK3gCKkS2dOIIBrxkac8EbCFYNZRmoMJm97DSumjnl9VqoZX1yQ72CMx4pHwxWKWNhtMMr7QuoEKc9RBeXm7tL2m3O7n7qhStFwFSo0Sfb6asWijSJX0YoOoT+SrVxD2NGE/Er6lMUocsVNvwT0GaGTfHzo19ct8kKpYtMT4qj119FzOK4HIqip2utABrIttlCqaUwqawZCZRCqHqeuXxNiLQ8pOru6ikKMyHkwWKXeHRXMHn1JF6PadC0GMIDV9H3SknMIgEPzuB1xDQj/3WZ89ToNFFl+4plNVzsV9brId6FFha/oRcXpP7oyAlz+VqU7dDJi4hGJzARjeLiyXOldrhHENUmdsjD2ChRjIh4W6Kvpxr7zY6+nd1TmJmR7ZyZwVT3WPX9HZuTGtZD9m8siJ5QHzyqftU/Nz5e8SAjpQylsz0oRGDoXJU9WktgdZRAyYNLT9g4B2IDmO0bLPZFnu8DRvXzTEMs2IPJMUPcdK8yGsJlq11mHUVv0t9fnk8IeWDYJUInInNxBEb0yw3/yOsYuhLCJfPmND0p+cXQlwqNXUBv2U3RorKslFY3KHP63jBsD7xU8iLcLw3UaMduQTxT86ZeTBPrSbHaTi8GTtu28/QAvPeyneLhTcxI3bGwPMQMAKER9IkAlw0k8Z9F0GsLX6qwpTcIOZRrUQLr7Ub1SHNFqHSNdzmJMeVdStXu4UqvUnmeRpvil0OIrvEmo5iLmZOEkAeG3d9HF7+OqziFE6X7rtyhTsiSq7he+XRdrexWods2wptF78hzRpZUaceDTPwGZis9QY94q7L0RuV2erpFSjeB2w//sCl6qo9u5LxNPN04PeAtelgqbOkdOF18YNkwevt7UD2qqbzLsHiX4qHq26e8y9JGKa/SCE8aodFyb9KD7k1tLCFkt7D7ha6aqNUStFoCuBXoto3wZpmHpIkobIew3i/cXSITVTzBMq/IxH0aA3YvzCI+Dp/V/xcJVH89QBfJcvHUPUc9PDiOsQqvcsPo7a8iyhZqIMzMjL5NsbCUHLHCmoIVnoxUC40qT9GcJIQ8UOyaPrrQJWuwghpM0ofJ3gEYUUIVUhJP6rwt/7x4UlUHKVQpGziHSX36Xqm0LdaDXri89QbGPIgYIbwR+3bWfJfNjeHRIUz2iajZ3ouLnBcPcGjUEEZdPEYwaA9TCkZo0Cxj4R7GqAofDkqedwA1dU6JZHROpKcayvOytd8uump6zXbYvT9z2/tU+6udX150c2QuIQ8cu6aPDtfOGYMVXB6cwwXE5OZo3X/8EzFZUpFfo6+pvOwrmD45sEV9dIbtcNG2C57QKYQvmu184EZd1sbYzjHbdvYgPGX1ZVXgnxDPaABzYx69rDo+Y7J26fiowT4xDMwNisiokZxGGpwbrXoM9fBhNIqh0Rr1KSo9SV3MrH0v4jsTxtCsOfjFE0JPeMoQVBHSqYE5DFrb1TcreeUDiPRXI5RHW9k5qPcZ1hFfQsiuxaVeGO/q6jJn7wdqmPs5nIw5LARIthXlZQ5iCjNr4qnbw07XRwjZOnZ/Hx0hVVCvA/SE7INZtpMIzotXW+3FdULI7odCRx5Qdu5rJeorLBjdbe9IEkI2yi4IXRJCCCHbBz06QgghjoZCRwghxNFQ6AghhDgaCh0hhBBHQ6EjhBDiaCh0hBBCHA2FjhBCiKOh0BFCCHE0FDpCCCGOhkJHCCHE0VDoCCGEOBoKHSGEEEfDjzoTQh5ovvvd75pThFSHQkcIeaBRQvf888+bc4SshaFLQgghjoZCt0fJ5fOScijIf4QQ4mQodHuQhdVFvPX/3sLf/N+38JOf/RRXf/FzxH/1Nj66/SFWk6tIp9O6COqpkDPXIoSQBxP20e0hMuLFKX558w5uXP1H3LozDw0uJET40qkEDu7bj4OHD6CxsQFNLuMZ6CGZ73r203j0kSf1eUJ2G+yjI+uxrR5dPOiFy+VCIGIuuGsiCLi8CMbNWXJXLCQzevrU4YP4oxdfQP9pP77whc/jed8LeLZHbhRHHsf7iQa8twLcuJ3U04/e/hD/4/I03v7FT0wr66GOlUs/7vbkC4yjdPhUGR/GeTwJITvANgpdHJdCwNBQLyan71Xp/JjQohhxm7Nk02iSltJZPS2mDMFbyWnINzTh8NFjeObEc3D/1m/hqX/6WRx87hTw6c/oKf/kc1hevIPfvPNzw9CGkIeSmAZNs1IMo90heHx2sXMKFG1CdjvbJ3TxSwhhAGfPDqB3clpuB+R+oUQu9skCDrY362khk8XtZBrJfB7pfAHL6QzmE0ksJ1JIyPJEKq2HOVU6ceQAmnJppNNJw9hd4Yb/9AC80TnEzCWE7EXe/cEbeO3lp/DUUyq9jJdf+wHeNfO2lh/gNbH/Rk3j6+U7i20Tusj5M8DAS3C7X8JA7yTOlcUdjVBkIBCA1wpveQOIFItY+Sr0KcvN+eqhS8nzWiEyWadkRIgjqNsw8r2BYEX4TGwGrTbIulYF8aAsU/U6g2Xx4PKaS8Qto6eseFmpXAEfLCdxU4lbNo+kpEQmJ8KXR64gXlgur6dn9ndgNZFAOrFsWrsb4ohcDiE61C++eTXiGA/4isepPMypkGPls46xr+IY18tbz66FOhfEKxsPwGfZKXPRatmR5b4+TCKKEY/l1Rllfb6AtEv+BiI16iR7jh+8hhdevQTPX7yF9957T9K38Bd4FS+I2O08L+Kb730XX33anHU42yR0EUxP9orOqVijGyOvD+FK6FLFBX8Fk1dP4nU9xBVDeOAq+l6xC9EVXD15UfImatwcFSJkXrnRnAojpkJksQFc7XulKIiRgAdn8LqRJ3W8LnOesg7DKzhzrR8XVX74FK6eOW+Im3sE0br1Pli8u7SCxWwO86msnj5ZTemCpsKKd5IpfLCSwIJ4dUkRtmQuh0whj0fE81OppUFDNptBJrMZj07d+C3xUcmDvlAPwmer71F1nEYwWjxOozJXOk6mmPSUjvFs32BJVGrmrWe3EmnzXD+mVNlwD2ZHzHNBqG3HjeGZMIb0UO0MhuV0V2VD3VOYmZnAxMwMprrH6tRJ9g7v4o1vfwdfeVPE5UVLXZ7Gi4Gv47Pf+fae8azuF9sjdJFpTPYOQNc5hb8fQ1dCuFSmdL24cHEEfr2MG/6R1yvKWEJZjxiuXRE7cgM1zCiBsvryDLEt5qk6zl6oCKPa8qWNInW4XtbGB5+bq0m8L56bCk+uZLJ6Uv10H60Yy3J5DasyfzuRFrHLIpkvYCWZxnNHDuppSUSyIB5eNp0yLW6EtX104Z5J9A1W86jUcZLyZcdJPOricYphLmrLdw9jRjNEpX7eenYrsZWVc0GkDjf0xm7GjlF24LRRUuFWIVuG7sm738eln34FX3zRnLd4+qv4rt2zetce2pT08ms2ETTDjW+8hpfN/Jcl813xFO3zdmLfL+UpWz+otGXN1633wWdbhC4yPSnOknhPxSd6Fd4R7+n8Fl/u8esiTadwonRfKVEtz33CkWJWi1yhgLnbi1jN5LAiHt1iJqOnlWwWyzJ/S8RtMZVGVsQtk5cySgRTGTzR0YqjnW16WlpZRl7y8uLV3T2mOFTro4vfEEnpQVfZceoqCU21fIvN5tntbpTN2NHLVnizHnn42mydxHm8E8NPzcnaiPi88A2gGNp8D2+9dB3feEEEyiwBsfKN2BfxLZX/1tchmfja9+zzE2Vlv3PJI+aUrbfwpth69WtvVOkT3Ei9DzbbIHSmJ1X2RC8pPARs9ZNtPeGqlldPGB3Ih+LJxedXdS9tNSOeWko8OkkLIm5LqRSWRdhUyHJJUkbK5PN5NEjqeeigPoBFpVw6jXQygcw9CV0dqomGXVzqidNm8+oJYy02Y0cvK95f5blf9DIJqYfqN3sP3yyGNsXh+/xL+Kw5bfBZfD3wIvQSTz+DEzL/Utn8dbxTVDIp+62vwjD3NF786l/gKz+9hO+vUbqN1Ptgs+VCFw+eKw9bWqjwpfh1pUEpVxC6ZHXUxxEJiNdXbb26eHCy1/AUdTv6IBK50egzfvQP2fJUHefP4ErNARHOIiUe2/965ze4k0hhPimeWyaFT1aTelo2BW9VvDc1AGVVPDz1Nyse4NGWRnRIysgylVZWV5FNJeAy7d4dat+LZ+PtliNWiTpO4gWVHScpWzxOHnR7bfnxcfiKw/nr5a1nd6Nsxk5lWdUkH1yOfK2CbIpnPBsTjnd/gDdee7kUbhRPa31PcAu4X/XuEFsudJdCV9CrRlua8yX8OHuh1zYopRe4ds4Mb3pwDhcQi45UWa8eboxEwxi62mfY8YRwKnyx+L6dfyImVivqmNjAbc4Boy7nPlnAtZsLWEwqcUvI3zQ+XFrV07yI3YII4KJ4dSvi3SXSWRFGNeAkg3/y8BHZVw3Q1GAVSSuybja9aHh44p1sDLnZVwxGGUMQsZnhqsdXHaeglLCOk162eJzMAR+zpWPcE54yPaR6eevZ3Tj17YjYKnGT7VVjTlTZcLGsCx41CGeq+naTPcTTn8dLn/0OvlcZC3z3DREXq69MhRBfReyL3zJCkSq99fUd8KzuV707x336BJgazn0OJ2Nyg+AdYFv4T393Db9ZTqJBK8AlSRNvLbG8YmQ2qucb8dHkj0u0q0Gmlcf2zMFOvOT5lO7hNeWNUGX0Rz/Bz//neXzuc5/Dnw+Po6GhUV9OyG7hgfkE2A9ew1OvXsfX3/yWOfLyXVn0Al7Fm3jvm2qUihog8m143rIGp0j+G1/Dq984gTff+yZeXJNfb15Nv4rrX38T3/qqCm2adV3/Ot767ldlvrJsvXoffLahj47sBl584ig+c/QA9nV0oNDWiWWXCFRru56ymgvJTA6JVAarukeXRjaXxamHD4nnVhDXrYBMKqGndDqF1qYCGkQRtcJGPTpCyBpe/CbeevMlxL79gjm68QV8W0TuLV3k9AIIvHkCl14ww4dPfQ3fi6leuHvg0rfxQrEuS+QqWade3es0B6bUmt7l0KNzMAXx4pYyGdxMZvHz9z/C+6uGlzaf1/DJShKr+q8U5PWQ5VP72/Fn3c+I4OWQyeWxfOtDvezVa7/A4t/9Vzzl6cG/+Q//BR0inITsJvhRZ7Ie98mj47crd4KGhgYcamuD59A++D1Pwn+sU09fbM3i37kfxZ9Jev7YQXz66BH8ybNPwCX+XD4v3pusu7K8pKdGTUPjwS7sf+S30dLSYhgmhJAHCP5Mzx4kJ17b/Py8eHJZPTR5e3EZeZG5/YePIK8GomQzuPLjv9PLNovH989ffAHHjh2j0JFdCT06sh4Uuj2OGkmpQpxK+D786EOsrK6goakVKytLev7v93opcGRXQ6Ej60GhI2Uoby+ZTGLfvn36vBoiT8huhkJH1oOjLkkZTU1N2L9/vy5wFDlCiBOg0BFCCHE0DF0SQh5oVOiSkHpQ6AghhDgahi4JIYQ4GgodIYQQR0OhI4QQ4mgodIQQQhwNhY4QQoijodARQghxNBQ6QgghjoZCRwghxNFs+QvjU1NT5hQhhBBy/+GXUQghhDgahi4JIYQ4GgodIYQQR0OhI4QQ4mgodIQQQhwNhY4QQoijodARQghxNBQ6QgghjoZCRwghxNFQ6AghhDgaCh0hhBBHQ6EjhBDiaCh0hBBCHA2FjhBCiKOh0BFCCHE0FDpCCCGOhkJHCCHE0VDoCCFkB4nH4+YU2Sm2QegiCLhccFUkrzeACI8v2WbikXEEfNZ554MvEMHa0y6OcZ8P42UZ1c9bI8m5WyxTuV4tNlP2flNt29W+G9/mazaOSEDqseqUYxLYcIW7dP/Gy88/Of1KRAL6tg4ODq7Nq7de1by153Ak4IKvYoeoZaXz10TaUX5OW7YrU/0y6vwor22943n3dalUqk9t+9pttYiP+6RuVbZka5s8ul5ciGnQNCvF8Pqpq+h7JVixYwjZQuQC9vSF0D0aM8+7KYyiD56yu4bCja6eKOZi5mwRL4Jl562VJuA3S+xe1EV9Lzf+ym2XfdcdQp9nMzY30wZ1s/LI0RnFlFlnbGoUUmHNG1g5fkxoMxh2m7O7Atl+zwhgnn+xcA9m+6z9IXl9k+gJa5iZmYEmeZN9tpt7vfWq5q09hz3dXkRDl2332AimJ73iZExi2nYJxG/MyuHuhsec39h5X1kmpp8fHl1QFBs9nndTl0oxDGDEvJbdOD0g2zpy3tx/diI4PxKFd+C0lFIYtnYodOmG/+wAeq+EcMm+zYRsGXKhjU1iKCw3P79191PnXRDeybE1N19//xAm7Vc/qUD23fAMYkFgZLDyyX0riGEuKjehs37zhiQ1ukW8wkMVN+sHiMg0Jr1BnDXPP7f/LAa8phjFb2AWQ+i37ub+fpmbxQ21ofXWq5NXeQ67Tw/AG52TPWui6vQOYFREYVavyCA2ZxeCu0XOj7L6tvt4ujGsX8vTuri5h0dl/5ULuI7aX5IzWvEEtMN9dKdwolh/HMGAetoIIOCVv6LUpZ2hngy9CEh+mUvrtdxYyStziQ1blovrDdg9x7W24vLk7zXLGraMkgZ1bMVlRxfbQ3YV8csIRW03Egv3MGasJ//4OHzW8fN0wzt7w3ae3AVlISVJvsAaQZ27bISrrPzyyJyIc8BXXL88FKTOW5+ctyrfbHPN+tTTdJ9c4FGMFD2werY3ztqb5ybasO7+iSJ0uSK07J+ANjNsuwnLfijasIfCjP1Tsmdsr0/qCPgqQ9Zm2XHrWIidsobUqkNRz24Fa9qubv7W5ByiZV6UB92WmNVbr15e5Tns7oL4icWbf/xyCNGeLvi7emxiY3h5A6dLFu+OOCLK/lC/zRPbyPHcKvwQnV/zsBqZngTK2mRy/fp18Qy3krA2hF7tQsyc1YlpIuwaei/IlIGa77UVil3o1eRx3JxTNuz5Me1Cr6wv+fqS2AWt11aHbtvKs+qqaUvND2lhczZ2YWhNu2rbIruWsBxHdVzN2fWJaUGvVwtaB948T+SSWJu8QfN8UGWsdYzyQ9aJJMSCXilvtcG0J+saReRcUvlFW6rJkr/OeestNnAj9ZW2Z3Pncfm65djzNtOG9coKsaA25JV26fvJqw0FrX1loY6RbTukvDwS2+yXb29pX5l1VezLoh05V7zFdtSrYz279bFvb7X1Km1brNlPNsrzKs9hu01ju4wq1fab6+jbZ7dt7ptqqey8r5YvduzNX/d4brSu8m0yqHIOr7nmDfulIrb6tkfoTOO21DtUEhOjTIUY6uJlNboyv0r5IndjSwmfnNhr7K1ni+xaNi10apXKi6LaBWZnnTJlN5FqZe3LquSvu34FNcvXt23cLI3r0rgp1qtrnXZsps1lZW3EwvIQULpJlm7+G21XlXJ127XOukXq2127H0vE9POxtO5Gha5yPTvV8srPYXs9qu3W9ttET9koa0e97beoVsYUHtuDW5G7Op4WqoyxXmXyBq0HNwu7mAtq28raU6pvhwajaIhOjJTc1/h1XMUVnPFY4QJJnjOy5CquV4sL6OXtYU8b1fLcJ2RJDVvi1E7EwjgVOgePXr8XgaBZcNO2yK5BhXHMyY1yz/108YgR1iqewyOwokrrovfZ9KCr7FxToSez36YaG61vHdvu4ZnidTmz3miOSlub2eaNlnX74R8exsSMtEnunsVBBtW2oxp6ORUyNesp1lVnX1rUq2Mdu7X2oxr15+mbRTBWGizj7uoBykLlcagxIT22iqutZ1Err2o/nerH0vv2rFCpMXhD9dOp0J63uxRAvXvM/m97WNui1vHcMJWDUWIQM4iGbpj5FsZ2TY4ZYXl922r0Pe5wH52JLh5rxVDT5KSq1sp6YlMtr54wKlQnaTSq1xkLy9pnXoGudXdji+wO3KcxUDG6TEfvl7P35di4p366CAKePsz1TxVHmcnj9MbFtpqo1b2xb6K+Tduujd7PU+zz2Mw2r1NWDXEvjtizoT+wmG1fT/gt9HLVRuqtFYw11KvjLuzqgjSCtWKltqtMFIzBG5bm1FxPqJe3tp9OXQezmJ6eLbvpK6GNhs5jenYr+ueqsJHjedeIqE6EMRQdwfmK69voQw7hslznY3X6Hu+P0OkdieLRSaut7Y+LD+ry1nr9wIOTvbby+qAQOQH1mUpb8tRyXrzDah2SCrXumnosIdukLbKLcGN4VJ5u1dDr4mACdfzkCXxotPqNSd0UoC4Sc37TqBuV27yZmJ3z+rSFvXNe8gN98pQ9AONaVOeaPNiVnWuqrfXOtfXqs7gb25XIOtYN9qx9rY22QVGnrBp1KDeuwYonEENYreNlDNgobkfNh5bK7VVFrXep1qNeHZu0q15vqSVIumjaHsT00YHmg0e99erlKdacw8ZrB5OT0TJv0djfk5iMbv5hpzrmOWV5jRs6nveCH2dFIyzvrYh7GKNyjEKDUk/x2qrCzgxGqYaK8faWYrC9Q7aOy2o2ZJkakKKX79XsndzK1gWbrfX6A9UAlF6rXt2WmaFTxxb763Y9sbCtQ1ySVw5u6fit7SMq9XGo86S0XmUqlSn1Mag+E/FQzDJebWjIPsjBsOf12vpxhir7M2JacKhWfnldivr1KVtGntHWerYrqbbtXn2d8sEEm2tD/bIKo41qHxWT/XjpSNuKx1NsFBtUuX/U/aS0veUDJSrLVpmvWoeint1y9D4rq5wtFfuozP1hnBOqHmtx7fXWtSmUzmETqadaf7Vuq6ygQu2LtfatZBSvXqbW+Vz7eG60rvLzvoh+/VbJ07e3Yh/olOpzKaHr6uqSaUL2ICrkMt0PbYI+O9kZ1CfA3O4tcasMeA6vy30KXRKyS7infjpCNs+WipyC5/C60KMjhBDiaOjREUIIcTQUOkIIIY6GQkcIIcTRUOgIIYQ4GgodIYQQR0OhI4QQ4mgodIQQQhwNhY4QQoijodARQghxNBQ6QgghjoZCRwghxNFQ6AghhDgaCh0hhBBHQ6EjhBDiaCh0hBBCHA2FjhBCiKOh0BFCCHE0FDpCCCGOhkJHiEOIx+PmFCHEzjYIXQQBlwuusuSFNxBEpOw6VOW8CO6aa3Or2rPbtmsPER9HwGedcz4EIuZyxDFeXF7KH19zjNSxq7ZcUSVP6vOJrYB+Yqv8yjpc8AXGpfbaxMd98FlGa7ZfYd8GybM3JBLQ2zE4OFhlvWpsfjtrt8uins2tQ+2v9bePkHK2yaPrxYWYBk2z0kW8fjKEPo9dAPyY0KIYcZuz952tas9u2669gtxoPSPAaEw/52LhHsz22W+8cu6VnZMzGK44RpFAHybN6fUx6wvGMOG3DFXWEcNodwgeXy2xi+B8qAejekPqtV+JnAcjPWHElN3YADAyaObJen2T6AlrmJmZgSbrTfYFZGlt6m3n2rz19utWIHVsUCTdw6PAWP3tI6SSHQpduuEfiSJ2ATjzSrDuEy4hd0VkGpPeIM6aouP2n8WAN4q5mD4r9KCrzsOH8hTGuoMYMufro4RHBGEojJlKtSxDzvvTA/BG51Bsho34+BhmB87Ko5FQr/3xywhFRUTP+sWiyhyWhylTqOM3MCut7teNCP5+mZvFjRoXWb3trJq37n7dafw4OzCLsa1VWuJwdrSPzv3SAHqvXDMvevUUZ3l45nQwAK8eHnHBKxnxSPl8iTiCAS+83gACXhUWjdjEs9KWFwHbunabel7x0dDeHoVRh1FO6g/YBbpeHTY78aDk8+lzR/BPQJsZNoRAJ4a5qDlZNl2F+DgGQwOYGu4yF9QnEhDvCkHEJix1qUUckcshRIf6DTErI47LoSh6LPWt1/7YHKLeAZwuZZbQ87rhMWchU921hKjedtbKq7tf1zJ32Qij6teNT85987JQIuoq82yNUKxvPGI8NCCKEY/Ngw344JP1Az75W3Z9y32kqwfR0OWyZYTUY2cHo7hP4BSu4nrVM/QKzlzrx0U9NKNcPw9embbPny8KhrrRhE5eRDQ6gYloFBdPnoOnLHBvsxWWGovrRnC+D3jdDC/FLpzC5LnqHqaq4wxeN0JFWkymzmywDhvuEUS1iSo3ObLdKG9p0u7piJczLTdP48FF9fNYR11uqoMhDEzZb+a1mTvvQ98k4B04XaW8ulmbN3k9edAX6kFYPLE16F6avX3l2NsfvzErS+ZwuUr79byeLltb3BAdwOwal67edm58H6zdr3aimAx1Y1S/vmIIi+fVN2iImwo5DkVDuFzc7YaXOnDaj+GZsFiUh8OY4aXq13f3FGZm5PqemcFU91j5tae8VrstQtZhZ4WuLr24UAzNKEHsxUDZvCWQEUxPSt5LpUtS9xQnp21CY7MlF0W5uE7i3CV5QpR594g8rUZHqlzcRh1FG/Kv/+yFTdRB7ifKaze6z8yHDD28B3T3T5n9TAOY7TP6uOLjgwgNTK3pr6uO3MgnRbjCQVsfmR11szYeoowkN/ueyeLNvow1nliJNe1XRGULqrR/o9Tbzo3ug6rtKkO2X8TSiHLKNVMmbn70D0URMtUprnu6o1XqVNeeEsBShluFf8uuPcX9DJ+SB42dFbr4dZGDUzixzgVVF92GeFP2J2fPGVmyEaHxYyIWxqmQeID6+uVhzSLV2lnXGyW7BRUi8/TNFr0DHfcwZlSfVrGfaRij+k03oocPoyMe81yyQmgqpFbtQCshk5u8uf5INQErQz0gBWv20VWjWvtVqE5cSJxe0/64kTd7w9aOOAwnz37yGmHS6tu5sX1Qdb9uEn//kBlyNNozVM0t1B9KKjxjUddoWb+jCs+ak4RsgB0VuvilEK5U7a/YBKa3Vz6qUyW5ODZyAbpF7KJR88lYhRxfWfsqQDVR2wqRJtuKfjPWPY6N3ow9GJ6xn0NWCE1bZ5CJ3LQnpGx0BOfXxKvvnprt93TXFss1eaoPzYvuMlfRXWc7VeiwVp7RiM3v1xpYIcdInbCtuws9Zv2lNqlkr3udPldCKtghoYsjEvRCHC893HdvqBCIeHRyh7F0KC62Xd4NjOZUg0PWlKsmXpV1SPvPi9d4ryJNto9iWK3KzVjyXGpQkHngVQiuryI8tnnkgSk8tM5QfnXeiDdSLURZKVD12u8+jQHvZHGkYTwyjjGr/bowTGLaaoQaJbnOCNNNUa9dazC85OI1o15VKBtEY4Yvx2oN0FEYZUbs17cIbflAFkWlmBNSm20SuorQousVnLs2gHBsg17XOvgnYgjjHDymfU/oFMIXq/W1VeAewcWBa3jFWq9PfLRw9f4GVceFYh0embqwgVF2FXDU5Y4RmVZvf1WEvCTp4Tf/BGJBYMzM84xtgXei8J9FUASorzhQorJ+D8bU6MyyUYsmpnhZAlW3/bpHFkZPyAgvevpC6Alb7TcEd7ZPyvpEEPpmMWSd03H1Qvu9nX/121WF0Fjxmqm27Xr4MloZtvSgW4mb1KF2pXF9W3bU9d2DsH2gjP7KQ41RqIRUwXX9+nWtq2tjw6oJIVuH8lQGMbVumHSjqE+Aud27/O6vxHcQmKom/htkq/cbcT67aNQlIXsLNeS+J1TltZS7ZNeLnBnKRdVXMzaK/WsyhGwMCh0h94299JUP9SEFD/pmg5i6B5FS7/FhtNbrDYRUh6FLQgghjoYeHSGEEEdDoSOEEOJoKHSEEEIcDYWOEEKIo6HQEUIIcTQUOkIIIQ4G+P+23/VQFFTpHQAAAABJRU5ErkJggg==" /></p>
 <ul>
-<li>siccome sono due i possibili valori, la colonna può essere
-sostituita con valori logici TRUE o FALSE</li>
-</ul>
-<pre class="r"><code># MODIFICA TYPE
-netflix = netflix %&gt;% mutate(Movie = (type == &quot;Movie&quot;)) %&gt;% select(-type,-show_id)</code></pre>
-</div>
-<div id="netseparation" class="section level3">
-<h3>SEPARATION</h3>
-<pre class="r"><code>netflixMovies = netflix %&gt;% filter(Movie == TRUE) %&gt;% select(-Movie)
-# MODIFICA AL CAMPO DURATION
-netflixMovies = netflixMovies %&gt;% mutate(duration = gsub(&quot; min&quot;,&quot;&quot;,duration))
-
-
-netflixShows = netflix %&gt;% filter(Movie == FALSE) %&gt;% select(-Movie)
-# DURATION TO SEASONS
-netflixShows = netflixShows %&gt;% mutate(Seasons = substr(duration,1,2)) %&gt;% mutate(Seasons = strtoi(gsub(&quot; &quot;,&quot;&quot;,Seasons))) %&gt;% select(-duration)</code></pre>
-</div>
-<div id="netgenres" class="section level3">
-<h3>GENRES</h3>
-<pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-for (i in 1:nrow(netflix)){
-  gen = unlist(str_split(netflix$Genres[i],&quot;, &quot;))
-  gen = gen[!(gen %in% genres)]
-  genres = append(genres, gen )
-}
-netGenr = levels(factor(genres))
-(netflixGenres = data.frame(
-  genreID = 1:length(netGenr),
-  genre = netGenr
-))</code></pre>
-<pre><code>##    genreID                        genre
-## 1        1           Action &amp; Adventure
-## 2        2               Anime Features
-## 3        3                 Anime Series
-## 4        4             British TV Shows
-## 5        5     Children &amp; Family Movies
-## 6        6            Classic &amp; Cult TV
-## 7        7               Classic Movies
-## 8        8                     Comedies
-## 9        9               Crime TV Shows
-## 10      10                  Cult Movies
-## 11      11                Documentaries
-## 12      12                   Docuseries
-## 13      13                       Dramas
-## 14      14         Faith &amp; Spirituality
-## 15      15                Horror Movies
-## 16      16           Independent Movies
-## 17      17         International Movies
-## 18      18       International TV Shows
-## 19      19                     Kids&#39; TV
-## 20      20              Korean TV Shows
-## 21      21                 LGBTQ Movies
-## 22      22                       Movies
-## 23      23             Music &amp; Musicals
-## 24      24                   Reality TV
-## 25      25              Romantic Movies
-## 26      26            Romantic TV Shows
-## 27      27             Sci-Fi &amp; Fantasy
-## 28      28          Science &amp; Nature TV
-## 29      29    Spanish-Language TV Shows
-## 30      30                Sports Movies
-## 31      31              Stand-Up Comedy
-## 32      32 Stand-Up Comedy &amp; Talk Shows
-## 33      33                Teen TV Shows
-## 34      34                    Thrillers
-## 35      35        TV Action &amp; Adventure
-## 36      36                  TV Comedies
-## 37      37                    TV Dramas
-## 38      38                    TV Horror
-## 39      39                 TV Mysteries
-## 40      40          TV Sci-Fi &amp; Fantasy
-## 41      41                     TV Shows
-## 42      42                 TV Thrillers</code></pre>
-</div>
-<div id="netratings" class="section level3">
-<h3>RATINGS</h3>
-<pre class="r"><code>netRat = levels(factor(netflix$rating))
-(netflixRatingTypes = data.frame(
-  ratingID = 1:length(netRat),
-  rating = netRat
-))</code></pre>
-<pre><code>##    ratingID   rating
-## 1         1   66 min
-## 2         2   74 min
-## 3         3   84 min
-## 4         4        G
-## 5         5    NC-17
-## 6         6       NR
-## 7         7       PG
-## 8         8    PG-13
-## 9         9        R
-## 10       10    TV-14
-## 11       11     TV-G
-## 12       12    TV-MA
-## 13       13    TV-PG
-## 14       14     TV-Y
-## 15       15    TV-Y7
-## 16       16 TV-Y7-FV
-## 17       17       UR</code></pre>
-</div>
-<div id="netcountries" class="section level3">
-<h3>COUNTRIES</h3>
-<pre class="r"><code>countries = vector(mode = &quot;character&quot;)
-netCountr = netflix %&gt;% filter(!is.na(country)) 
-
-head(netCountr %&gt;% filter(str_ends(country,&quot;,&quot;)))</code></pre>
-<pre><code>## # A tibble: 5 x 9
-##   title         director        cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 The Present   Farah Nabulsi   Sale~ United~  2020 TV-MA  24 min   Drama~ TRUE 
-## 2 Funan         Denis Do        Béré~ France~  2018 TV-14  87 min   Drama~ TRUE 
-## 3 City of Joy   Madeleine Gavin &lt;NA&gt;  United~  2018 TV-MA  77 min   Docum~ TRUE 
-## 4 Virunga       Orlando von Ei~ &lt;NA&gt;  United~  2014 TV-MA  100 min  Docum~ TRUE 
-## 5 Hotel Pacific Janusz Majewski Mare~ Poland,  1975 TV-MA  96 min   Class~ TRUE</code></pre>
-<pre class="r"><code>netCountr = netCountr %&gt;% mutate(country = 
-                                   ifelse(str_ends(country,&quot;,&quot;),gsub(&quot;.{1}$&quot;,&quot;&quot;,country),country)
-                                   ) %&gt;% mutate(country = 
-                                   ifelse(str_starts(country,&quot;,&quot;),substring(country,3),country)
-                                   )
-netCountr = netCountr %&gt;% mutate(country = gsub(&quot;, &quot;,&quot;,&quot;,country))
-
-head(netCountr)</code></pre>
-<pre><code>## # A tibble: 6 x 9
-##   title                director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
-## 1 Dick Johnson Is Dead Kirsten~ &lt;NA&gt;  United~  2020 PG-13  90 min   Docum~ TRUE 
-## 2 Blood &amp; Water        &lt;NA&gt;     Ama ~ South ~  2021 TV-MA  2 Seaso~ Inter~ FALSE
-## 3 Kota Factory         &lt;NA&gt;     Mayu~ India    2021 TV-MA  2 Seaso~ Inter~ FALSE
-## 4 Sankofa              Haile G~ Kofi~ United~  1993 TV-MA  125 min  Drama~ TRUE 
-## 5 The Great British B~ Andy De~ Mel ~ United~  2021 TV-14  9 Seaso~ Briti~ FALSE
-## 6 The Starling         Theodor~ Meli~ United~  2021 PG-13  104 min  Comed~ TRUE</code></pre>
-<pre class="r"><code>for (i in 1:nrow(netCountr)){
-  countr = unlist(str_split(netCountr$country[i],&quot;,&quot;))
-  countr = countr[!(countr %in% countries)]
-  countries = append(countries, countr )
-}
-netCount = levels(factor(countries))
-netflixCountries = data.frame(
-  countryID = 1:length(netCount),
-  country = netCount
-)
-head(netflixCountries)</code></pre>
-<pre><code>##   countryID     country
-## 1         1 Afghanistan
-## 2         2     Albania
-## 3         3     Algeria
-## 4         4      Angola
-## 5         5   Argentina
-## 6         6     Armenia</code></pre>
-</div>
-</div>
-<div id="sequels" class="section level1">
-<h1>SEQUELS</h1>
-<pre class="r"><code>spec(sequels)</code></pre>
-<pre><code>## cols(
-##   Title = col_character(),
-##   `Release Date` = col_character(),
-##   Year = col_double(),
-##   Description = col_logical(),
-##   URL = col_character(),
-##   `IMDb Rating` = col_double(),
-##   `Runtime (mins)` = col_double(),
-##   Genres = col_character(),
-##   `Num Votes` = col_double(),
-##   Directors = col_character(),
-##   `Movie Series` = col_character(),
-##   Order = col_double()
-## )</code></pre>
-<pre class="r"><code>sequels = sequels %&gt;% select(-`Release Date`,-Description,-URL)</code></pre>
-<pre class="r"><code>Series = levels(factor(sequels$`Movie Series`))
-# Contiene tutte le Serie che possiedono dei sequels
-length(Series)</code></pre>
-<pre><code>## [1] 376</code></pre>
-<div id="seqgenres" class="section level3">
-<h3>GENRES</h3>
-<pre class="r"><code>genres = vector(mode = &quot;character&quot;)
-sequels = sequels %&gt;% filter(!is.na(Genres))
-for (i in 1:nrow(sequels)){
-  gen = unlist(str_split(sequels$Genres[i],&quot;, &quot;))
-  gen = gen[!(gen %in% genres)]
-  genres = append(genres,gen)
-}
-(seqGen = levels(factor(genres)))</code></pre>
-<pre><code>##  [1] &quot;Action&quot;    &quot;Adventure&quot; &quot;Animation&quot; &quot;Biography&quot; &quot;Comedy&quot;    &quot;Crime&quot;    
-##  [7] &quot;Drama&quot;     &quot;Family&quot;    &quot;Fantasy&quot;   &quot;History&quot;   &quot;Horror&quot;    &quot;Music&quot;    
-## [13] &quot;Musical&quot;   &quot;Mystery&quot;   &quot;Romance&quot;   &quot;Sci-Fi&quot;    &quot;Sport&quot;     &quot;Thriller&quot; 
-## [19] &quot;War&quot;       &quot;Western&quot;</code></pre>
-<pre class="r"><code>seqGenres = data.frame(
-  genID = 1:length(seqGen),
-  genre = seqGen
-)
-
-#View(MoviesCleaned)</code></pre>
-</div>
-</div>
-<div id="oscars" class="section level1">
-<h1><a href="#indice">OSCARS</a></h1>
-<pre class="r"><code>View(awards)
-colnames(awards)[8] = &quot;title&quot;</code></pre>
-<div id="winner" class="section level3">
-<h3>WINNER</h3>
-<pre class="r"><code>levels(factor(awards$winner))</code></pre>
-<pre><code>## [1] &quot;FALSO&quot; &quot;VERO&quot;</code></pre>
-<pre class="r"><code>awards = awards %&gt;% mutate(winner = (winner == &quot;VERO&quot;))
-#View(awards)
-if (all(awards$year_ceremony == awards$year_film+1)){
-  print(&quot;la cerimonia di un anno premia i film dell&#39;anno precedente&quot;)
-  awards = awards %&gt;% select(-year_ceremony)
-}</code></pre>
-<pre><code>## [1] &quot;la cerimonia di un anno premia i film dell&#39;anno precedente&quot;</code></pre>
-<pre class="r"><code>awards %&gt;% group_by(title) %&gt;% summarise(nominees = n()) %&gt;% arrange(desc(nominees))</code></pre>
-<pre><code>## # A tibble: 4,835 x 2
-##    title                nominees
-##    &lt;chr&gt;                   &lt;int&gt;
-##  1 &lt;NA&gt;                      304
-##  2 A Star Is Born             25
-##  3 Titanic                    16
-##  4 Moulin Rouge               15
-##  5 Mutiny on the Bounty       15
-##  6 All about Eve              14
-##  7 Cleopatra                  14
-##  8 La La Land                 14
-##  9 Little Women               14
-## 10 Chicago                    13
-## # ... with 4,825 more rows</code></pre>
-<pre class="r"><code>View(awards)</code></pre>
-</div>
-<div id="gender" class="section level3">
-<h3>GENDER</h3>
-<pre class="r"><code>levels(factor(awards$gender))</code></pre>
-<pre><code>## [1] &quot;female&quot; &quot;Female&quot; &quot;Male&quot;</code></pre>
-<pre class="r"><code>awards = awards %&gt;% mutate(gender = 
-                             ifelse(str_starts(gender,&quot;f&quot;),
-                                    gsub(&quot;f&quot;,&quot;F&quot;,gender),
-                                    gender
-                                    )
-                             )
-levels(factor(awards$gender))</code></pre>
-<pre><code>## [1] &quot;Female&quot; &quot;Male&quot;</code></pre>
+<li><p>TOTAL DIMENSION = 260442 Bytes</p></li>
+<li><p>“Movie” = 5char * 1Byte/char = 5Bytes –&gt; 5Bytes * 7814 =
+39070Bytes</p></li>
+<li><p>“Tv Show” = 7char * 1Byte/char = 7 Bytes –&gt; 7 Bytes *
+(9668-7814) = 12978 Bytes</p></li>
+<li><p>TYPE = 39070Bytes + 12978 Bytes = 52048 Bytes</p></li>
+<li><p>REMAINING = 260442 - 52048 = 208394 Bytes</p>
 <ul>
-<li>Due valori possibili sostituibili con valori logici TRUE o
-FALSE</li>
+<li>208395 - 208394 = 1Byte –&gt; the difference between “MOVIE” and
+“TYPE” is 1 character</li>
+</ul></li>
 </ul>
-<pre class="r"><code>awards = awards %&gt;% mutate(Male = (gender == &quot;Male&quot;)) %&gt;% select(-gender)
-head(awards %&gt;% select(Male))</code></pre>
-<pre><code>## # A tibble: 6 x 1
-##   Male 
-##   &lt;lgl&gt;
-## 1 TRUE 
-## 2 FALSE
-## 3 TRUE 
-## 4 FALSE
-## 5 TRUE 
-## 6 FALSE</code></pre>
-<pre class="r"><code>awards = awards %&gt;% filter(!is.na(title))</code></pre>
+</div>
+<div id="clean" class="section level3">
+<h3>CLEAN</h3>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbkAAADLCAYAAADzye1WAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAAAhdEVYdENyZWF0aW9uIFRpbWUAMjAyMjowNzoxNCAyMzozNTowM80TsLwAADUtSURBVHhe7Z17bFvXnee/1PvhR+w4TydxHqQdq/LMbJtuRySmmbQznaWcGWjSXc6i2ImyxS7516yUAv4jGAXdIhp0sQZqCgV2If0RRJlFseAfhRZrk4sC0yKdFb3TxwymVuXGZNOkTfOwY+vNN3n3d+6DvKRI6mFKlqnvxzjWvfecex73cb739zvnXjo0AYQQQkgT0mL+JYQQQpoOihwhhJCmhSJHCCGkaaHIEUIIaVoocoQQQpoWihwhhJCmhSJHCCGkaaHIEUIIaVru2Mvg+UIONxcXsbKSVLXAocPd6OnqQltrO9rbOkR9qb+EEEJujzsmcrdWbyCVzOKfrv4MC9dvQsu1IJ3Lo+/kSfmbRVd3F44cPQSHaN2B3i70dvWip6MXHW2dZg6EEEJIfe6YyP1w/hq6sklc/WUcy8uLKIjA/fJX7+CPn30WP/rpj3D8wfuRFCvP0daFk086kchm0NPTLcJ3D1YTK3j0kQfQ3d2pi19nR6cI4EG0trSauRNCCCF3SOTeW1rF/WKpfe/vvo9MQcPKWgL3HOzFzVQOh7raAK2AxaUlZDIJvPfeL/GlP3gOP4z+PVxPnpJtSeSyeTz+2Am8//HHcBQKuP/BY0Crhud+34MDPYfF+qOrkxBCyB0QuUQ2h4VkGvf3dmFpdQ1ptb60iEQyhVQ6o4vejZs3kUgkoeWyuLGSQFdbi1hpDiQzOfR0tmNNRO74vQexsLCI9o4OdLdksbq6gqefeBhHD/Ti9Kc+h+7eQ2aJhBBC9iu7KnKqqOurSXS1t6K7vR15c5uqQR4aciJwKiQyWaQkLK2uYlWEb2F5RSy4DD5ZXNStvIXlNUCsvAJasHLzFo4duQftJ1x4aPk6Pvin/4nn//w/ou/Tf2gUSgghZN+yqyKXyuXxkVhmx3q6sCiWWktLqz6xxCH/tYilpsGBbKEg4iUaltckFCTkdcstIfsm5G+mIOti0aVTSV0AF8XqK2RSOHjoKO776B28/49v4uyfB/DM54eMQvcRf/3Xf20uEUIIUeyqyCk35aoIlLLkkmKpKWHL5UTMciJaEsSIE8ETY62lRRe8glRNtA4pEbpVEbi1bA5JEbtktoCslkdaIpMS3yrpn8isYOnqz/Cbf/xbPP9CAJ/7wr8xS90/KJH7m7/5G3ONEELIrs3QUEL2zuIK7ulqF4ssq1tjCRGrggidmiV5+EAPesXCa+9o1wUukclgIZHC9ZVVLKwlkUilkEqldTdmLpdFRkQvK/lkZftDbcDJe3r0VxDSyRX9HTxCCCFk10Tu6o1FHD/Uo7seRcWQyxewlM7g+moCHy6v4ZPVJNZSGX1iihIrzdGCtvY2dHR0oLWtDQ7dtSkWnlh3WYnPicCp0CLhoY42JEQQ8xKXXF1GXgSVEEII2RWRe3dhRX+HbS2Tx5pYYWrcrUUES00+aW1tk3XI9jxWJGTNyScpETsleiqsJtNYk6BmYhZkX80B5MUCzEsenSKETx67B4l0Wiw4seQSSuSyZsmEEEL2M7sictfXkmKViciJFZdMF7CaziIl1pYSpnQqjZVUCssiZovJFD4RiyyZz6OlrVUPjlYJ8heyv5qNmVMTUyReE8FziCXYq1yXGbEAJQ/lxsxl0ihoKiUhhJD9zo6L3C9uLIhQtWAlk0U6n0NKBEjNlBSJ0sff1FdMDktQll06JwIoovfh4jJ+e3MRi7oLU0RPxCybL4jIOVAQizAvobWrEznZ55knj+PeA936WF0+l0GrQyzBdMosnewF4pEJBDwOOBwqeOAJRBA344AIArJtorSBEEIaxo6KnD7FX8Qnq2nGpJC8/M0WsJTK4vryGj5cWsViIqHPrFQzLjs62tDS2o7WDhGwtnasidWWUvvIvolkGslkEmmx9rLZDNJi8XXkszja1YG8iGdaytFEQFulI1UuTbJHiATgGgyhbyxmvhM5jTEMwiVCRwghO82OiZyaWPJrEbLVTEF/vy2tv/NWQFoESP5Aa3HIsoYFEbxFEbBlEa9MJieCpVyaGSTFokumc1hJZ5EQoVNWW76tFVmxCh0tbfhkZQXuR+6X/dK4fmtRd1k6NIfkrYkIps1akDtLHBPjU/CHZzHidZrbnPCeC8I9NU7rjRCy4+yYyKl3295fTenvtaVlWVlrGWVx5dTrAxmsKSET60u9IJ7IifhpInzqJTkRsTY1BieiJraZ/vJ3Sh9zS4sVl0ZB9kmI9XeitwcPHOrFsUMH0IaCiGoOopvSoBYUZJkIcbubUIInYBMW0004EYDHjPdIZFwsL/t6kTp5xSc8pe1m0PeNX0Io6seQ10hXxDmCWU2Ez9K9MkQYAx54JP+Ap9K1KWypTR4E7G0oQ9LaXKiBSCmd/RgYceZ21U7PhK0+UlfJo+w4EUL2FDsmcvGby1gQIctoImD6C99KsBz6l0zUu3EFh4iYprbnsSYCdmslgZsrYvmtJXRLTp9FKfkouVJWXEY6nJSEjFT5+vIqPv3wvVhKpBD78AY+uLmovvaFXEEsQdmpIMJIpBN3jQJFN6GGmG8Oo66AxFhEMTo/hGkVHwtCIjE8Y18/b6atn5dzZLa4XQv7ZYsbvrOiYLF5KWFrRAIuhPqmMTs7icnZWUz3jdtcm1tsU7gfc8U22FHiNIip/jBiKl3Mh7nBYVMsIzg/qIow8w/2Y2rcEDbnyBj80RAuWZpmivhYdbUmhOwBdkTk1MzJXywsISsWmvosl3qvLa3ELitWWDYnVplYcfJXvUqgXgUotLaiINZbWqw4NWVEfaQ5oyaSiNhpEvIigpoac8sX9JmYv//YA3DedxQP3HMQn3rkfnS1igknApjPJPXPfakxOuLFpHTSk0U3oXTSZ30iP3bcCJ7zQk/hPIl+JU5l63O4pnfom8lLECvLM2i6J7fV70cwM2UKpIleztSMKVRbbJN3yNYGOzHMR+1tr7QspzB+SSxI2c85MgltdsRIJ+UP+aMImSoXvxRC1D8kWwkhe5WGi5yywC7/5gaWsxpy0iHlxLTKisCp2ZHqHThd9GRdf4UgldUtN/Uid0qEL63G39RrBmr8TkQrK+KXb28XAWxDXnRMHq3Rq+VxRCy739xawvu3xFoU629ldVU0rgUtWhYpyUvjxBODeMRw/eluNwliBW3VsiqyYV5iHQ3LNn9YRMjc5OpbL4T1iF8TSRJLzGWWUSzHJlSNaJNeTj9OlrTShghpLIz+kFiQej3KXZ7eIT+ioUvS2jguhaLwr/PFEkL2Eg0XuV8trmL+plhxImZK0NSEE2PSSU4stAISImRJ9UkuJX6SPqfcltJZZUTA1MSUrFh46id39J/dkZCTUBBBVL5LNa736D0H8Knj9+HBwwdwuKcL3W0tSGcy+ldRMuk1seI0XeRyap99jXLtDWJ+aNpw3akQC25NdIpsnJdyM44iiFhR4QTnWfjcU5ip9Bcqi0+NnVVaWKY1GTRdhaVgWVkNalOZlVoFpwjdrOGCjekuT8uVKYh1qLssIzXGGwkhe4qGipyaJfnD33yMxXROd0fqrsmsEjW1XhALLYcVER9lxaltSsiUQGXSaWQz6puU5hdPJC81EUWFjCyrn+HJi/XXKeHh7i79W5bvLyxjeU39Bp16oTwF9YsGmeSydEyqJuo/WnPKddfncpqutjgiyr2mL2+HOnlFAhicEnGattx6Fk6MjPkxNSiCVpzYIfueVxbfWBWXpuEOHD1fmmyyfrJHI9rkQp/bVo5ddNVyWXkKu9Vn1nFQtYGuSkL2Og0Vuatiwf1yYVWsNOV2lJDJYU13QYqoZfJIpGRduSbFkkuI0CXEctODCJtyUSpLLSdpCyJ8UCGnxuGU8IlgibX30OFenHrwXtx7sAf39Hajp6NN/0izmn0pz/RIrC6gRdKpz3sVRDD3N16cEyskVHT9DWNmXtlJ26F+XpGZKfm/ws1oTRbxToo15MP8uMuMc2Ec4XKLz4Z3Miax43CZ+bhC/QgXxfM22qQLmTVBRcR3Ngz/3KBRjiuE/vC0IbrOEUz75jFslT84J3GTZWKmvwIh/9SYHiFkb9Own9q5IdbV/7jyDt5fWUNnq5rI79C/YmKhftm7VbYvrKyiQ+I0ETaF/h1K6UwK6msm5royxNSvy7XKYotYby2y3ipCd+rIQfQ9eAyd7a369y0PdXUgt7aMv//xT1Fo7cCPv/tfsfbuT/BnfzmCL3/1P6Ojq0cVsW/gT+0QQkg5DbHk1O++zd9cxnsrCf37kmoMTr0np37hO6G+TiIhKRaX+shyUqy7ZbGyliRehVU181JZbxLvkNAi+0AsOmWJqdcLEjkNaTVu1+rApx97EF1ivSlX5w0R01/duIXfSFCTW9S7cYmlG+ju6UZeLEn13hwhhJD9TUNEbjmdweUPF5BuaYcmIdfSJpaWMZkkm3cgJUKlhOjG8qo+iUR9nSQvgqaW1TicclOuiigp8VO/RKBELCMhL6FFTV5JJvGpwwdFvAr67M2OtlYc6e3GE0cPocNR0Mfr8pkUkjc/Ru+BHrESc5xhSQghpDEipzyM6tuT3R0daOvqQktnJ7TOLmjtnfr0/1xrK8ROM75hqTn0L5yoXyRYU5ZeWv0Aqlhdst4mgtYqQf3KgPpKypJsX1bbJP/PPvYA2lpbkBfxSoioriRSujW3vLoG9SOrqdUlQMvhwMFec0YeRY4QQvY7DRG5Q12d+PJTD+HswwfR1+3AsXYHDna2oqenB53dPWjvPoBsWwda2zvQ0d6OgxK629vQJhafcm+qySdK0G6JeC2J8CnRay3kccihoUdE7vOP3o/2lhax4FrQ29GG3s52seQ6cb+EpZUVse4gIrcAKRa9B3v0XyPgC+GEEEIaZsk9evgA/vCJ4xj+vZPw9z+OP3v0XnjuOwDXkR4c7WhFm1hWhw4cQEvvAWQk5Dq60drZIWLYKfEdOCyi16Ve/pa8lkWgrqfSuC6C1yLW2xP3HsInKwm8f3MZHy+vYUGsOGXtOZRVl0ypeSrIJFcgRiM6JS/1kWe6KwkhhDRE5Cxaxdpqk3Bfbw/+5SMP4M+eehiBvsfw75334csPH4bnSBdcrQU82qrhkYNdOHjwAHCgF5meXuTF4usUy+9obzcekOVjar2lFX/81HEcle3qN+MeONSDAyKMjoKG1VQW1z76BMlUSlrRYlhyHS1o7+rCysoaFhcXkE6n9TE8Qggh+5OGilwtDre34jOP3I8/eOgo/uihQ/jyk/fjz0/ch6HjR+C5pxtP97bjeHcnDolAQSy8THcvtK5u9N93D+7v6cattYT+AviK+vkdNRmlxSFC2onDIphqZqayJLOJJXR0dKKzsxsFdOo/56NQ7zoRQgjZn+yKyB06dAi9YrGpMbrjx47ixNHDaF9ZBD58H+77DuLfnj6Br5x+FN5Hj8B9bzf6ulvweGcrTt97CIdF/Ho62vV34zpaVXU19YFM/SXzW0uL5mxLsSAPHIdz4EVo93wWTz/zJ3jo+AkRPbH6KHKEELJvadjL4FtBFZlKpfRXAtQsyJ9dmcfK6jKOP3IcDz/wANDWrltu6odUE5m8/s6dmnjS2daqW229bQ70tgI//NGP8cnKGnpFPBd+/R6++Iefx5NPPone3l50iVW43wSOL4MTQkg5d0TkKrHGzdRHlf/5Zz/DO++8i0cfexRPPfUkerp79J/oURNPbiWSWEpm0CUWnWzF5X/6ZxREKDOLN/HlP/1TSf9U2VdW9hsUOUIIKWdPiFw1VldXcfUXv8BHH3+MbrHUHj3+MLp6evXPgeW0Frz7wa91QXzk3nvxpS9+EUeOHDH33L8okSOEEFJiz4pcJR988IEI3kdo7+hEW1sbPr5xAw8eO4ann37aTEEIIYSUc9eInIVybS4vL+PAgQO62BFCCCG1uOtEjhBCCNks+3eWBiGEkKaHIkcIIaRpocgRQghpWihyhBBCmhaKHCGEkKaFIkcIIaRpocgRQghpWihyhBBCmhaKHCGEkKaFIkcIIaRpocgRQghpWhry7crp6WlziRBCCNkbDA8P8wPNhBBCmhe6KwkhhDQtFDlCCCFNC0WOEEJI00KRI4QQ0rRQ5AghhDQtFDlCCCFNC0WOEEJI00KRI4QQ0rRQ5AghhDQtFDlCCCFNC0WOEEJI00KRI4QQ0rRQ5AghhDQtFDlCCCFNC0WOEEJI00KRI4QQ0rRQ5AghhDQtDRK5CAIOBxxVgxvBuJXGWt5p7GXVLjceDMCt6uh2y987Uc9GU/s8BCJWvAcTxXZay1snHplAwGPl74FHCijPKo5IQLZbdfB4pA5WijgmZF9PjcLjEx5JP1GRn4GKq7VfI1HlGMeMEHJXozWcsObHgHYhZq7eETZTB5UGmj9srhbZC/XfLqrubi24qbpvJW0FYb8GtW/Y2jkmm6CheDBjWtBtrBdTxIzj7TYLjAXdkodfalFJebpyJM5dbZ+dYDfLIoTsFPvcXTmA0y5zkWwSscLGp0S/ZjHidZrbnPCeC8I9NW5ahjHMR8UaPueVGAOn04tJUcJo6JJuoTlHxuDHFGYqraXIjGz1Y2zE2rNEfGIcc75z8JrrO4sX53xzGN8Fq5EQsnPsosjZ3YDGciBgugtVcAdQ9GbpxBEMuE13mAPuQLCq+8pAucbsaWdwxYwpL9dCbRuUzvQyXnZJ+mCwShoLox5uqV9AuTXtbrm4dOwOqbe5uvep56IU8VLuRY+001PN/WgSv4RQ1I+hSqVxjmBWE+EralMUoUsVeXgnoc2OmMLnxZCYbFMVKheZmRIDb6iKkMVxKRRF/8n14mcgbbO5T0uuUdkzEii5TfU4c/s6t2i5G9V5sr8oyoSQu5M7aMldxtSV03g1pkHTYgj7rmDwxZKQRQIuvIxXEdOM+FdlzVVjkESlHSym1fDmkMq9HmJVaGGxFwZwQcqPjp4yt69H5R06/Sai0UlMRqN48/RrpXo4RxHVJnfJstgsUYyKcFuCr4cax82O3s6+aczOSjtnZzHdN179eMfmpYSNkOMbC6I/NAiXKl+Nx01MVDzESCpD5WwPCREYGlfliNYSVx0lTvLQ0h82roGYD3ODw8Wxx/ODwJh+nWmIBfsxNW4Im25NRkO4ZNXLLKNoRXqHyuMJIXcdd1DkRGDeHIXh8XLCO/oq/JdDuGh2TDNTEl90dyl32AUMlHWIFpVpJbXqnMzl28PI2/d8yXpwPu+rUY+9glikZodeDJMbybBqpxu+s7Z2nvXBfTvtFMtuclbKjoXlAcYHhEYxKOJbNmnEew5Bt81lqVyV7iDkVK5Hiau7D9W9yxXu0XVW5RTGlVUpRTtHKq1JZXEadYpfCiG6zoqMYj5mLhJC7jr25phc/G1cwRmcKvW50judki1X8HblU3W1tI1Cz9twaRatItfLsqVKPe5m4tcwV2kBusRKla3XKtvp6hMZ3QJOL7wjpuCpMbnR8zbhdOKsz120rJSr0u07W3xY2TR6/ftR3ZOprMqwWJVimertU1ZlqVHKmjRckoY7tNyKdKFvS40lhOw19qbIVRO0WmJWS/wagZ634dIss4w0EYSdENU7hfOkSEQVC7DMGjJxnoXPbn1ZxCfgscb7IoHqrwDoAlkunLrFqLsEJzBeYU1uGr3+VQTZQk16mZ3V2xQLS8pRy5UpWC7JSDV3qLIQzUVCyF3JHR2TC120JiaoiSODmBrwwfAMKjeSWFDnbfHnxYKqOiGhStrAa5jSl2+Xyrwl96AbDne9STB3I4bbbtTezprvqjkxMubH1KAImu29t8h5sfz8Y4Yo6sIximG7a1Iw3IFmGgvnCMaUy3BY4tw+1NQ4JZDReZGdaiiLy1Z/u+Cq5XXtsFt9ZtsHVf2rXV9u9HEGLiF3LXd0TA5XXzMmJjhceA0XEJOO0ep7vJMx2VIRX2NsqTzti5g57WvQmJyRd7iYtwOu0BmE3zTredfNrqyN0c5xWzv7EZ62xq4q8E6KReTD/LhLT6vOz7jsXTo/amJPDL75YREYNWPTCMPzY1XPoe4yjEbhH6tRnqLSgtSFzDr2IryzYfjnzIkurhD6w9OGmIqITvvmMWy1a3BO4sonC+mvPyhLtnIwUB8jrCO8hJA9j0NTPpxdR01lfw2nY03m9iM7irIuhzGN2XU+1J1ht8sjhDSevTkmR0gV1JT//pB94spOEsF5sWarvZROCLl7oMiRu4jd+wqJ+roKxvbaO5CEkK1yh9yVhBBCyM5DS44QQkjTQpEjhBDStFDkCCGENC0UOUIIIU0LRY4QQkjTQpEjhBDStFDkCCGENC0UOUIIIU0LRY4QQkjTQpEjhBDStFDkCCGENC0UOUIIIU0LP9BMCLnr+O53v2suEVKbF154gSJHCLn7UCL3zDPPmGuErOcnP/mJLnJ0VxJCCGlaKHL7iFw+LyGHgvwjhJD9AEVun7C4toS3/t9b+Lv/+xZ+8rOf4sovfo74r9/BRzc/xFpyDel0WhdAPRRy5l6EEHJ3wzG5Jicj1pvil9dv4dqVf8aNWwvQ4EBCRC+dSuDwgYM4fOQQWltb0OYwnnnulfWTTz6FBx94VF8nZK/BMTmyETs2JhcPuuFwOBCImBu2TQQBhxvBuLlKtsViMqOHx44cxh899yyGznrxxS9+Ac94nsWT/dJJHH0Y7yda8N4qcO1mUg8/eudD/K9LM3jnFz8xc9kIda4c+nm3B09gAqXTp9J4MMHzSQjZRRoscnFcDAF+/wCmZm5X5byY1KIYdZqrZMsoE305ndXDUsoQu9WchnxLG44cuw9PnHoazt/9XZz4F5/B4afPAE99Sg/5R5/GytIt/PZXPzcy2hTyQBLToBwDRohhrC8El8cudM0CBZuQu4XGilz8IkLw4dw5HwamZqQrIHcKJXCxTxZxuLtdD4uZLG4m00jm80jnC1hJZ7CQSGIlkUJCtidSad21qcKpo4fQlksjnU4amW0LJ7xnfXBH5xEztxCyH3n3B6/jlRdO4MQJFV7AC6/8AO+acY3lB3hF8n+9ZuYbxTcnDRW5yPmXAd/zcDqfh29gCq+V+RoN92MgEIDbcmm5A4gUk1jxyt0p28316u5KiXNbbjHZp5SJEEdQz8OIdweCFS4zyTNo1UH2tQqIB2WbKrc5WBHLLa85RNgyesiKdZXKFfDBShLXlbBl80hKSGRyInp55ApifeXyenjiYA/WEgmkEytmbtshjsilEKL+IbHJqxHHRMBTPE/lrk2FnCuPdY49Fee4XtxG+Vqoa0GssYkAPFY+ZaZZrXxku2cQU4hi1GVZc0Zajycg9ZK/gUiNMsm+4wev4NmXLsL1V2/hvffek/At/BVewrMidLvPc/jme9/FVx83V/cJDRS5CGamBkTjlH/RidFX/bgculhxs1/G1JXTeFV3a8UQ9l3B4It2EbqMK6fflLjJGh2jQkTMLZ3MmTBiyi0W8+HK4ItFMYwEXHgZrxpxUsarsuYqGyC8jJevDuFNFR8+gysvnzeEzTmKaN1y7y7eXV7FUjaHhVRWD5+spXQxU67EW8kUPlhNYFGsuaSIWjKXQ6aQxwNi8anQ0aIhm80gk9mKJac6fUt4VHBhMNSP8LnqR1Sdp1GMFc/TmKyVzpMpJP2lczw3OFwSlJpxG+VbidR5fgjTKm24H3Oj5rUg1M7HiZHZMPy6e3YWI3K5q7ShvmnMzk5icnYW033jdcok+4d38fq3v4OvvCHC8pylLI/jucDX8ZnvfHvfWVR3isaJXGQGUwM+6Bqn8A7BfzmEi2UqN4ALb47Cq6dxwjv6akUaSyTrEcPVy5KPdJ5GNkqcrLE7Q2iLcaqMcxcqXKe2eKmjyBzeLqvj3c/1tSTeF4tNuSRXM1k9qHG5j1aNbbm8hjVZv5lIi9BlkcwXsJpM4+mjh/WwLAJZEMsum06ZOW6G9WNy4f4pDA5Xs6TUeZL0ZedJLOnieYphPmqLd45gVjMEpX7cRvlWYksr14LIHK7pld1KPkZa31kjpcKp3LR015N3v4+LP/0KvvScuW7x+FfxXbtF9a7dnSnhhVdsAmi6GF9/BS+Y8S9I5LtiIdrX7cS+X4pTef2gMi9rvW65zUPDRC4yMyVGklhNxSd55dIRq+l8g2/1+NsiS2dwqtSnlKgW5zzVlEJWi1yhgPmbS1jL5LAqltxSJqOH1WwWK7J+Q4RtKZVGVoQtk5c0SgBTGTzS04ljvV16WF5dQV7i8mLNbR9TGKqNycWviZz042TZeTpZEplq8RZbjbPnu1m2ko+etsKKdcmD11bLJM3Hr2L4qblYGxGeZ78BFN2Z7+Gt59/GN54VcTJTQHL5RuxL+JaKf+vrkEh87Xv29cmytN+56JLsVF5v4Q3J66WvvV5lDHAz5TYHDRI504Iqe5KXEPYDjX6irSda1eLqiWIT8qFYcPGFNd06W8uIhZYSS07CogjbciqFFRE15aZclpCRNPl8Hi0S+u89rE9WUSGXTiOdTCBzWyJXh2qCYReWesK01bh6oliLreSjpxWrr/LaL1qXhNRDjZO9h28W3Zli6H3heXzGXDb4DL4eeA56isefwClZf75s/W38qqhikvZbX4WR3eN47qt/ha/89CK+v07lNlNuc9AQkYsHXyt3VVool6XYc6UJKJcRumgNyscRCYi1V22/urhwesCwEPV89Akj0snoK14M+W1xqozzL+NyzckPzUVKLLX/86vf4lYihYWkWGyZFD5ZS+phxRS7NbHa1GSTNbHs1N+sWH7HOlrRIyEj21RYXVtDNpWAw8x3e6hjLxaNu0/OWCXqPIn1U3aeJG3xPLnQ57bFxyfgKU7Zrxe3Ub6bZSv5VKZVVfLA0ZSvTpAt8YRrc6Lx7g/w+isvlFyMYmFtbAE2gDtV7i7TEJG7GLqMATWr0lwv4cW5CwO2CSgDwNXXTJemC6/hAmLR0Sr71cOJ0WgY/iuDRj6uEM6E3yy+T+edjEmuFWVMbqKLa4LZlfOfLOLq9UUsJZWwJeRvGh8ur+lhQYRuUcRvSay5VbHqEumsiKKaXJLB79x/VI5VCzQ1MUXCquybTS8Zlp1YJZtDOvqKiSfjCCI2O1L1/KrzFJQU1nnS0xbPkzm5Y650jvvD06ZlVC9uo3w3T/18RGiVsEl71fwSlTZcTOuAS024ma7ebrKPePwLeP4z38H3Kv1/774uwmKNjSm34UuIfelbhvtRhbe+vgsW1Z0qd/fZxc96qSnbr+F0TDoH3v07wn/5h6v47UoSLVpBTmwBmlhpiZVVI7JVPc+IbSZ/HHLGW2RZWWpPHO7F867HdMuuLW+4J6M/+gl+/r/P43Of+xz+cmQCLS2t+nZC9gp3zWe9fvAKTrz0Nr7+xrfMGZbvyqZn8RLewHvfVDNS1GSQb8P1ljURReJf/xpe+sYpvPHeN/Hcuvh662r5Jbz99Tfwra8qd6ZZ1ttfx1vf/aqsV6atV+7dD39qpwl57pFj+NSxQzjQ04NCVy9WHCJOnd16yGoOJDM5JFIZrOmWXBrZXBZn7r9HLLaCmGwFZFIJPaTTKXS2FdAiaqgVdukZiJBm5Llv4q03nkfs28+asxifxbdF4N7SBU5PgMAbp3DxWdNleOJr+F5MjbrdBhe/jWeLZVkCV8kG5erWpjkJpdbyXQItuSajINbbciaD68ksfv7+R3h/zbDOFvIaPllNYk3/tYG87qY8cbAbf9H3hIhdDplcHis3PtTTXrn6Cyz9w3/HCVc//t1/+m/oEdEkZC/BDzSTjbgDlhy/RbkbtLS04J6uLrjuOQCv61F47+vVw5c6s/gPzgfxFxKeue8wnjp2FH/y5CNwiB2Xz4vVJvuurizroVWee1oPn8TBB34PHR0dRsaEEHIXwp/a2SfkxFpbWFgQCy6ruyNvLq0gLxJ38MhR5NWkk2wGl3/8D3radrH0/tVzz+K+++6jyJE9CS05shEck9tntLW16aJ1/PjDeOKJJ/Dp3+mH89GHUVhdwNpH7yG1dAuuhx/Qw1/6/rWkO06BI4Tc9VDk9iFqmntrayuOHTuGM/1n8NnPfBZ9J134wuef1QPFjRDSLFDkiG7lHTx4UBc/FQghpFmgyBFCCGlaOPGEEHLXoSaeELIRauIJRY4QQkjTQnclIYSQpoUiRwghpGmhyBFCCGlaKHKEEEKaFoocIYSQpoUiRwghpGmhyBFCCGlaKHKEEEKaloa8DD49PW0uEUIIIXuD4eFhfvGEEEJI80J3JSGEkKaFIkcIIaRpocgRQghpWihyhBBCmhaKHCGEkKaFIkcIIaRpocgRQghpWihyhBBCmhaKHCGEkKaFIkcIIaRpocgRQghpWihyhBBCmhaKHCGEkKaFIkcIIaRpocgRQghpWihyhBBCmhaKHCGE7DDxeNxcIrtNg0QugoDDAUdFcLsDiPDckh0mHplAwGNddx54AhGsv+zimPB4MFEWUf26NYJcu8U0lfvVYitp7zTV2q6O3cQO37NxRAJSjlWmnJPApgvco8c3Xn79yeVXIhLQ2zo8PLw+rt5+VePWX8ORgAOeigOitpWuXxOpR/k1beVdGeqnUddHeWkbnc/tl6VCqTzV9vVttYhPeKRslXZ9Xg205AZwIaZB06wQw6tnrmDwxWDFQSGkgcjN6xoMoW8sZl530xjDIFxlPYbCiZP9UczHzNUibgTLrlsrTMJrpti7qBv6djr9yrbLsesLYdC1lTy3UgfVUbnk7Ixh2iwzNj0GKbBm51WOF5PaLEac5uqeQNrvGgXM6y8W7sfcoHU8JG5wCv1hDbOzs9AkbmrQ1rHX269q3Ppr2NXnRjR0ydbHRjAz5RYDYwoztlsgfm1OTncfXOb65q77yjQx/fpw6WKi2Oz53E5ZKsTgw6h5Lztx1idtHT1vHj87EZwfjcLtOyupFOV57aC70gnvOR8GLodw0d5eQhqG3GTjU/CHpePzWj2fuu6CcE+Nr+t4vUN+TNnvfFKBHLuRWcSCwOhw5RN7I4hhPiod0Dmv2RlJiU4RrrC/oqO+i4jMYModxDnz+nN6z8HnNoUofg1z8GPI6sm9Q7I2h2uqofX2qxNXeQ07z/rgjs7LkTVRZbp9GBNBmNMLMojN20Vgu8j1UVbeTp9PJ0b0e3lGFzbnyJgcv3Lx1lHHS2LGajz97MKY3BmcKpYdRzCgnjICCLjlryh06UCoJ0I3AhJfZsa6LbNT4srMYCMvyyR1B+wW4/q84vLE7zbTGnkZKQ3q5BWXg1ysD9lTxC8hFLV1IhbOEcxaT/zxCXis8+fqg3vumu062QZlbiQJnsA6MZ2/ZLiorPhyb5wIc8BT3L/c/aOuW49ctyrerHPN8tRT9KDc3FGMFi2venlvnvUd5xbqsOHxiSJ0qcKd7J2ENjti64DlOBTzsLu/jONTys9or0fKCHgq3dRm2gnrXEg+ZRWpVYaiXr4VrKu76vitxXlEy6wnF/osIau3X724ymvYeRJiHxY7/vilEKL9J+E92W8TGsO6850t5bg94oio/P1DNgtsM+ezUXghGr/uQTUyMwWU1akCMecaQFjzY0C7EDNXdWKaCLqGgQuyZKDWB2yJYhcGNHkMN9dUHvb4mHZhQPaXeH1L7II2YCtDz9uKs8qqmZda92thczV2wb+uXrXzInuWsJxHdV7N1Y2JaUG3WwtaJ968TtRtsC64g+b1oNJY+xjp/daFJMSCbklv1cHMT/Y1ksi1pOKLeakqS/wG1627WMHNlFdqz9au4/J9y7HHbaUOG6UVYkHN75Z66cfJrfmD1rGyUOfI1g5JL4/DtvzL21s6VmZZFceymI9cK+5iPeqVsVG+9bG3t9p+lXlbrDtONsrjKq9he55Gu4wiVfvNffT22fM2j021UHbdV4uXfOzV3/B8bras8jYZVLmG193zRv6lJFXKM2Nuk+oNGfCXhMRIUyGEunBZFa6Mr5K+yHbyUqInF/W6/DbKi+xZtixyapfKG6LazWVngzRlHUi1tPZtVeI33L+Cmunr5210lMZ9aXSI9craoB5bqXNZWhuxsDwAlDrIUse/2XpVSVe3XhvsW6R+vuuPY4mYfj2W9t2syFXuZ6daXPk1bC9H1d1qv03wVB5l9ajXfotqaUzRsT20FdnW+bRQaYz9KoM7aD20WdiFXFBtK6vP+vJ2cOKJhujkaMlkjb+NK7iMl12Wi0CC62XZcgVvV/MF6Ontrk4b1eKcp2RLjbzEkJ2MhXEm9BpcevluBIJmwi3nRfYMynVjLm6W2x6Xi0cMV1bxGh6F5UnaEH2Mph8ny6415W4yx2mqsdnyNsjbOTJbvC9nN5q5UZnXVtq82bROL7wjI5iclTpJz1mcUFCtHdXQ0yk3qVlOsaw6x9KiXhkb5FvrOKrZfa7BOQRjpYkxzpP9QJl7PA41/6PfVnC1/SxqxVUdl1PjVvpYnuUeNSZqqHE55c5z95WcptvHHO+2u7Itap3PTVM58SQGyQbR0DUz3sJo19S44YrX27bBWOMujMmZ6MKxXgg1TS6oajWsJzTV4uqJokINiEajepmxsOz98ovQdW47eZG9gfMsfBWzyHT0cTj72I2N2xqXiyDgGsT80HRxNpk8Rm9eaKsJWt1OfQvlbTnv2ujjOsUxjq20eYO0ahp7cWaeDf1hxaz7RqJvoaerNiNvvViso14Z28hXF6NRrBcq1a4yQTAmalh6U3M/oV7c+nE5dR/MYWZmrqzDVyIbDZ3HzFwjxuOqsJnzuW1EUCfD8EdHcb7i/jbGjEO4JPf5+CbGGndP5PRBQ7HkpMZW2+NidzrctV4xcOH0gC29PgFELj59pTIveVo5L1ZhrcFHte+6ciwR22JeZA/hxMiYPNWq6dXFiQPq/MmTt3+seqekOgSoG8Rc3zKqk3KaHYk5EK8vW9gH4iU+MChP1z4Y96G61uShruxaU3Wtd61tVJ7FdvKuRPaxOtdz9r02WwdFnbRqdqF0WsMVTx+GqFrny5icUWxHzQeWyvaqpNa7UhtRr4wt5qteYaklRrpg2h7C9FmA5kNHvf3qxSnWXcPGqwVTU9EyK9E43lOYim79Qac65jVlWYubOp+3gxfnRCMsq62IcwRjco5Cw1JO8d6qgzylNADlB601fmZH+XQHSj7XAb9tkLJaHrJNTT7R0w9o9gFtldcFW14bjf+pySYDVrl6XmaETp28OD6354mFbYPfEtxyckvnb/2YUGlMQ10npf0qQylNycevxkjEMjHTuDW/3z6hwcjP7baN2/grxy9iWtBfK768LEX98lReRpxR13p5V1Kt7W59n/KJA1urQ/20CqOO6hgVg/186UjdiudT8ihWqPL4qP6k1N7ySRGVaausVy1DUS/fcvQxKiudLRTHpMzjYVwTqhxrc+39NsxTKF3DJlJOtfFpPa+yhAp1LNbnbwUjefU0ta7n2udzs2WVX/dF9Pu3Spze3opjoLO+PIfaLAuE7B+Um2VmCNokbXWyO6jPejmdDTGnDHgNb5pddFcSske4rXE5QrZOQwVOwWt409CSI4QQ0rTQkiOEENK0UOQIIYQ0LRQ5QgghTQtFjhBCSNNCkSOEENK0UOQIIYQ0LRQ5QgghTQtFjhBCSNNCkSOEENK0UOQIIYQ0LRQ5QgghTQtFjhBCSNNCkSOEENK0UOQIIYQ0LRQ5QgghTQtFjhBCSNNCkSOEENK0UOQIIYQ0LRQ5QgghTUuDRC6CgMMBR1lwwx0IIhI3k+iodG4Ey7bdSRpVn73Wrn1EfAIBj3XNeRCImNvLUOfHgwnb+YlHAvBY16onUBZXYv1+qjy1X0C/sFW8VXYpeAITqHcpxCc88FiZbrP+ZfvVrL9Q0c6y7DcsO46I1NVRvVJClXrtAOp41awCIRvQQEtuABdiGjTNCm/i1dMhDLrsnb8Xk1oUo05z9Y7TqPrstXbtF6STdY0CYzH9mouF+zE3uL7TjQQGMWUu60jnPjw4B595vcZ8wOhwfWEyMMsLxjDptU62XN9l130MY30huDy18ovgfKgfYyNq/23Wv3K/Mam/q0LAFEqQVTvDZjrfHAaL9apfdiSghM+F8VDU2NBwpPxNCqRzRBo4XqV9hGyCHXRXOuEdjSJ2AXj5xeAmOhBCtkhkBlPuIM6ZguP0noPPHcV8TF/VUVbAeF8QfnNdxzmCWW0Wus6o1bN9cEfnYdutCnFMeERs/GHMWjtWRa77s76a+cUnxjHnOyePRcJ266/jRp/L2m9I4udwreImi18KIeofw4iVv4iFPxrCJZVug7K9k4ZoT/vcxoY7ihfnRKDHd9pkJE3Jjo/JOZ/3YeDyVfOGV09vlmVnLgcDcJvuFLdEKDeSfb1EHMGAG253AAG3coVGbMJZmZcbAdu+9jz1uOIjob0+CqMMI52UH7CLc70ybPnEgxLPp85dwTsJbXZEZMUihnm74aEstpAP0yMnzQ3V0cXA3QeXuV6NSMCFUQQRm9TlqQ5xRHRxGTKErIw4Loll1H/SrPG26+/FkKheSFcrlWxcxFfErJRRDVzos4Rso7K3wPylCpeoeVsogXaUWbTqQcEBz0TEeGBAVCxQy5qTuIAHHtk/4JG/Zfe39CMn+xENXSrbRsimkKe1BhDW/BjQLsTM1TLscZXL0OAPa/pq7II2IOsDZet+SWUQ9kucrYDYhQF9X4OKvMJ+274qTpbNXWMX/BoGLhjp9LhSvVUZxTzkf2vdYKMyarWf7BaxoFtD8ZzEtKDbrQWNkyXnx1q2EQtqYqfIPm6teJrLMPbz+1W+0NzrMjCvicrgLl1vZejlWfVbz9bqL9vcUidVN1WeubUMvTzZz6xMLGy0d307KssuoW+vfnAEs/3uoNleuWdUelk3Sqiot1Uffb08Tt1r9nqtL7faMSBkY+7w7MoBXDjnNZ4mnadwRtZ9ZetX8Lb+6BbBzJTEPV967tQtxKkZm8Vky8s7ZNtXMYXXLsqToaw7R+UJNjpqe4K1MMoo5iH/e89d2EIZ5E6irHVjuGxSt6DiE8MI+abrWze621KNR/mqjoUZRDE11Y9wOKgG7qqkEQu+Ykwu3D+FwWpjfLH5mhbj1uqvLKJxYEzD7OQsNDVkVTmpRCHtmw73IzTo0q2s4Rmgv4r3sbLsrSHtnx6B4fWUe8buEtUtzmjJ4rTcp+vapO49N3xnSxFO5fItu/cU5a5cQjbDzotc/G2RgjM4Va+z2Qg9j8t42WW6RFRwvSxbNiMyXkzGwjgTeg0uff9yV2aRavUsE1qyV1FuMdfgnHTS1jib4RaMjhqdu8NhucaUq2z9yXR6RzBm64zLUSImnb+ZZuMJKurhKLiJMb4SW65/5DxG+8dQ9Jx6JzEmwlptzMopcUrIlQDPTp5Fn2wrukuF9WU3Fu+Q33QzGm3yD1WR0fg1zJntK93fo7LFPs6oXK3mIiFbYMdFLn4xhMtVxye2gGnlXSh7YlZBbozN3JhOEbpoVN8nFhbZevnF9dP9qwlaIwSa7Ch6J61bIfZO2omRWft1EobftLiqTxqJ49qcuVgH76TkEx3F+QYOuG6n/nFV2blrG4htFeKXEIqqCSvmatWyG4yaFKMsu4gq249qGgfnSfSvs4hVsNdr+2OGZH+zgyIXRyTohhhcuovv9lBuD7HkpHexbuy45O1wb2LWppoIsi5dNeGqLEPqf16sxdsVaLJzFN1sW+ykZT+HmhxkXhRxZRlJ5293l1VHHpbCfkwN1ptYpK4bsUKquSVdFbM4t1l/3ZWnC4d5pUYmMF7h7tNRrxBIOw0Dz6qXD3qy7R67dSgL2HbPqNcdrDJ0TJfleK3JOAojzaj9/hYBLp+0oigJNCGbpYEiV+FOdLyI1676EI5t0traAO9kDGG8BpeZvyt0BuE3q42tVeAcxZu+q3jR2m9QbLNw9bEHVcaFYhkuWbqwidl0FXB25a4RmVFvj1W4uSRUc0mW4Z1ELAiMm/u5xrfQ2XvPIeiewmBxim5l+S6Mq1mYZTMXTZxn4ZN9Z8xdt13/irE212AI/WFz/M4UNr0IlU7aGdLzd2FwrlSvbZddjdB48Z6p1nbdZRmtdFW60KeETcpXh9K4v6181P3dj/C0LR/9lQe7eBKyORya8gsQQnYFZaEMY3qDd+2aDCW8w8B0NeHfJPvyuJGGcIdnVxKyv1AvZPeHzu8jS99wk8J3dtsCJ2ac7SsxhGwNihwhu8p++nqH+kiC4Sadvg2BUi+7Y2w7rzcQQnclIYSQJoaWHCGEkCYF+P+4Ocs+UzAjewAAAABJRU5ErkJggg==" /></p>
+<ul>
+<li><p>TOTAL DIMENSION = 244 KBytes = 248921 Bytes</p></li>
+<li><p>“TRUE” = 4char * 1Byte/char = 4Bytes –&gt; 4Bytes * 7814 = 31256
+Bytes</p></li>
+<li><p>“FALSE” = 5char * 1Byte/char = 5Bytes –&gt; 5Bytes * (9668-7814)
+= 9270 Bytes</p></li>
+<li><p>MOVIE = 31256 Bytes + 9270 Bytes = 40526 Bytes</p></li>
+<li><p>REMAINING = 248921 - 40526 = 208395 Bytes</p></li>
+</ul>
+</div>
+<div id="clean-more" class="section level3">
+<h3>CLEAN MORE</h3>
+<p><img src="data:image/png;base64,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" /></p>
+<ul>
+<li><p>TOTAL DIMENSION = 218063 Bytes</p></li>
+<li><p>“M” and “T” have 1 char</p></li>
+<li><p>1char * 1Byte/char = 1Byte –&gt; 1*9668 = 9668 Bytes</p></li>
+<li><p>REMAINING = 218063 - 9668 = 208395</p></li>
+</ul>
 </div>
 </div>
-<div id="update-data" class="section level1">
-<h1>UPDATE DATA</h1>
-<p>I datasets sono stati riformati togliendo eventuali dati inutili alla
-ricerca.</p>
-<div id="amazon-1" class="section level3">
-<h3>AMAZON</h3>
-<pre class="r"><code>filePath = &quot;../../CLEAN_DATA/&quot;  # www/CLEAN_DATA
-
-(amazonPath = paste(filePath,&quot;AMAZON/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/AMAZON/&quot;</code></pre>
-<pre class="r"><code>colnames(amazon) = tolower(colnames(amazon))
-write_csv(amazon,paste(amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
-colnames(amazonMovies)  = tolower(colnames(amazonMovies))
-write_csv(amazonMovies,paste(amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;)  )
-colnames(amazonShows)  = tolower(colnames(amazonShows))
-write_csv(amazonShows,paste(amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;)  )
-write_csv(amazonGenres,paste(amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonRatingTypes,paste(amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonCountries,paste(amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="disney-1" class="section level3">
-<h3>DISNEY</h3>
-<pre class="r"><code>(disneyPath = paste(filePath,&quot;DISNEY/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/DISNEY/&quot;</code></pre>
-<pre class="r"><code>colnames(disney) = tolower(colnames(disney))
-write_csv(disney,paste(disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;)  )
-colnames(disneyMovies) = tolower(colnames(disneyMovies) )
-write_csv(disneyMovies,paste(disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;)  )
-colnames(disneyShows) = tolower(colnames(disneyShows))
-write_csv(disneyShows,paste(disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;)  )
-write_csv(disneyGenreTable,paste(disneyPath,&quot;disneyGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyRatingTypes,paste(disneyPath,&quot;disneyRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyCountries,paste(disneyPath,&quot;disneyCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="high-gross" class="section level3">
-<h3>HIGH GROSS</h3>
-<pre class="r"><code>(grossPath = paste(filePath,&quot;GROSS/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/GROSS/&quot;</code></pre>
-<pre class="r"><code>colnames(HighestGrossers) = tolower(colnames(HighestGrossers))
-write_csv(HighestGrossers,paste(grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;)  )
-write_csv(grossGenreTable,paste(grossPath,&quot;grossGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(grossDistributors,paste(grossPath,&quot;grossDistributors.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="movielens-1" class="section level3">
-<h3>MOVIELENS</h3>
-<pre class="r"><code>(movielensPath = paste(filePath,&quot;MOVIELENS/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/MOVIELENS/&quot;</code></pre>
-<pre class="r"><code>colnames(movies) = tolower(colnames(movies))
-write_csv(movies,paste(movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;)  )
-colnames(ratings) = tolower(colnames(ratings))
-write_csv(ratings,paste(movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;)  )
-colnames(users) = tolower(colnames(users))
-write_csv(users,paste(movielensPath,&quot;users.csv&quot;,sep=&quot;&quot;) )
-write_csv(workTable,paste(movielensPath,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(ageTable,paste(movielensPath,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(movieLensGenreTable,paste(movielensPath,&quot;movieLensGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(uszips,paste(movielensPath,&quot;uszips.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="netflix-1" class="section level3">
-<h3>NETFLIX</h3>
-<pre class="r"><code>(netflixPath = paste(filePath,&quot;NETFLIX/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/NETFLIX/&quot;</code></pre>
-<pre class="r"><code>colnames(netflix) = tolower(colnames(netflix))
-write_csv(netflix,paste(netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
-colnames(netflixMovies) = tolower(colnames(netflixMovies))
-write_csv(netflixMovies,paste(netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;)  )
-colnames(netflixShows) = tolower(colnames(netflixShows))
-write_csv(netflixShows,paste(netflixPath,&quot;netflixShows.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixGenres,paste(netflixPath,&quot;netflixGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixRatingTypes,paste(netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="oscars-1" class="section level3">
-<h3>OSCARS</h3>
-<pre class="r"><code>(oscarPath = paste(filePath,&quot;OSCARS/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/OSCARS/&quot;</code></pre>
-<pre class="r"><code>colnames(awards) = tolower(colnames(awards))
-write_csv(awards,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</code></pre>
-</div>
-<div id="sequels-1" class="section level3">
-<h3>SEQUELS</h3>
-<pre class="r"><code>(sequelPath = paste(filePath,&quot;SEQUELS/&quot;,sep=&quot;&quot;))</code></pre>
-<pre><code>## [1] &quot;../../CLEAN_DATA/SEQUELS/&quot;</code></pre>
-<pre class="r"><code>colnames(sequels) = c(&quot;title&quot;,&quot;year&quot;,&quot;rating&quot;,&quot;duration&quot;,&quot;genres&quot;,&quot;votes&quot;,&quot;directors&quot;,&quot;seriesTitle&quot;,&quot;order&quot;)
-
-write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot;  )
-write_csv(seqGenres,paste(sequelPath,&quot;sequelGenres.csv&quot;,sep=&quot;&quot;))</code></pre>
-</div>
-<div id="subindex-code" class="section level3">
-<h3>SUBINDEX-CODE</h3>
-<pre class="js"><code>buttons = document.querySelectorAll(&quot;.openSubIndex&quot;)
-for (let index = 0; index &lt; buttons.length; index++) {
-    buttons[index].innerText = &quot;Drop INDEX&quot;
-    buttons[index].addEventListener(&quot;click&quot;,()=&gt;{
-    buttons[index].parentElement.children[2].style.display = &quot;inline&quot;
-    })
-}</code></pre>
-<script type="text/javascript">
-buttons = document.querySelectorAll(".openSubIndex")
-for (let index = 0; index < buttons.length; index++) {
-    buttons[index].innerText = "Drop INDEX"
-    buttons[index].addEventListener("click",()=>{
-    buttons[index].parentElement.children[2].style.display = "inline"
-    })
-}
-</script>
-<p>Questo codice aggiunge un evento di ascolto a tutti i pulsanti
-“&gt;&gt;&gt;” , responsabili dell’apertura dei relativi subIndex</p>
-</div>
+<div id="conclusions" class="section level1">
+<h1>CONCLUSIONS</h1>
+<ul>
+<li><p>Saving the files according to the CLEAN format allows the data to
+be interpreted as logical by RSTUDIO, so accessing and checking the
+values ​​is faster and easier</p></li>
+<li><p>the three datasets provide the same amount of information, so the
+larger the file size, the greater the redundancy will be</p></li>
+</ul>
 </div>
 
 
