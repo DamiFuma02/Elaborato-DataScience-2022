@@ -67,7 +67,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
     -   YEAR
 
-    -   AMAZON, DISNEY, NETFLIX
+    -   STREAMING SERVICES
 
     -   RATING
 
@@ -93,7 +93,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
     -   Corrispondenza modelli RT e IMDB
 
--   numero di film in base al genere prevalente
+-   prevailing rating by country
+
+    -   [AMAZON](./TRANSFORM/Amazon.html#countryRating)
+
+    -   [DISNEY](./TRANSFORM/Disney.html#countryRating)
+
+    -   [NETFLIX](./TRANSFORM/Netflix.html#countryRating)
 
 -   gross / avarage rating
 

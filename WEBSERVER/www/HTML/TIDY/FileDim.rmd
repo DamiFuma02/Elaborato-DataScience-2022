@@ -14,26 +14,34 @@ library(dplyr)
 # AMAZON DATASETS
 
 ```{r}
-amazDirty = read_csv("../../DATASETS/AMAZON/amazon.csv")
-amazClean = read_csv("../../CLEAN_DATA/AMAZON/amazon.csv")
-spec(amazDirty)
-spec(amazClean)
+amazDirty = read_csv("../../DATASETS/AMAZON/amazon.csv") %>% select(title,type)
+amazClean = amazDirty  %>% mutate(movie = (type=="Movie"))
+amazCleanMore = amazDirty  %>% mutate(movie = ifelse(type=="Movie",1L,0L))
+```
 
-write_csv(amazDirty %>% select(title,type),"./amazDirt.csv")
-write_csv(amazClean %>% select(title,movie),"./amazClean.csv")
-write_csv(amazClean %>% select(title,movie) %>% mutate(movie = ifelse(movie == TRUE,"M","T"))       ,"./amazCleanMore.csv")
+```{r}
+spec(amazDirty)
+levels(factor(amazDirty$type))
+spec(amazClean)
+levels(factor(amazClean$movie))
+spec(amazCleanMore)
+levels(factor(amazCleanMore$movie))
+# 1 = TRUE, 0 = FALSE
+
+write_csv(amazDirty,"./amazDirt.csv")
+write_csv(amazClean,"./amazClean.csv")
+write_csv(amazCleanMore  ,"./amazCleanMore.csv")
 
 paste("ALL FILES HAVE"  , nrow(amazClean) , "ROWS")
 nMovies = nrow(amazClean %>% filter(movie)) 
 paste("THERE ARE",nMovies,"MOVIES, THE OTHERS ARE TV-SHOWS") 
 
-"1 CHARACTER = 1 BYTE"
+print("1 CHARACTER = 1 BYTE")
 ```
 
 ### DIRTY
 
 ![](images/amazDirt.png)
-
 
 -   TOTAL DIMENSION = 260442 Bytes
 
@@ -67,7 +75,7 @@ paste("THERE ARE",nMovies,"MOVIES, THE OTHERS ARE TV-SHOWS")
 
 -   TOTAL DIMENSION = 218063 Bytes
 
--   "M" and "T" have 1 char
+-   "0" and "1" have 1 char
 
 -   1char \* 1Byte/char = 1Byte --\> 1\*9668 = 9668 Bytes
 
@@ -75,6 +83,6 @@ paste("THERE ARE",nMovies,"MOVIES, THE OTHERS ARE TV-SHOWS")
 
 # CONCLUSIONS
 
--   Saving the files according to the CLEAN format allows the data to be interpreted as logical by RSTUDIO, so accessing and checking the values ​​is faster and easier
+-   Saving the files according to the [CLEAN MORE] format allows RSTUDIO to intepret the data as logical. Accessing and Checking operations are faster and easier
 
 -   the three datasets provide the same amount of information, so the larger the file size, the greater the redundancy will be

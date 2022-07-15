@@ -8,6 +8,7 @@ output: html_document
 ```{r}
 library(readr)
 library(dplyr)
+library(ggplot2)
 ```
 
 # INDICE
@@ -16,21 +17,63 @@ library(dplyr)
 
 ```{r}
 source("../IMPORT/dataScript/amazonData.r")
-spec(amazon)
 ```
 
-[RatingTypesTable](https://www.primevideo.com/help/ref=atv_hp_nd_cnt?nodeId=GFGQU3WYEG6FSJFJ)
+# COUNTRY RATING {#countryRating}
 
-# RATING PLOT
+### MOVIES
 
 ```{r}
-(allTypes= amazonRatingTypes$rating)
-dati = amazon %>% filter(!is.na(rating))
+
+countStates = vector(mode = "integer",length = length(amazonCountries$country))
+
+for (i in 1:length(amazonCountries$country)){
+  countStates[i] = nrow( amazonMovies %>% filter(grepl(amazonCountries$country[i],country )) )
+}
+# DESCENDING ORDER BY OCCURRENCES
+mostFreqCountries = amazonCountries$country[order(desc(countStates))]
+ratingCountry = vector(mode = "character",length = length(mostFreqCountries))
+
+for (i in 1:length(mostFreqCountries)){
+  ratingCountry[i] = (amazonMovies %>% filter(grepl(mostFreqCountries[i],country)) %>% group_by(rating) %>% summarise(count = n()) %>% arrange(desc(count)))$rating[1]
+}
+
+(moviesRatingCountry = data.frame(
+  country = mostFreqCountries,
+  rating = ratingCountry
+))
+
+ggplot(moviesRatingCountry) + geom_point(aes(rating,country))
+
+
+
+
+
 
 ```
 
-## MOVIES
+### TV-SHOWS
 
 ```{r}
-View(amazonMovies)
+countStates = vector(mode = "integer",length = length(amazonCountries$country))
+
+for (i in 1:length(amazonCountries$country)){
+  countStates[i] = nrow( amazonShows %>% filter(!is.na(rating)) %>% filter(grepl(amazonCountries$country[i],country )) )
+}
+# DESCENDING ORDER BY OCCURRENCES
+mostFreqCountries = amazonCountries$country[order(desc(countStates))]
+ratingCountry = vector(mode = "character",length = length(mostFreqCountries))
+
+for (i in 1:length(mostFreqCountries)){
+  ratingCountry[i] = (amazonShows %>% filter(!is.na(rating)) %>% filter(grepl(mostFreqCountries[i],country)) %>% group_by(rating) %>% summarise(count = n()) %>% arrange(desc(count)))$rating[1]
+}
+
+(showsRatingCountry = data.frame(
+  country = mostFreqCountries,
+  rating = ratingCountry
+))
+
+ggplot(showsRatingCountry) + geom_point(aes(rating,country))
+
+
 ```

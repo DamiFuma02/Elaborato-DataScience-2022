@@ -8,3 +8,9 @@ output: html_document
 # UNITING DATA {#unitingData}
 
 CORRISPONDENZA AMAZON DISNEY NETFLIX
+
+```{r}
+data = inner_join(amazon,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(gross,license,year)
+
+ggplot(data) + geom_point(aes(year,gross, color = license))
+```

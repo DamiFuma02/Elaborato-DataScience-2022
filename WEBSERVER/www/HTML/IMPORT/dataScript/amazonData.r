@@ -1,6 +1,6 @@
 
 filePath = "../../CLEAN_DATA/AMAZON/"
-amazon <- read_csv(paste(filePath,"amazon.csv",sep=""),col_types = "?")
+amazon <- read_csv(paste(filePath,"amazon.csv",sep=""),col_types = "ccccicicl")
 amazonCountries <- read_csv(paste(filePath,"amazonCountries.csv",sep=""),col_types = "?")
 amazonDirectors <- read_csv(paste(filePath,"amazonDirectors.csv",sep=""),col_types = "?")
 amazonGenres <- read_csv(paste(filePath,"amazonGenres.csv",sep=""),col_types = "?")

@@ -6,42 +6,76 @@ output: html_document
 ---
 
 ```{r}
-library(dplyr)
 library(readr)
+library(dplyr)
 library(ggplot2)
+```
+
+# INDICE
+
+# IMPORT
+
+```{r}
 source("../IMPORT/dataScript/netflixData.r")
-source("../IMPORT/dataScript/grossData.r")
 ```
 
-```{r}
-spec(netflixShows)
-View(netflix)
-spec(netflixMovies)
-```
+# COUNTRY RATING {#countryRating}
 
-# COUNTRY-GENRES {#genreAPP}
+### MOVIES
 
 ```{r}
-spec(netflix)
-genreCountry = function(c){
-  countryData = netflix %>% filter(grepl(c,country))
-  prec = 0
-  genTop = ""
-  for (i in 1:length(netflixGenres$genre)){
-    a = nrow(countryData %>% filter(grepl(netflixGenres$genre[i],Genres)))
-    if (a > prec){
-      prec = a
-      genTop = netflixGenres$genre[i]
-    }
-  }
-  return(genTop)
+
+countStates = vector(mode = "integer",length = length(netflixCountries$country))
+
+for (i in 1:length(netflixCountries$country)){
+  countStates[i] = nrow( netflixMovies %>% filter(grepl(netflixCountries$country[i],country )) )
+}
+# DESCENDING ORDER BY OCCURRENCES
+mostFreqCountries = netflixCountries$country[order(desc(countStates))]
+ratingCountry = vector(mode = "character",length = length(mostFreqCountries))
+
+for (i in 1:length(mostFreqCountries)){
+  ratingCountry[i] = (netflixMovies %>% filter(grepl(mostFreqCountries[i],country)) %>% group_by(rating) %>% summarise(count = n()) %>% arrange(desc(count)))$rating[1]
 }
 
+moviesRatingCountry = data.frame(
+  country = mostFreqCountries,
+  rating = ratingCountry
+)
 
-(countryGenTable = data.frame(
-  country = netflixCountries$country,
-  FavGenre = unlist(lapply(netflixCountries$country,genreCountry))
-))
+moviesRatingCountry %>% group_by(rating) %>% summarise(nCountries = n(), countries = paste(country,sep=","))
+
+#ggplot(moviesRatingCountry) + geom_point(aes(rating,country))
 
 
+
+
+
+
+```
+
+### TV-SHOWS
+
+```{r}
+countStates = vector(mode = "integer",length = length(netflixCountries$country))
+
+for (i in 1:length(netflixCountries$country)){
+  countStates[i] = nrow( netflixShows %>% filter(!is.na(rating)) %>% filter(grepl(netflixCountries$country[i],country )) )
+}
+# DESCENDING ORDER BY OCCURRENCES
+mostFreqCountries = netflixCountries$country[order(desc(countStates))]
+ratingCountry = vector(mode = "character",length = length(mostFreqCountries))
+
+for (i in 1:length(mostFreqCountries)){
+  ratingCountry[i] = (netflixShows %>% filter(!is.na(rating)) %>% filter(grepl(mostFreqCountries[i],country)) %>% group_by(rating) %>% summarise(count = n()) %>% arrange(desc(count)))$rating[1]
+}
+
+showsRatingCountry = data.frame(
+  country = mostFreqCountries,
+  rating = ratingCountry
+)
+
+data = showsRatingCountry %>% group_by(rating) %>% summarise(nCountries = n()) 
+
+ggplot(data) + geom_col(aes(rating,nCountries))
 ```

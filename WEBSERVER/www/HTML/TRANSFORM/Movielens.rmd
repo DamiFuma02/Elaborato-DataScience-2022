@@ -62,25 +62,55 @@ data.frame(
 
 # USER-LOCATIONS {#userLocation}
 
+```{r}
+# choices = c(showMap, choiceParam)
+usersMap = function(choices,param){  
+  if (param  == "O"){
+    occID = workTable[workTable$workType == choices[2],]$workID
+    dati = left_join(users %>% filter(occupation == occID), ratings, by = "userid" ) %>% group_by(userid) %>% summarise(MeanRating = mean(rating), zip = levels(factor(zip))) %>% group_by(zip) %>% summarise(userCount = n())
+    dati = left_join(dati,uszips  ,by="zip") 
+    dati = dati %>% filter(!is.na(lat))
+    plot = plot_usmap(data = dati,values = "userCount",labels = (choices[1] == "YES") , label_color = "white")  +  scale_fill_continuous( low = "red", high = "green", name = paste(choices[2],"users count"), label = scales::comma ) + theme(legend.position = "right")
+    return(plot)
+  } else {
+    movieGenreID = (movies %>% filter(grepl(choices[2],genres)))$movieid
+    meanUserRatings = ratings %>% filter(movieid %in% movieGenreID)  %>% group_by(userid) %>% summarise(MeanRating = mean(rating))
+    head(meanUserRatings)
+    
+    meanUserRatings = left_join(meanUserRatings,users %>% select(userid,zip),by="userid")
+    head(meanUserRatings)
+    
+    meanUserRatings = meanUserRatings %>% group_by(zip) %>% summarise(rating = mean(MeanRating))
+    head(meanUserRatings)
+    
+  
+    meanUserRatings = left_join(meanUserRatings,uszips ,by="zip") %>% select(rating,zip,lat,lng,fips)
+    
+    meanUserRatings = meanUserRatings %>% filter(!is.na(lat))
+    plot = plot_usmap(data = meanUserRatings, values = "rating",labels = (choices[1] == "YES"), label_color = "white")  +  scale_fill_continuous( low = "red", high = "green", name = paste("User Rating for",choices[2],"movies",sep=" "), label = scales::comma ) + theme(legend.position = "right")
+    
+    return(plot)
+  }
+  
+  
+  
+  
+  
+}
+```
+
 -   Creare una tabella con ogni votazione associata al zipcode dell'utente
 
 ```{r}
+(param = ifelse(  ((floor(runif(1)*2)) == 0),"O","G"))
+if (param == "O"){
+  choices = c(FALSE,workTable$workType[floor(runif(1)*length(workTable$workType))+1])
+} else {
+  choices = c(FALSE,MLGenres$genre[floor(runif(1)*length(MLGenres$genre))+1])
+}
+print(paste("Chosen Param:",choices[2],sep=" "))
 
-meanUserRatings = ratings %>% group_by(userid) %>% summarise(numOfRatings = n(),MeanRating = mean(rating))
-head(meanUserRatings)
-
-meanUserRatings = left_join(meanUserRatings,users,by="userid")
-head(meanUserRatings)
-
-
-# aggiungere info geografiche per creare la mappa
-prova = left_join(meanUserRatings,uszips,by="zip") %>% select(MeanRating,zip,lat,lng,county_fips)
-colnames(prova)[5] = "fips"
-head(prova)
-
-
-plot_usmap(data = prova, values = "MeanRating") +  scale_fill_continuous( low = "red", high = "green", name = "Mean Rating", label = scales::comma ) + theme(legend.position = "right")
-
+usersMap(choices,param)
 
 ```
 
@@ -94,8 +124,7 @@ zipFreq = users %>% group_by(zip) %>% summarise(count = n()) %>% arrange(desc(co
 head(zipFreq)
 # str(userZips)
 
-countZips = left_join(zipFreq,uszips,by="zip") %>% select(zip,lng,lat,count,county_fips)
-colnames(countZips)[5] = "fips"
+countZips = left_join(zipFreq,uszips,by="zip") %>% select(zip,lng,lat,count,fips)
 #View(countZips)
 
 

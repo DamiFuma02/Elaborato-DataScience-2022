@@ -1,8 +1,4 @@
-# IMPORT CLEANED DATA
-names = c("amazon","disney","gross","movielens","netflix","oscars","sequel")
-for (i in 1:length(names)){
-  source(paste("./R/",names[i],"Data.r",sep=""))
-}
+
 # APP FUNCTIONS
 
 # RECCOMENDATION SYSTEM
@@ -109,7 +105,7 @@ usersMap = function(choices,param){  # STRINGA
     dati = left_join(users %>% filter(occupation == occID), ratings, by = "userid" ) %>% group_by(userid) %>% summarise(MeanRating = mean(rating), zip = levels(factor(zip))) %>% group_by(zip) %>% summarise(userCount = n())
     dati = left_join(dati,uszips  ,by="zip") 
     dati = dati %>% filter(!is.na(lat))
-    plot = plot_usmap(data = dati,values = "userCount",labels = (choices[1] == "YES") , label_color = "white")  +  scale_fill_continuous( low = "red", high = "green", name = "Users Number", label = scales::comma ) + theme(legend.position = "right")
+    plot = plot_usmap(data = dati,values = "userCount",labels = (choices[1] == "YES") , label_color = "white") +labs(title = paste("-",toupper(choices[2]),"- USERS COUNT BY ZIPCODE",sep=""))  +  scale_fill_continuous( low = "red", high = "green", name = "USERS COUNT", label = scales::comma ) + theme(legend.position = "right")
     return(plot)
   } else {
     movieGenreID = (movies %>% filter(grepl(choices[2],genres)))$movieid
@@ -124,10 +120,10 @@ usersMap = function(choices,param){  # STRINGA
     
     # aggiungere info geografiche per creare la mappa
   
-    prova = left_join(meanUserRatings,uszips ,by="zip") %>% select(rating,zip,lat,lng,county_fips)
+    prova = left_join(meanUserRatings,uszips ,by="zip") %>% select(rating,zip,lat,lng,fips)
     
     prova = prova %>% filter(!is.na(lat))
-    plot = plot_usmap(data = prova, values = "rating",labels = (choices[1] == "YES"), label_color = "white")  +  scale_fill_continuous( low = "red", high = "green", name = "USERS Mean Rating for selected Genre", label = scales::comma ) + theme(legend.position = "right")
+    plot = plot_usmap(data = prova, values = "rating",labels = (choices[1] == "YES"), label_color = "white")+labs(title = paste("USERS RATING FOR -",toupper( choices[2]),"- MOVIES",sep=""))   +  scale_fill_continuous( low = "red", high = "green", name = "USERS MEAN RATING", label = scales::comma ) + theme(legend.position = "right")
     
     return(plot)
   }
