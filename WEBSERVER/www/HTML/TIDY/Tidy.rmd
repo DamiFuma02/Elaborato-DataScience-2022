@@ -574,7 +574,7 @@ head(netflixCountries)
 # [OSCARS](#indice) {#oscars}
 
 ```{r}
-View(awards)
+#View(awards)
 colnames(awards)[8] = "title"
 ```
 
@@ -588,8 +588,8 @@ if (all(awards$year_ceremony == awards$year_film+1)){
   print("the ceremony premiates the previous year movies")
   awards = awards %>% select(-year_ceremony)
 }
-awards %>% group_by(title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
-View(awards)
+
+#View(awards)
 
 ```
 

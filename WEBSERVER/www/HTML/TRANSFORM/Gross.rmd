@@ -5,12 +5,97 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-# UNITING DATA {#unitingData}
+```{r, include=FALSE}
+library(readr)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(modelr)
+source("../IMPORT/dataScript/amazonData.r")
+source("../IMPORT/dataScript/disneyData.r")
+source("../IMPORT/dataScript/netflixData.r")
+source("../IMPORT/dataScript/grossData.r")
+```
 
-CORRISPONDENZA AMAZON DISNEY NETFLIX
+# GROSS YEAR {#yearMap}
 
 ```{r}
-data = inner_join(amazon,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(gross,license,year)
 
-ggplot(data) + geom_point(aes(year,gross, color = license))
+file = gross
+bestTitles = function(y){
+   return ((file %>% filter(year == y) %>% arrange(desc(gross)))$title[1])
+}
+
+
+colnames(gross)[7] = "duration"
+
+bestMoviesByYear = gross  %>% group_by(year) %>% summarise(title = unlist(lapply(unique(year), bestTitles))) %>% left_join(gross %>% select(-year) ,by="title") 
+
+
+
+plot = ggplot(bestMoviesByYear, aes(x=year, y=gross, size = duration, color = license, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5), name="NOMINEES") + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))  + theme(legend.position="none")
+
+ggplotly(plot)
+
+```
+
+```{r}
+grossYear = gross %>% group_by(year) %>% summarise(gross = sum(gross),filmCounts = n())
+
+
+#View(grossYear)
+ggplot(grossYear,aes(year,gross)) + geom_point(aes(color = filmCounts)) + geom_smooth()
+```
+
+# UNITING DATA {#unitingData}
+
+## AMAZON
+
+```{r}
+
+data = inner_join(amazon,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+
+ 
+
+
+ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS AMAZON MOVIES")  + scale_color_discrete(labels=c("Over 10","Over 13","Over 17","NA"))
+
+
+grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 
+
+
+ggplot(grossYear,aes(year,gross)) + geom_point() + geom_smooth() + labs(title="TOTAL YEAR GROSS AMAZON MOVIES ")
+```
+
+## DISNEY
+
+```{r}
+data = inner_join(disney,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+
+ 
+
+
+
+ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS DISNEY MOVIES")  + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","NA"))
+
+grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 
+
+
+ggplot(grossYear,aes(year,gross)) + geom_point() + geom_smooth() + labs(title="TOTAL YEAR GROSS DISNEY MOVIES ")
+```
+
+## NETFLIX
+
+```{r}
+data = inner_join(netflix,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+
+ 
+ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS NETFLIX MOVIES") + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","Over 17","NA"  ))
+
+
+
+grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 
+
+
+ggplot(grossYear,aes(year,gross)) + geom_point() + geom_smooth() + labs(title="TOTAL YEAR GROSS AMAZON MOVIES ")
 ```

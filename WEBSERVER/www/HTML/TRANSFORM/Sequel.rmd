@@ -7,6 +7,52 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(plotly)
+library(readr)
+source("../IMPORT/dataScript/sequelData.r")
+source("../IMPORT/dataScript/grossData.r")
+source("../IMPORT/dataScript/oscarsData.r")
 ```
 
-UNIRE AMAZON DISNEY NETFLIX
+# GROSS MAP
+
+```{r}
+
+sequelGross = inner_join(sequels,gross %>% select(title,gross,license),by="title") 
+
+
+meanLic = function(listLic){
+  licWeigths =data.frame(
+    wgt = 1:5,  
+    lic = c("NA","G","PG","PG-13","R")
+  )  
+  if (!grepl(",",listLic)) {
+    return(listLic)
+  } else {
+    listLic = unlist(str_split(listLic,", "))
+    listLicWGT = licWeigths[licWeigths$lic %in% listLic,]$wgt
+    licwgt = sort(listLicWGT,decreasing=TRUE)[1]
+    return(licWeigths[licWeigths$wgt == licwgt,]$lic)
+  }
+}
+
+
+plot = sequelGross %>% group_by(seriesTitle) %>% summarise(nFilms = n(),rating = mean(rating), gross = sum(gross), license = unlist(lapply((toString(unique(license))), meanLic)) )  %>% ggplot() + geom_point(aes(rating,gross,size=nFilms, color = license)) + scale_size(range = c(1,5),name="nFILM") + scale_color_discrete(labels=c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))
+
+ggplotly(plot)
+
+```
+
+```{r}
+
+sequelGross = inner_join(sequels,gross %>% select(title,gross,license),by="title") 
+
+sequelGross %>% group_by(seriesTitle) %>% summarise(nFilms = n(),gross = sum(gross)) %>% group_by(nFilms) %>% summarise(nSeries = n(),gross = mean(gross))  %>% ggplot() + geom_col(aes(nFilms,gross, fill = nSeries)) + scale_fill_gradient(low="red",high="green",name="Number of Different Series") + labs(title="AVERAGE GROSS PER NUMBER OF FILM")
+
+
+```
+
+

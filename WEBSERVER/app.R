@@ -19,7 +19,7 @@ mainUI = fluidPage(
   p(id="c",a(id = "startLink","START PRESENTATION", href="./HTML/Presentation.html")),
   
   h3(id = "indexTitle","INDEX"),
-  radioButtons("chosenAPP","CHOOSE THE APP",choiceNames = c("Reccomendation System","MOVIELENS User MAPS"), choiceValues = c("RS","UM")),
+  radioButtons("chosenAPP","CHOOSE THE APP",choiceNames = c("Reccomendation System","MOVIELENS User MAPS","OSCARS INTERACTIVE MAP"), choiceValues = c("RS","UM","OM")),
   actionButton("invia","LAUNCH APP"),
   uiOutput("outUI")
 )
@@ -33,6 +33,14 @@ usersMap_UI = fluidPage(
 )
 
 
+oscars_UI = fluidPage(
+  h2("","OSCAR INTERACTIVE MAP"),
+  radioButtons("license","CHOOSE THE LICENSE",choiceNames = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"), choiceValues = c("G","PG","PG-13","R","NA")),
+  actionButton("sendLicense","SEND"),
+  uiOutput("interactivePlot")
+)
+
+
 
 reccomendAPP_UI = fluidPage(
   h2(id = "","Reccomendation System"),
@@ -40,6 +48,7 @@ reccomendAPP_UI = fluidPage(
   radioButtons("movieType",label = "Choose the movie Type",choiceNames = c("Movie","TV-Shows"), choiceValues = c("M","T")),
   radioButtons("arrangeBy","Arrange BY",choices = c("year","duration","oscarNominees")),
   radioButtons("order","Select Order",choiceNames  = c("Ascending","Descending"), choiceValues = c("A","D")),
+  textInput("age","INSERT YOUR AGE"),
   actionButton("print","SEND"),
   textOutput("printout"),
   tableOutput("printTable")
@@ -77,6 +86,8 @@ server <-  function(input,output){
       reccomendAPP_UI  
     } else if (input$chosenAPP == "UM") {
       usersMap_UI
+    } else if (input$chosenAPP == "OM") {
+      oscars_UI
     }
   })
   output$outUI = renderUI( { appUI() } )
@@ -117,6 +128,17 @@ server <-  function(input,output){
     output$printTable = renderTable({
       reccTable()
      })
+    
+    
+    # OSCARS INTERACTIVE
+    
+    oscMap = eventReactive(input$sendLicense,{
+      oscarMap(input$license)
+    })
+    
+    output$interactivePlot = renderUI({
+      ggplotly(oscMap())
+    })
     
     
     

@@ -95,17 +95,16 @@ reccomendAPP = function(compiledList){
 }
 
 
-
-
-
+# MOVIELENS
 usersMap = function(choices,param){  # STRINGA
   if (param  == "O"){
     # OCCUPATION MAP
     occID = workTable[workTable$workType == choices[2],]$workID
-    dati = left_join(users %>% filter(occupation == occID), ratings, by = "userid" ) %>% group_by(userid) %>% summarise(MeanRating = mean(rating), zip = levels(factor(zip))) %>% group_by(zip) %>% summarise(userCount = n())
+    dati = left_join(users %>% filter(occupation == occID), ratings, by = "userid" ) %>% group_by(userid) %>% summarise(rating = mean(rating), zip = unique(zip)) 
+    dati = dati %>% group_by(zip) %>% summarise(rating = mean(rating),userCount = n())
     dati = left_join(dati,uszips  ,by="zip") 
     dati = dati %>% filter(!is.na(lat))
-    plot = plot_usmap(data = dati,values = "userCount",labels = (choices[1] == "YES") , label_color = "white") +labs(title = paste("-",toupper(choices[2]),"- USERS COUNT BY ZIPCODE",sep=""))  +  scale_fill_continuous( low = "red", high = "green", name = "USERS COUNT", label = scales::comma ) + theme(legend.position = "right")
+    plot = plot_usmap(data = dati,values = "userCount",labels = (choices[1] == "YES") , label_color = "white") +labs(title = paste("<",toupper(choices[2]),"> USERS COUNT BY ZIPCODE",sep=""))  +  scale_fill_continuous( low = "red", high = "green", name = "USERS COUNT", label = scales::comma ) + theme(legend.position = "right")
     return(plot)
   } else {
     movieGenreID = (movies %>% filter(grepl(choices[2],genres)))$movieid
@@ -123,7 +122,7 @@ usersMap = function(choices,param){  # STRINGA
     prova = left_join(meanUserRatings,uszips ,by="zip") %>% select(rating,zip,lat,lng,fips)
     
     prova = prova %>% filter(!is.na(lat))
-    plot = plot_usmap(data = prova, values = "rating",labels = (choices[1] == "YES"), label_color = "white")+labs(title = paste("USERS RATING FOR -",toupper( choices[2]),"- MOVIES",sep=""))   +  scale_fill_continuous( low = "red", high = "green", name = "USERS MEAN RATING", label = scales::comma ) + theme(legend.position = "right")
+    plot = plot_usmap(data = prova, values = "rating",labels = (choices[1] == "YES"), label_color = "white")+labs(title = paste("USERS MEAN RATING FOR -",toupper( choices[2]),"- MOVIES BY ZIPCODE",sep=""))   +  scale_fill_continuous( low = "red", high = "green", name = "USERS MEAN RATING", label = scales::comma ) + theme(legend.position = "right")
     
     return(plot)
   }
@@ -132,4 +131,25 @@ usersMap = function(choices,param){  # STRINGA
   
   
   
+}
+
+
+# OSCARS INTERACTIVE
+
+oscarMap = function(chosenLic){
+  
+
+  bestNominees = oscars  %>% group_by(title) %>% summarise(nominees = n(),winCount = length(winner[winner]), loseCount = length(winner[!winner]))  %>% arrange(desc(nominees))
+  
+  bestNomineesGross = inner_join(bestNominees,gross,by="title")
+  if (chosenLic == "NA"){
+    bestNomineesGross = bestNomineesGross %>% filter(is.na(license))
+  } else {
+    bestNomineesGross = bestNomineesGross %>% filter(license == chosenLic)
+  }
+  
+  
+  plot = ggplot(bestNomineesGross, aes(x=year, y=gross, size = nominees, color = winCount, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5), name="NOMINEES") + scale_color_gradient(low="red",high="green")  + theme(legend.position="none")
+  return(plot)
+
 }

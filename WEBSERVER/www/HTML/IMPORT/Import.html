@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-13" />
+<meta name="date" content="2022-07-16" />
 
 <title>IMPORT DATA</title>
 
@@ -365,54 +365,53 @@ pre code {
 
 <h1 class="title toc-ignore">IMPORT DATA</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-13</h4>
+<h4 class="date">2022-07-16</h4>
 
 </div>
 
 
-<div id="indice" class="section level2">
-<h2>INDICE</h2>
+<div id="index" class="section level1">
+<h1>INDEX</h1>
 <ul>
 <li><p><a href="https://www.kaggle.com/datasets/shivamb/amazon-prime-movies-and-tv-shows">AMAZON</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#amazon">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#amazon">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Amazon.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://www.kaggle.com/datasets/shivamb/disney-movies-and-tv-shows">DISNEY+</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#disney">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#disney">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Disney.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies">GROSS</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#gross">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#gross">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Gross.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://grouplens.org/datasets/movielens/1m/">MOVIELENS</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#movielens">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#movielens">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Movielens.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://www.kaggle.com/datasets/shivamb/netflix-shows">NETFLIX</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#netflix">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#netflix">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Netflix.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://www.kaggle.com/datasets/dharmikdonga/academy-awards-dataset-oscars">OSCARS</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#oscars">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#oscars">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Oscars.html">TRANSFORM</a></p></li>
 </ul></li>
 <li><p><a href="https://data.world/priyankad0993/sequels">SEQUELS</a></p>
 <ul>
-<li><p><a href="../TIDY/Tidy.html#sequels">pulizia</a></p></li>
-<li><p>trasformazione</p></li>
+<li><p><a href="../TIDY/Tidy.html#sequels">TIDY</a></p></li>
+<li><p><a href="../TRANSFORM/Sequel.html">TRANSFORM</a></p></li>
 </ul></li>
 </ul>
 <div id="r-code" class="section level3">
 <h3>R CODE</h3>
-<pre class="r"><code>#eval = FALSE indica che il chunk non viene compilato
-
+<pre class="r"><code>#eval = FALSE --&gt; THE CODE CHUNK ISN&#39;T EVALUATED
 library(readr)
 
 amazon  &lt;- read_csv(&quot;../../DATASETS/AMAZON/amazon.csv&quot;)
@@ -437,13 +436,10 @@ uszips &lt;- read_csv(&quot;../../DATASETS/MOVIELENS/uszips.csv&quot;)
 netflix &lt;- read_csv(&quot;../../DATASETS/NETFLIX/netflix.csv&quot;)
 
 
-oscars &lt;- read_csv(&quot;../../DATASETS/OSCARS/oscars.csv&quot;)
+awards &lt;- read_delim(&quot;../../DATASETS/OSCARS/oscars.csv&quot;,delim=&quot;;&quot;)
 
 
-sequels &lt;- read_delim(&quot;../../DATASETS/SEQUELS/sequels.csv&quot;,delim = &quot;;&quot;)
-
-
-tmdb &lt;- read_csv(&quot;../../DATASETS/TMDB/tmdb.csv&quot;)</code></pre>
+sequels &lt;- read_delim(&quot;../../DATASETS/SEQUELS/sequels.csv&quot;,delim = &quot;;&quot;)</code></pre>
 </div>
 </div>
 

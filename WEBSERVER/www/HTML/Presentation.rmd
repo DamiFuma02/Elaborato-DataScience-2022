@@ -1,5 +1,5 @@
 ---
-title: "PRESENTAZIONE"
+title: "PRESENTATION"
 author: "Damiano Fumagalli"
 date: "`r Sys.Date()`"
 output: html_document
@@ -71,7 +71,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
     -   RATING
 
--   [MOVIELENS-APP](./TRANSFORM/Movielens.html#userLocation)
+-   [MOVIELENS-APP](./TRANSFORM/Movielens.html)
 
     -   MAPPING USER LOCATIONS BY...
 
@@ -79,44 +79,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
         -   MOVIE GENRE
 
--   [GROSS](./TRANSFORM/Gross.html#unitingData): CREARE UNA CORRISPONDENZA DEI FILM TRA LE 3 PIATTAFORME (DISNEY, NETFLIX, AMAZON)
+-   [GROSS](./TRANSFORM/Gross.html):
 
--   PREDIZIONE [OSCAR](./TRANSFORM/Oscars.html)
+    -   [GROSS / YEAR](./TRANSFORM/Gross.html#yearMap)
 
-    -   Oscar %\>% winner == FALSE
+    -   [AMAZON](./TRANSFORM/Gross.html#unitingData)
 
-    -   Numero di film con più nominee
+    -   [DISNEY](./TRANSFORM/Gross.html#unitingData)
 
-    -   Ordine decrescente
+    -   [NETFLIX](./TRANSFORM/Gross.html#unitingData)
 
-    -   Rating
+-   [OSCARS](./TRANSFORM/Oscars.html#interactivePlot): INTERACTIVE PLOT
 
-    -   Corrispondenza modelli RT e IMDB
-
--   prevailing rating by country
-
-    -   [AMAZON](./TRANSFORM/Amazon.html#countryRating)
-
-    -   [DISNEY](./TRANSFORM/Disney.html#countryRating)
-
-    -   [NETFLIX](./TRANSFORM/Netflix.html#countryRating)
-
--   gross / avarage rating
-
--   film preferiti delle annate correlati alla mentalità?
-
--   ANALISI ANTROPOLOGICA DEI FILM
-
--   trovare film con protagonisti deceduti nella vita reale
-
--   Trovare i film più visti con i sequel
-
--   correlazione sequel rating
-
--   
-
--   Gross in funzione di genre
-
--   Sequel Gross
-
-# [TIDY DATA](./TIDY/Tidy.html)
+-   [SEQUELS](./TRANSFORM/Sequel.html): MAP

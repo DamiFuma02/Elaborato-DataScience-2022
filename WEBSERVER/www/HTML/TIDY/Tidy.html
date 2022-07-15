@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-15" />
+<meta name="date" content="2022-07-16" />
 
 <title>TIDYING /DATASETS/</title>
 
@@ -366,7 +366,7 @@ pre code {
 
 <h1 class="title toc-ignore">TIDYING /DATASETS/</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-15</h4>
+<h4 class="date">2022-07-16</h4>
 
 </div>
 
@@ -1295,7 +1295,7 @@ head(netflixCountries)</code></pre>
 </div>
 <div id="oscars" class="section level1">
 <h1><a href="#indice">OSCARS</a></h1>
-<pre class="r"><code>View(awards)
+<pre class="r"><code>#View(awards)
 colnames(awards)[8] = &quot;title&quot;</code></pre>
 <div id="winner" class="section level3">
 <h3>WINNER</h3>
@@ -1308,22 +1308,7 @@ if (all(awards$year_ceremony == awards$year_film+1)){
   awards = awards %&gt;% select(-year_ceremony)
 }</code></pre>
 <pre><code>## [1] &quot;the ceremony premiates the previous year movies&quot;</code></pre>
-<pre class="r"><code>awards %&gt;% group_by(title) %&gt;% summarise(nominees = n()) %&gt;% arrange(desc(nominees))</code></pre>
-<pre><code>## # A tibble: 4,835 x 2
-##    title                nominees
-##    &lt;chr&gt;                   &lt;int&gt;
-##  1 &lt;NA&gt;                      304
-##  2 A Star Is Born             25
-##  3 Titanic                    16
-##  4 Moulin Rouge               15
-##  5 Mutiny on the Bounty       15
-##  6 All about Eve              14
-##  7 Cleopatra                  14
-##  8 La La Land                 14
-##  9 Little Women               14
-## 10 Chicago                    13
-## # ... with 4,825 more rows</code></pre>
-<pre class="r"><code>View(awards)</code></pre>
+<pre class="r"><code>#View(awards)</code></pre>
 </div>
 <div id="gender" class="section level3">
 <h3>GENDER</h3>
