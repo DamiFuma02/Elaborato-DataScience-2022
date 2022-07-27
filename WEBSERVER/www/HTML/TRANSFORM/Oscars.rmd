@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 library(dplyr)
 library(tidyverse)
+library(readr)
 library(plotly)
 library(tidyr)
 library(ggplot2)
@@ -34,30 +35,30 @@ bestNomineesGross = inner_join(bestNominees,gross,by="title")
 
 
 
-plot = ggplot(bestNomineesGross, aes(x=year, y=gross, size = nominees, color = license, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5), name="NOMINEES") + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))  + theme(legend.position="none")
+plot = ggplot(bestNomineesGross, aes(x=year, y=gross, size = nominees, color = agerating, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5)) + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))  + theme(legend.position="right")
 
 
 
 ggplotly(plot)
 
 
-#ggplot(bestNomineesGross) + geom_histogram(aes(gross,nominees, fill = license), position = "dodge") + scale_fill_discrete(label = c("ALL PEOPLE","Over 10","Over 13","Over 17","NA"))
 
 ```
 
 # NOMINEES
 
 ```{r}
-bestFilmNominees = oscars %>% group_by(title) %>% summarise(nominees = n(), year = year_film) %>% arrange(desc(nominees))
+bestFilmNominees = oscars %>% group_by(title) %>% summarise(nominees = n()) %>% arrange(desc(nominees))
 hist(x = bestFilmNominees$nominees,xlab = "Nominees",main = "Nominees Frequency")
 ```
 
 ```{r}
-dati = left_join(bestFilmNominees,gross,by="title") %>% filter(!is.na(gross))
+dati = inner_join(bestFilmNominees,gross,by="title") %>% filter(!is.na(gross))
+colnames(dati)[8] = "duration"
 head(dati)
 hist(x = dati$nominees,xlab = "Nominees",main = "Nominees Frequency")
 
-ggplot(dati) + geom_point(mapping = aes(nominees,gross,color = license)) + scale_y_log10()
+ggplot(dati,aes(nominees,gross,color = agerating,size = duration)) + geom_point(alpha = 0.5) + scale_y_log10()
 ```
 
 ### GENRE
@@ -80,7 +81,7 @@ print(paste("Genere Più occorrente nei migliori film",genTop,sep=" : "))
 ### LICENSE / NOMINEES
 
 ```{r}
-ggplot(dati) + geom_bar(mapping = aes(x=nominees,fill=license),position = "dodge")  + scale_fill_discrete(labels=c("Tutti","Over 10","Over 13","Over 17","NA"))
+ggplot(dati) + geom_bar(mapping = aes(x=nominees,fill=agerating),position = "dodge")  + scale_fill_discrete(labels=c("Tutti","Over 10","Over 13","Over 17","NA"))
 ```
 
 ### GENRES / NOMINEES
@@ -99,10 +100,8 @@ allgen[rev(order(genCounts))]
 ## SEQUELS
 
 ```{r}
-View(sequels)
-View(oscars)
 
-oscarsWithSequels = inner_join(sequels %>% select(-genres,-votes,-directors),oscars %>% select(title,year_film),by="title") %>% filter(year == year_film) %>% select(-year_film)  %>% group_by(title) %>% summarise(nominees = n(),year = unique(year),rating = unique(rating),duration = unique(duration), order = unique(order),seriesTitle = unique(seriesTitle)) %>% arrange(seriesTitle)
+oscarsWithSequels = inner_join(sequels %>% select(-genres,-votes,-directors),oscars %>% select(title,year),by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(-`year.x`,-`year.y`)  %>% group_by(title) %>% summarise(nominees = n(),year = unique(year),rating = unique(rating),duration = unique(duration), order = unique(order),seriesTitle = unique(seriesTitle)) %>% arrange(seriesTitle)
 
 head(oscarsWithSequels)
 

@@ -1,5 +1,5 @@
-library(readr)
 filePath = "../../CLEAN_DATA/GROSS/"
-gross <- read_csv(paste(filePath,"gross.csv",sep=""),col_types = "?")
-grossGenres <- read_csv(paste(filePath,"grossGenres.csv",sep=""),col_types = "?")
-grossDistributors = read_csv(paste(filePath,"grossDistributors.csv",sep=""),col_types = "?")
+gross <- readRDS(paste(filePath,"gross.rds",sep=""))
+grossGenres <- readRDS(paste(filePath,"grossGenreTable.rds",sep=""))
+grossDistributors = readRDS(paste(filePath,"grossDistributors.rds",sep=""))
+grossLicenseTable = readRDS(paste(filePath,"licenseTable.rds",sep=""))

@@ -67,10 +67,11 @@ levels(factor(amazon$type))
 ```{r}
 # View(amazon)
 spec(amazon)
+colnames(amazon)[8] = "Year"
+colnames(amazon)[11] = "Genres"
 
-amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description,-show_id)
-colnames(amazon)[6] = "Year"
-colnames(amazon)[9] = "Genres"
+amazon = amazon %>% filter(!is.na(type))  %>% select(-date_added,-description,-show_id) %>% mutate(Year = as.integer(Year)) 
+
 
 levels(factor(amazon$type))
 # CREA UNA COLONNA "Movie" LOGICA BINARIA 
@@ -94,6 +95,8 @@ amazonShows = amazon %>% filter(!Movie)
 amazonShows = amazonShows %>% mutate(Seasons = substr(duration,1,2)) %>% select(-duration,-Movie) %>% mutate(Seasons = strtoi(gsub(" ","",Seasons)))
 # Seasons = integer number
 head(amazonShows %>% select(title,Seasons))
+
+
 ```
 
 ### GENRES {#amazgenres}
@@ -126,7 +129,7 @@ amazonRatTypes = levels(factor(amazon$rating))
 (amazonRatingTypes = data.frame(
   ratingID = 1:length(amazonRatTypes),
   rating = amazonRatTypes,
-  Movie = (amazonRatTypes %in% amazonMovieRatings)
+  movie = (amazonRatTypes %in% amazonMovieRatings)
 ))
 # Movie Logical = if the rating is about Movies or TV-SHOWS
 
@@ -183,10 +186,10 @@ amazonDirectors = data.frame(
 :::
 
 ```{r}
+colnames(disney)[8] = "Year"
+colnames(disney)[11] = "Genres"
+disney = disney %>% select(-description,-date_added,-show_id) %>% mutate(Year = as.integer(Year))
 
-disney = disney %>% select(-description,-date_added,-show_id)
-colnames(disney)[6] = "Year"
-colnames(disney)[9] = "Genres"
 head(disney)
 ```
 
@@ -247,7 +250,8 @@ disneyGenreTable = data.frame(
 (disRats = levels(factor(disney$rating)))
 disneyRatingTypes = data.frame(
   ratingID = 1:length(disRats),
-  rating = disRats
+  rating = disRats,
+  movie = (disRats %in% levels(factor(disneyMovies$rating)))
 )
 ```
 
@@ -286,7 +290,7 @@ disneyCountries = data.frame(
 :::
 
 ```{r}
-
+colnames(HighestGrossers)[11] = "ageRating"
 HighestGrossers = HighestGrossers %>% filter(!is.na(`Movie Runtime`)) %>% select(-...1,-`Movie Info`,-`Release Date`,-`International Sales (in $)`,-`Domestic Sales (in $)`)
 head(HighestGrossers)
 ```
@@ -346,7 +350,11 @@ grossGenreTable = data.frame(
 ### RATING {#groratings}
 
 ```{r}
-levels(factor(HighestGrossers$License))
+levels(factor(HighestGrossers$ageRating))
+licenseTable = data.frame(
+  license = c("G","PG","PG-13","R","NA"),
+  maxYear = c(9,12,17,99,NA)
+)
 ```
 
 ### DISTRIBUTORS {#grodistributors}
@@ -484,10 +492,10 @@ colnames(uszips)[5] = "fips"
 ```{r}
 
 spec(netflix)
+colnames(netflix)[8] = "Year"
+colnames(netflix)[11] = "Genres"
+netflix = netflix %>% select(-date_added,-description) %>% mutate(Year = as.integer(Year))
 
-netflix = netflix %>% select(-date_added,-description)
-colnames(netflix)[7] = "Year"
-colnames(netflix)[10] = "Genres"
 ```
 
 ### TYPES {#nettypes}
@@ -539,7 +547,8 @@ netGenr = levels(factor(genres))
 netRat = levels(factor(netflix$rating))
 (netflixRatingTypes = data.frame(
   ratingID = 1:length(netRat),
-  rating = netRat
+  rating = netRat,
+  movie = (netRat %in% levels(factor(netflixMovies$rating)))
 ))
 ```
 
@@ -576,6 +585,7 @@ head(netflixCountries)
 ```{r}
 #View(awards)
 colnames(awards)[8] = "title"
+colnames(awards)[1] = "year"
 ```
 
 ### WINNER
@@ -586,7 +596,7 @@ awards = awards %>% mutate(winner = (winner == "VERO"))
 
 if (all(awards$year_ceremony == awards$year_film+1)){
   print("the ceremony premiates the previous year movies")
-  awards = awards %>% select(-year_ceremony)
+  awards = awards %>% select(-year_ceremony) %>% mutate(year = as.integer(year))
 }
 
 #View(awards)
@@ -613,13 +623,15 @@ awards = awards %>% mutate(Male = (gender == "Male")) %>% select(-gender)
 head(awards %>% select(Male))
 awards = awards %>% filter(!is.na(title))
 
+
+
 ```
 
 # [SEQUELS](#indice) {#sequels}
 
 ```{r}
 spec(sequels)
-sequels = sequels %>% select(-`Release Date`,-Description,-URL)
+sequels = sequels %>% select(-`Release Date`,-Description,-URL) %>% mutate(Year = as.integer(Year ))
 ```
 
 ```{r}
@@ -648,7 +660,7 @@ seqGenres = data.frame(
 
 # UPDATE DATA {#update-data}
 
-I datasets sono stati riformati togliendo eventuali dati inutili alla ricerca.
+THE DATA FORMAT IS CHOSEN [HERE](./FileDim.html#fileType)
 
 ### AMAZON
 
@@ -658,15 +670,15 @@ filePath = "../../CLEAN_DATA/"  # www/CLEAN_DATA
 amazon = amazon %>% mutate(Movie = ifelse(Movie,1L,0L))
 
 colnames(amazon) = tolower(colnames(amazon))
-write_csv(amazon,paste(amazonPath,"amazon.csv",sep="") )
+saveRDS(amazon,paste(amazonPath,"amazon.rds",sep="") )
 colnames(amazonMovies)  = tolower(colnames(amazonMovies))
-write_csv(amazonMovies,paste(amazonPath,"amazonMovies.csv",sep="")  )
+saveRDS(amazonMovies,paste(amazonPath,"amazonMovies.rds",sep="")  )
 colnames(amazonShows)  = tolower(colnames(amazonShows))
-write_csv(amazonShows,paste(amazonPath,"amazonShows.csv",sep="")  )
-write_csv(amazonGenres,paste(amazonPath,"amazonGenres.csv",sep="") )
-write_csv(amazonRatingTypes,paste(amazonPath,"amazonRatingTypes.csv",sep="") )
-write_csv(amazonCountries,paste(amazonPath,"amazonCountries.csv",sep="") )
-write_csv(amazonDirectors,paste(amazonPath,"amazonDirectors.csv",sep="") )
+saveRDS(amazonShows,paste(amazonPath,"amazonShows.rds",sep="")  )
+saveRDS(amazonGenres,paste(amazonPath,"amazonGenres.rds",sep="") )
+saveRDS(amazonRatingTypes,paste(amazonPath,"amazonRatingTypes.rds",sep="") )
+saveRDS(amazonCountries,paste(amazonPath,"amazonCountries.rds",sep="") )
+saveRDS(amazonDirectors,paste(amazonPath,"amazonDirectors.rds",sep="") )
 
 ```
 
@@ -678,24 +690,26 @@ write_csv(amazonDirectors,paste(amazonPath,"amazonDirectors.csv",sep="") )
 
 disney = disney %>% mutate(Movie = ifelse(Movie,1L,0L))
 colnames(disney) = tolower(colnames(disney))
-write_csv(disney,paste(disneyPath,"disney.csv",sep="")  )
+saveRDS(disney,paste(disneyPath,"disney.rds",sep="")  )
 colnames(disneyMovies) = tolower(colnames(disneyMovies) )
-write_csv(disneyMovies,paste(disneyPath,"disneyMovies.csv",sep="")  )
+saveRDS(disneyMovies,paste(disneyPath,"disneyMovies.rds",sep="")  )
 colnames(disneyShows) = tolower(colnames(disneyShows))
-write_csv(disneyShows,paste(disneyPath,"disneyShows.csv",sep="")  )
-write_csv(disneyGenreTable,paste(disneyPath,"disneyGenreTable.csv",sep="") )
-write_csv(disneyRatingTypes,paste(disneyPath,"disneyRatingTypes.csv",sep="") )
-write_csv(disneyCountries,paste(disneyPath,"disneyCountries.csv",sep="") )
+saveRDS(disneyShows,paste(disneyPath,"disneyShows.rds",sep="")  )
+saveRDS(disneyGenreTable,paste(disneyPath,"disneyGenreTable.rds",sep="") )
+saveRDS(disneyRatingTypes,paste(disneyPath,"disneyRatingTypes.rds",sep="") )
+saveRDS(disneyCountries,paste(disneyPath,"disneyCountries.rds",sep="") )
 ```
 
-### HIGH GROSS
+### GROSS
 
 ```{r}
 (grossPath = paste(filePath,"GROSS/",sep=""))
 colnames(HighestGrossers) = tolower(colnames(HighestGrossers))
-write_csv(HighestGrossers,paste(grossPath,"gross.csv",sep="")  )
-write_csv(grossGenreTable,paste(grossPath,"grossGenreTable.csv",sep="") )
-write_csv(grossDistributors,paste(grossPath,"grossDistributors.csv",sep="") )
+saveRDS(HighestGrossers,paste(grossPath,"gross.rds",sep="")  )
+saveRDS(grossGenreTable,paste(grossPath,"grossGenreTable.rds",sep="") )
+saveRDS(grossDistributors,paste(grossPath,"grossDistributors.rds",sep="") )
+
+saveRDS(licenseTable,paste(grossPath,"licenseTable.rds",sep="") )
 
 ```
 
@@ -704,16 +718,16 @@ write_csv(grossDistributors,paste(grossPath,"grossDistributors.csv",sep="") )
 ```{r}
 (movielensPath = paste(filePath,"MOVIELENS/",sep=""))
 colnames(movies) = tolower(colnames(movies))
-write_csv(movies,paste(movielensPath,"movies.csv",sep="")  )
+saveRDS(movies,paste(movielensPath,"movies.rds",sep="")  )
 colnames(ratings) = tolower(colnames(ratings))
-write_csv(ratings,paste(movielensPath,"ratings.csv",sep="")  )
+saveRDS(ratings,paste(movielensPath,"ratings.rds",sep="")  )
 users = users %>% mutate(Male = ifelse(Male,1L,0L))
 colnames(users) = tolower(colnames(users))
-write_csv(users,paste(movielensPath,"users.csv",sep="") )
-write_csv(workTable,paste(movielensPath,"workTable.csv",sep="") )
-write_csv(ageTable,paste(movielensPath,"ageTable.csv",sep="") )
-write_csv(movieLensGenreTable,paste(movielensPath,"movieLensGenreTable.csv",sep="") )
-write_csv(uszips,paste(movielensPath,"uszips.csv",sep="") )
+saveRDS(users,paste(movielensPath,"users.rds",sep="") )
+saveRDS(workTable,paste(movielensPath,"workTable.rds",sep="") )
+saveRDS(ageTable,paste(movielensPath,"ageTable.rds",sep="") )
+saveRDS(movieLensGenreTable,paste(movielensPath,"movieLensGenreTable.rds",sep="") )
+saveRDS(uszips,paste(movielensPath,"uszips.rds",sep="") )
 ```
 
 ### NETFLIX
@@ -722,14 +736,14 @@ write_csv(uszips,paste(movielensPath,"uszips.csv",sep="") )
 (netflixPath = paste(filePath,"NETFLIX/",sep=""))
 netflix = netflix %>% mutate(Movie = ifelse(Movie,1L,0L))
 colnames(netflix) = tolower(colnames(netflix))
-write_csv(netflix,paste(netflixPath,"netflix.csv",sep="") )
+saveRDS(netflix,paste(netflixPath,"netflix.rds",sep="") )
 colnames(netflixMovies) = tolower(colnames(netflixMovies))
-write_csv(netflixMovies,paste(netflixPath,"netflixMovies.csv",sep="")  )
+saveRDS(netflixMovies,paste(netflixPath,"netflixMovies.rds",sep="")  )
 colnames(netflixShows) = tolower(colnames(netflixShows))
-write_csv(netflixShows,paste(netflixPath,"netflixShows.csv",sep="") )
-write_csv(netflixGenres,paste(netflixPath,"netflixGenres.csv",sep="") )
-write_csv(netflixRatingTypes,paste(netflixPath,"netflixRatingTypes.csv",sep="") )
-write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
+saveRDS(netflixShows,paste(netflixPath,"netflixShows.rds",sep="") )
+saveRDS(netflixGenres,paste(netflixPath,"netflixGenres.rds",sep="") )
+saveRDS(netflixRatingTypes,paste(netflixPath,"netflixRatingTypes.rds",sep="") )
+saveRDS(netflixCountries,paste(netflixPath,"netflixCountries.rds",sep="") )
 
 ```
 
@@ -739,7 +753,10 @@ write_csv(netflixCountries,paste(netflixPath,"netflixCountries.csv",sep="") )
 (oscarPath = paste(filePath,"OSCARS/",sep=""))
 awards = awards %>% mutate(winner = ifelse(winner,1L,0L),Male = ifelse(Male,1L,0L))
 colnames(awards) = tolower(colnames(awards))
-write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
+saveRDS(awards,paste(oscarPath,"oscars.rds",sep="") )
+
+
+saveRDS(awards,paste(oscarPath,"oscars.rds",sep="") )
 
 
 ```
@@ -750,8 +767,8 @@ write_csv(awards,paste(oscarPath,"oscars.csv",sep="") )
 (sequelPath = paste(filePath,"SEQUELS/",sep=""))
 colnames(sequels) = c("title","year","rating","duration","genres","votes","directors","seriesTitle","order")
 
-write_delim(sequels,paste(sequelPath,"sequels.csv",sep=""),delim= ";"  )
-write_csv(seqGenres,paste(sequelPath,"sequelGenres.csv",sep=""))
+saveRDS(sequels,paste(sequelPath,"sequels.rds",sep="")  )
+saveRDS(seqGenres,paste(sequelPath,"sequelGenres.rds",sep=""))
 
 
 ```

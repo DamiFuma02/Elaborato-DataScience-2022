@@ -21,7 +21,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
     -   [TIDY](../TIDY/Tidy.html#disney)
 
-    -   [TRANSFORM](../TRANSFORM/Disney.html)
+    -   [TRANSFORM](../TRANSFORM/Gross.html#disney)
 
 -   [GROSS](https://www.kaggle.com/datasets/sanjeetsinghnaik/top-1000-highest-grossing-movies)
 

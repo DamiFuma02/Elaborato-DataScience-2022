@@ -21,7 +21,7 @@ source("../IMPORT/dataScript/oscarsData.r")
 
 ```{r}
 
-sequelGross = inner_join(sequels,gross %>% select(title,gross,license),by="title") 
+sequelGross = inner_join(sequels,gross %>% select(title,gross,agerating),by="title") 
 
 
 meanLic = function(listLic){
@@ -40,7 +40,7 @@ meanLic = function(listLic){
 }
 
 
-plot = sequelGross %>% group_by(seriesTitle) %>% summarise(nFilms = n(),rating = mean(rating), gross = sum(gross), license = unlist(lapply((toString(unique(license))), meanLic)) )  %>% ggplot() + geom_point(aes(rating,gross,size=nFilms, color = license)) + scale_size(range = c(1,5),name="nFILM") + scale_color_discrete(labels=c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))
+plot = sequelGross %>% group_by(seriesTitle) %>% summarise(nFilms = n(),rating = mean(rating), gross = sum(gross), license = unlist(lapply((toString(unique(agerating))), meanLic)) )  %>% ggplot(aes(rating,gross,size=nFilms, color = license,text=seriesTitle)) + geom_point() + scale_size(range = c(1,5)) + scale_color_discrete(labels=c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"),name="AGE LIMITATIONS") + theme(legend.position = "right")
 
 ggplotly(plot)
 
@@ -48,7 +48,7 @@ ggplotly(plot)
 
 ```{r}
 
-sequelGross = inner_join(sequels,gross %>% select(title,gross,license),by="title") 
+sequelGross = inner_join(sequels,gross %>% select(title,gross,agerating),by="title") 
 
 sequelGross %>% group_by(seriesTitle) %>% summarise(nFilms = n(),gross = sum(gross)) %>% group_by(nFilms) %>% summarise(nSeries = n(),gross = mean(gross))  %>% ggplot() + geom_col(aes(nFilms,gross, fill = nSeries)) + scale_fill_gradient(low="red",high="green",name="Number of Different Series") + labs(title="AVERAGE GROSS PER NUMBER OF FILM")
 

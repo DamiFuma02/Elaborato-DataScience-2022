@@ -1,4 +1,3 @@
-library(readr)
 filePath = "../../CLEAN_DATA/SEQUELS/"
-sequels <- read_delim(paste(filePath,"sequels.csv",sep=""),col_types = "?",delim = ";")
-sequelGenres = read_csv(paste(filePath,"sequelGenres.csv",sep=""),col_types = "?")
+sequels <- readRDS(paste(filePath,"sequels.rds",sep="") )
+sequelGenres = readRDS(paste(filePath,"sequelGenres.rds",sep="") )

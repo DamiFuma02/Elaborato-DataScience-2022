@@ -21,8 +21,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [TRANSFORM + VISUALIZE](./TRANSFORM/Transform.html)
 
--   [CONCLUSIONS](./CONCLUSIONS/Conclusions.html)
-
 # ENVIRONMENT
 
 ![](images/rstudio.png){width="115"} [cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
@@ -59,7 +57,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [INFO](./TIDY/FileDim.html): CLEANING DATA --\> LESS PC RESOURCES
 
--   [APP](./): Reccomendation System
+-   [APP](../): Recommendation System
 
     -   MOVIES / TV-SHOWS
 

@@ -1,3 +1,2 @@
-
 filePath = "./www/CLEAN_DATA/OSCARS/"
-oscars <- read_csv(paste(filePath,"oscars.csv",sep=""),col_types = "iiccccll")
+oscars <- readRDS(paste(filePath,"oscars.rds",sep=""))

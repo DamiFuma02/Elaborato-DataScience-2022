@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damiano Fumagalli" />
 
-<meta name="date" content="2022-07-16" />
+<meta name="date" content="2022-07-18" />
 
 <title>TIDYING /DATASETS/</title>
 
@@ -366,7 +366,7 @@ pre code {
 
 <h1 class="title toc-ignore">TIDYING /DATASETS/</h1>
 <h4 class="author">Damiano Fumagalli</h4>
-<h4 class="date">2022-07-16</h4>
+<h4 class="date">2022-07-18</h4>
 
 </div>
 
@@ -426,9 +426,11 @@ spec(amazon)</code></pre>
 ##   listed_in = col_character(),
 ##   description = col_character()
 ## )</code></pre>
-<pre class="r"><code>amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description,-show_id)
-colnames(amazon)[6] = &quot;Year&quot;
-colnames(amazon)[9] = &quot;Genres&quot;
+<pre class="r"><code>colnames(amazon)[8] = &quot;Year&quot;
+colnames(amazon)[11] = &quot;Genres&quot;
+
+amazon = amazon %&gt;% filter(!is.na(type))  %&gt;% select(-date_added,-description,-show_id) %&gt;% mutate(Year = as.integer(Year)) 
+
 
 levels(factor(amazon$type))</code></pre>
 <pre><code>## [1] &quot;Movie&quot;   &quot;TV Show&quot;</code></pre>
@@ -438,7 +440,7 @@ amazon = amazon %&gt;% mutate(Movie = (type==&quot;Movie&quot;)) %&gt;% select(-
 head(amazon)</code></pre>
 <pre><code>## # A tibble: 6 x 9
 ##   title                director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
+##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
 ## 1 The Grand Seduction  Don McK~ Bren~ Canada   2014 &lt;NA&gt;   113 min  Comed~ TRUE 
 ## 2 Take Care Good Night Girish ~ Mahe~ India    2018 13+    110 min  Drama~ TRUE 
 ## 3 Secrets of Deception Josh We~ Tom ~ United~  2017 &lt;NA&gt;   74 min   Actio~ TRUE 
@@ -518,9 +520,9 @@ amazonRatTypes = levels(factor(amazon$rating))
 (amazonRatingTypes = data.frame(
   ratingID = 1:length(amazonRatTypes),
   rating = amazonRatTypes,
-  Movie = (amazonRatTypes %in% amazonMovieRatings)
+  movie = (amazonRatTypes %in% amazonMovieRatings)
 ))</code></pre>
-<pre><code>##    ratingID   rating Movie
+<pre><code>##    ratingID   rating movie
 ## 1         1      13+  TRUE
 ## 2         2       16  TRUE
 ## 3         3      16+  TRUE
@@ -639,13 +641,14 @@ amazonDirectors = data.frame(
 <li><a href="#discountries">COUNTRIES</a></li>
 </ul>
 </div>
-<pre class="r"><code>disney = disney %&gt;% select(-description,-date_added,-show_id)
-colnames(disney)[6] = &quot;Year&quot;
-colnames(disney)[9] = &quot;Genres&quot;
+<pre class="r"><code>colnames(disney)[8] = &quot;Year&quot;
+colnames(disney)[11] = &quot;Genres&quot;
+disney = disney %&gt;% select(-description,-date_added,-show_id) %&gt;% mutate(Year = as.integer(Year))
+
 head(disney)</code></pre>
 <pre><code>## # A tibble: 6 x 9
 ##   type    title              director cast  country  Year rating duration Genres
-##   &lt;chr&gt;   &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
+##   &lt;chr&gt;   &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; 
 ## 1 Movie   Duck the Halls: A~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   23 min   Anima~
 ## 2 Movie   Ernest Saves Chri~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     91 min   Comedy
 ## 3 Movie   Ice Age: A Mammot~ Karen D~ Raym~ United~  2011 TV-G   23 min   Anima~
@@ -663,7 +666,7 @@ head(disney)</code></pre>
 head(disney)</code></pre>
 <pre><code>## # A tibble: 6 x 9
 ##   title                director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
+##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
 ## 1 Duck the Halls: A M~ Alonso ~ Chri~ &lt;NA&gt;     2016 TV-G   23 min   Anima~ TRUE 
 ## 2 Ernest Saves Christ~ John Ch~ Jim ~ &lt;NA&gt;     1988 PG     91 min   Comedy TRUE 
 ## 3 Ice Age: A Mammoth ~ Karen D~ Raym~ United~  2011 TV-G   23 min   Anima~ TRUE 
@@ -744,7 +747,8 @@ for (i in 1:nrow(disney)){
 ## [8] &quot;TV-Y7&quot;    &quot;TV-Y7-FV&quot;</code></pre>
 <pre class="r"><code>disneyRatingTypes = data.frame(
   ratingID = 1:length(disRats),
-  rating = disRats
+  rating = disRats,
+  movie = (disRats %in% levels(factor(disneyMovies$rating)))
 )</code></pre>
 </div>
 <div id="discountries" class="section level3">
@@ -792,30 +796,31 @@ for (i in 1:nrow(disney)){
 <li><p><a href="#grodistributors">DISTRIBUTORS</a></p></li>
 </ul>
 </div>
-<pre class="r"><code>HighestGrossers = HighestGrossers %&gt;% filter(!is.na(`Movie Runtime`)) %&gt;% select(-...1,-`Movie Info`,-`Release Date`,-`International Sales (in $)`,-`Domestic Sales (in $)`)
+<pre class="r"><code>colnames(HighestGrossers)[11] = &quot;ageRating&quot;
+HighestGrossers = HighestGrossers %&gt;% filter(!is.na(`Movie Runtime`)) %&gt;% select(-...1,-`Movie Info`,-`Release Date`,-`International Sales (in $)`,-`Domestic Sales (in $)`)
 head(HighestGrossers)</code></pre>
 <pre><code>## # A tibble: 6 x 6
-##   Title               Distributor `World Sales (~` Genre `Movie Runtime` License
-##   &lt;chr&gt;               &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;  
-## 1 Star Wars: Episode~ Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13  
-## 2 Avengers: Endgame ~ Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13  
-## 3 Avatar (2009)       Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13  
-## 4 Black Panther (201~ Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;   
-## 5 Avengers: Infinity~ Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;   
-## 6 Spider-Man: No Way~ Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
+##   Title             Distributor `World Sales (~` Genre `Movie Runtime` ageRating
+##   &lt;chr&gt;             &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;    
+## 1 Star Wars: Episo~ Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13    
+## 2 Avengers: Endgam~ Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13    
+## 3 Avatar (2009)     Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13    
+## 4 Black Panther (2~ Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;     
+## 5 Avengers: Infini~ Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;     
+## 6 Spider-Man: No W~ Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
 <div id="groseparation" class="section level3">
 <h3>SEPARATION</h3>
 <pre class="r"><code>HighestGrossers = separate(HighestGrossers,Title,into = c(&quot;Title&quot;,&quot;Year&quot;),sep = -5) %&gt;% mutate(Title = gsub(&#39;.{2}$&#39;, &#39;&#39;, Title)) %&gt;% mutate(Year = strtoi(gsub(&#39;.{1}$&#39;, &#39;&#39;, Year)))
 head(HighestGrossers)</code></pre>
 <pre><code>## # A tibble: 6 x 7
-##   Title          Year Distributor `World Sales (~` Genre `Movie Runtime` License
-##   &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;  
-## 1 Star Wars: E~  2015 Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13  
-## 2 Avengers: En~  2019 Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13  
-## 3 Avatar         2009 Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13  
-## 4 Black Panther  2018 Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;   
-## 5 Avengers: In~  2018 Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;   
-## 6 Spider-Man: ~  2021 Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
+##   Title        Year Distributor `World Sales (~` Genre `Movie Runtime` ageRating
+##   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;    
+## 1 Star Wars:~  2015 Walt Disne~       2069521700 &#39;Act~ 2 hr 18 min     PG-13    
+## 2 Avengers: ~  2019 Walt Disne~       2797501328 &#39;Act~ 3 hr 1 min      PG-13    
+## 3 Avatar       2009 Twentieth ~       2847246203 &#39;Act~ 2 hr 42 min     PG-13    
+## 4 Black Pant~  2018 Walt Disne~       1347597973 &#39;Act~ 2 hr 14 min     &lt;NA&gt;     
+## 5 Avengers: ~  2018 Walt Disne~       2048359754 &#39;Act~ 2 hr 29 min     &lt;NA&gt;     
+## 6 Spider-Man~  2021 Sony Pictu~       1544455963 &#39;Act~ 2 hr 28 min     &lt;NA&gt;</code></pre>
 </div>
 <div id="groruntime" class="section level3">
 <h3>RUNTIME</h3>
@@ -837,14 +842,14 @@ HighestGrossers = HighestGrossers %&gt;% mutate(&quot;Duration (mins)&quot; = if
 
 head(HighestGrossers)</code></pre>
 <pre><code>## # A tibble: 6 x 7
-##   Title         Year Distributor `World Sales (~` Genre License `Duration (min~`
-##   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;              &lt;dbl&gt;
-## 1 Star Wars: ~  2015 Walt Disne~       2069521700 &#39;Act~ PG-13                138
-## 2 Avengers: E~  2019 Walt Disne~       2797501328 &#39;Act~ PG-13                181
-## 3 Avatar        2009 Twentieth ~       2847246203 &#39;Act~ PG-13                162
-## 4 Black Panth~  2018 Walt Disne~       1347597973 &#39;Act~ &lt;NA&gt;                 134
-## 5 Avengers: I~  2018 Walt Disne~       2048359754 &#39;Act~ &lt;NA&gt;                 149
-## 6 Spider-Man:~  2021 Sony Pictu~       1544455963 &#39;Act~ &lt;NA&gt;                 148</code></pre>
+##   Title       Year Distributor `World Sales (~` Genre ageRating `Duration (min~`
+##   &lt;chr&gt;      &lt;int&gt; &lt;chr&gt;                  &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;                &lt;dbl&gt;
+## 1 Star Wars~  2015 Walt Disne~       2069521700 &#39;Act~ PG-13                  138
+## 2 Avengers:~  2019 Walt Disne~       2797501328 &#39;Act~ PG-13                  181
+## 3 Avatar      2009 Twentieth ~       2847246203 &#39;Act~ PG-13                  162
+## 4 Black Pan~  2018 Walt Disne~       1347597973 &#39;Act~ &lt;NA&gt;                   134
+## 5 Avengers:~  2018 Walt Disne~       2048359754 &#39;Act~ &lt;NA&gt;                   149
+## 6 Spider-Ma~  2021 Sony Pictu~       1544455963 &#39;Act~ &lt;NA&gt;                   148</code></pre>
 <pre class="r"><code>colnames(HighestGrossers)[4] = &quot;Gross&quot;</code></pre>
 </div>
 <div id="grogenres" class="section level3">
@@ -875,8 +880,12 @@ for (i in 1:nrow(HighestGrossers)){
 </div>
 <div id="groratings" class="section level3">
 <h3>RATING</h3>
-<pre class="r"><code>levels(factor(HighestGrossers$License))</code></pre>
+<pre class="r"><code>levels(factor(HighestGrossers$ageRating))</code></pre>
 <pre><code>## [1] &quot;G&quot;     &quot;PG&quot;    &quot;PG-13&quot; &quot;R&quot;</code></pre>
+<pre class="r"><code>licenseTable = data.frame(
+  license = c(&quot;G&quot;,&quot;PG&quot;,&quot;PG-13&quot;,&quot;R&quot;,&quot;NA&quot;),
+  maxYear = c(9,12,17,99,NA)
+)</code></pre>
 </div>
 <div id="grodistributors" class="section level3">
 <h3>DISTRIBUTORS</h3>
@@ -1136,9 +1145,9 @@ colnames(uszips)[5] = &quot;fips&quot;</code></pre>
 ##   listed_in = col_character(),
 ##   description = col_character()
 ## )</code></pre>
-<pre class="r"><code>netflix = netflix %&gt;% select(-date_added,-description)
-colnames(netflix)[7] = &quot;Year&quot;
-colnames(netflix)[10] = &quot;Genres&quot;</code></pre>
+<pre class="r"><code>colnames(netflix)[8] = &quot;Year&quot;
+colnames(netflix)[11] = &quot;Genres&quot;
+netflix = netflix %&gt;% select(-date_added,-description) %&gt;% mutate(Year = as.integer(Year))</code></pre>
 <div id="nettypes" class="section level3">
 <h3>TYPES</h3>
 <pre class="r"><code>levels(factor(netflix$type))</code></pre>
@@ -1221,26 +1230,24 @@ netGenr = levels(factor(genres))
 <pre class="r"><code>netRat = levels(factor(netflix$rating))
 (netflixRatingTypes = data.frame(
   ratingID = 1:length(netRat),
-  rating = netRat
+  rating = netRat,
+  movie = (netRat %in% levels(factor(netflixMovies$rating)))
 ))</code></pre>
-<pre><code>##    ratingID   rating
-## 1         1   66 min
-## 2         2   74 min
-## 3         3   84 min
-## 4         4        G
-## 5         5    NC-17
-## 6         6       NR
-## 7         7       PG
-## 8         8    PG-13
-## 9         9        R
-## 10       10    TV-14
-## 11       11     TV-G
-## 12       12    TV-MA
-## 13       13    TV-PG
-## 14       14     TV-Y
-## 15       15    TV-Y7
-## 16       16 TV-Y7-FV
-## 17       17       UR</code></pre>
+<pre><code>##    ratingID   rating movie
+## 1         1        G  TRUE
+## 2         2    NC-17  TRUE
+## 3         3       NR  TRUE
+## 4         4       PG  TRUE
+## 5         5    PG-13  TRUE
+## 6         6        R  TRUE
+## 7         7    TV-14  TRUE
+## 8         8     TV-G  TRUE
+## 9         9    TV-MA  TRUE
+## 10       10    TV-PG  TRUE
+## 11       11     TV-Y  TRUE
+## 12       12    TV-Y7  TRUE
+## 13       13 TV-Y7-FV  TRUE
+## 14       14       UR  TRUE</code></pre>
 </div>
 <div id="netcountries" class="section level3">
 <h3>COUNTRIES</h3>
@@ -1250,7 +1257,7 @@ netCountr = netflix %&gt;% filter(!is.na(country))
 head(netCountr %&gt;% filter(str_ends(country,&quot;,&quot;)))</code></pre>
 <pre><code>## # A tibble: 5 x 9
 ##   title         director        cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
+##   &lt;chr&gt;         &lt;chr&gt;           &lt;chr&gt; &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
 ## 1 The Present   Farah Nabulsi   Sale~ United~  2020 TV-MA  24 min   Drama~ TRUE 
 ## 2 Funan         Denis Do        Béré~ France~  2018 TV-14  87 min   Drama~ TRUE 
 ## 3 City of Joy   Madeleine Gavin &lt;NA&gt;  United~  2018 TV-MA  77 min   Docum~ TRUE 
@@ -1266,7 +1273,7 @@ netCountr = netCountr %&gt;% mutate(country = gsub(&quot;, &quot;,&quot;,&quot;,
 head(netCountr)</code></pre>
 <pre><code>## # A tibble: 6 x 9
 ##   title                director cast  country  Year rating duration Genres Movie
-##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
+##   &lt;chr&gt;                &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;lgl&gt;
 ## 1 Dick Johnson Is Dead Kirsten~ &lt;NA&gt;  United~  2020 PG-13  90 min   Docum~ TRUE 
 ## 2 Blood &amp; Water        &lt;NA&gt;     Ama ~ South ~  2021 TV-MA  2 Seaso~ Inter~ FALSE
 ## 3 Kota Factory         &lt;NA&gt;     Mayu~ India    2021 TV-MA  2 Seaso~ Inter~ FALSE
@@ -1296,7 +1303,8 @@ head(netflixCountries)</code></pre>
 <div id="oscars" class="section level1">
 <h1><a href="#indice">OSCARS</a></h1>
 <pre class="r"><code>#View(awards)
-colnames(awards)[8] = &quot;title&quot;</code></pre>
+colnames(awards)[8] = &quot;title&quot;
+colnames(awards)[1] = &quot;year&quot;</code></pre>
 <div id="winner" class="section level3">
 <h3>WINNER</h3>
 <pre class="r"><code>levels(factor(awards$winner))</code></pre>
@@ -1305,8 +1313,9 @@ colnames(awards)[8] = &quot;title&quot;</code></pre>
 
 if (all(awards$year_ceremony == awards$year_film+1)){
   print(&quot;the ceremony premiates the previous year movies&quot;)
-  awards = awards %&gt;% select(-year_ceremony)
+  awards = awards %&gt;% select(-year_ceremony) %&gt;% mutate(year = as.integer(year))
 }</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: `year_film`.</code></pre>
 <pre><code>## [1] &quot;the ceremony premiates the previous year movies&quot;</code></pre>
 <pre class="r"><code>#View(awards)</code></pre>
 </div>
@@ -1356,7 +1365,7 @@ head(awards %&gt;% select(Male))</code></pre>
 ##   `Movie Series` = col_character(),
 ##   Order = col_double()
 ## )</code></pre>
-<pre class="r"><code>sequels = sequels %&gt;% select(-`Release Date`,-Description,-URL)</code></pre>
+<pre class="r"><code>sequels = sequels %&gt;% select(-`Release Date`,-Description,-URL) %&gt;% mutate(Year = as.integer(Year ))</code></pre>
 <pre class="r"><code>Series = levels(factor(sequels$`Movie Series`))
 
 length(Series)</code></pre>
@@ -1383,8 +1392,7 @@ for (i in 1:nrow(sequels)){
 </div>
 <div id="update-data" class="section level1">
 <h1>UPDATE DATA</h1>
-<p>I datasets sono stati riformati togliendo eventuali dati inutili alla
-ricerca.</p>
+<p>THE DATA FORMAT IS CHOSEN <a href="./FileDim.html#fileType">HERE</a></p>
 <div id="amazon-1" class="section level3">
 <h3>AMAZON</h3>
 <pre class="r"><code>filePath = &quot;../../CLEAN_DATA/&quot;  # www/CLEAN_DATA
@@ -1393,15 +1401,15 @@ ricerca.</p>
 <pre class="r"><code>amazon = amazon %&gt;% mutate(Movie = ifelse(Movie,1L,0L))
 
 colnames(amazon) = tolower(colnames(amazon))
-write_csv(amazon,paste(amazonPath,&quot;amazon.csv&quot;,sep=&quot;&quot;) )
+saveRDS(amazon,paste(amazonPath,&quot;amazon.rds&quot;,sep=&quot;&quot;) )
 colnames(amazonMovies)  = tolower(colnames(amazonMovies))
-write_csv(amazonMovies,paste(amazonPath,&quot;amazonMovies.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(amazonMovies,paste(amazonPath,&quot;amazonMovies.rds&quot;,sep=&quot;&quot;)  )
 colnames(amazonShows)  = tolower(colnames(amazonShows))
-write_csv(amazonShows,paste(amazonPath,&quot;amazonShows.csv&quot;,sep=&quot;&quot;)  )
-write_csv(amazonGenres,paste(amazonPath,&quot;amazonGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonRatingTypes,paste(amazonPath,&quot;amazonRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonCountries,paste(amazonPath,&quot;amazonCountries.csv&quot;,sep=&quot;&quot;) )
-write_csv(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(amazonShows,paste(amazonPath,&quot;amazonShows.rds&quot;,sep=&quot;&quot;)  )
+saveRDS(amazonGenres,paste(amazonPath,&quot;amazonGenres.rds&quot;,sep=&quot;&quot;) )
+saveRDS(amazonRatingTypes,paste(amazonPath,&quot;amazonRatingTypes.rds&quot;,sep=&quot;&quot;) )
+saveRDS(amazonCountries,paste(amazonPath,&quot;amazonCountries.rds&quot;,sep=&quot;&quot;) )
+saveRDS(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="disney-1" class="section level3">
 <h3>DISNEY</h3>
@@ -1409,39 +1417,41 @@ write_csv(amazonDirectors,paste(amazonPath,&quot;amazonDirectors.csv&quot;,sep=&
 <pre><code>## [1] &quot;../../CLEAN_DATA/DISNEY/&quot;</code></pre>
 <pre class="r"><code>disney = disney %&gt;% mutate(Movie = ifelse(Movie,1L,0L))
 colnames(disney) = tolower(colnames(disney))
-write_csv(disney,paste(disneyPath,&quot;disney.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(disney,paste(disneyPath,&quot;disney.rds&quot;,sep=&quot;&quot;)  )
 colnames(disneyMovies) = tolower(colnames(disneyMovies) )
-write_csv(disneyMovies,paste(disneyPath,&quot;disneyMovies.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(disneyMovies,paste(disneyPath,&quot;disneyMovies.rds&quot;,sep=&quot;&quot;)  )
 colnames(disneyShows) = tolower(colnames(disneyShows))
-write_csv(disneyShows,paste(disneyPath,&quot;disneyShows.csv&quot;,sep=&quot;&quot;)  )
-write_csv(disneyGenreTable,paste(disneyPath,&quot;disneyGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyRatingTypes,paste(disneyPath,&quot;disneyRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(disneyCountries,paste(disneyPath,&quot;disneyCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(disneyShows,paste(disneyPath,&quot;disneyShows.rds&quot;,sep=&quot;&quot;)  )
+saveRDS(disneyGenreTable,paste(disneyPath,&quot;disneyGenreTable.rds&quot;,sep=&quot;&quot;) )
+saveRDS(disneyRatingTypes,paste(disneyPath,&quot;disneyRatingTypes.rds&quot;,sep=&quot;&quot;) )
+saveRDS(disneyCountries,paste(disneyPath,&quot;disneyCountries.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
-<div id="high-gross" class="section level3">
-<h3>HIGH GROSS</h3>
+<div id="gross-1" class="section level3">
+<h3>GROSS</h3>
 <pre class="r"><code>(grossPath = paste(filePath,&quot;GROSS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/GROSS/&quot;</code></pre>
 <pre class="r"><code>colnames(HighestGrossers) = tolower(colnames(HighestGrossers))
-write_csv(HighestGrossers,paste(grossPath,&quot;gross.csv&quot;,sep=&quot;&quot;)  )
-write_csv(grossGenreTable,paste(grossPath,&quot;grossGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(grossDistributors,paste(grossPath,&quot;grossDistributors.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(HighestGrossers,paste(grossPath,&quot;gross.rds&quot;,sep=&quot;&quot;)  )
+saveRDS(grossGenreTable,paste(grossPath,&quot;grossGenreTable.rds&quot;,sep=&quot;&quot;) )
+saveRDS(grossDistributors,paste(grossPath,&quot;grossDistributors.rds&quot;,sep=&quot;&quot;) )
+
+saveRDS(licenseTable,paste(grossPath,&quot;licenseTable.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="movielens-1" class="section level3">
 <h3>MOVIELENS</h3>
 <pre class="r"><code>(movielensPath = paste(filePath,&quot;MOVIELENS/&quot;,sep=&quot;&quot;))</code></pre>
 <pre><code>## [1] &quot;../../CLEAN_DATA/MOVIELENS/&quot;</code></pre>
 <pre class="r"><code>colnames(movies) = tolower(colnames(movies))
-write_csv(movies,paste(movielensPath,&quot;movies.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(movies,paste(movielensPath,&quot;movies.rds&quot;,sep=&quot;&quot;)  )
 colnames(ratings) = tolower(colnames(ratings))
-write_csv(ratings,paste(movielensPath,&quot;ratings.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(ratings,paste(movielensPath,&quot;ratings.rds&quot;,sep=&quot;&quot;)  )
 users = users %&gt;% mutate(Male = ifelse(Male,1L,0L))
 colnames(users) = tolower(colnames(users))
-write_csv(users,paste(movielensPath,&quot;users.csv&quot;,sep=&quot;&quot;) )
-write_csv(workTable,paste(movielensPath,&quot;workTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(ageTable,paste(movielensPath,&quot;ageTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(movieLensGenreTable,paste(movielensPath,&quot;movieLensGenreTable.csv&quot;,sep=&quot;&quot;) )
-write_csv(uszips,paste(movielensPath,&quot;uszips.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(users,paste(movielensPath,&quot;users.rds&quot;,sep=&quot;&quot;) )
+saveRDS(workTable,paste(movielensPath,&quot;workTable.rds&quot;,sep=&quot;&quot;) )
+saveRDS(ageTable,paste(movielensPath,&quot;ageTable.rds&quot;,sep=&quot;&quot;) )
+saveRDS(movieLensGenreTable,paste(movielensPath,&quot;movieLensGenreTable.rds&quot;,sep=&quot;&quot;) )
+saveRDS(uszips,paste(movielensPath,&quot;uszips.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="netflix-1" class="section level3">
 <h3>NETFLIX</h3>
@@ -1449,14 +1459,14 @@ write_csv(uszips,paste(movielensPath,&quot;uszips.csv&quot;,sep=&quot;&quot;) )<
 <pre><code>## [1] &quot;../../CLEAN_DATA/NETFLIX/&quot;</code></pre>
 <pre class="r"><code>netflix = netflix %&gt;% mutate(Movie = ifelse(Movie,1L,0L))
 colnames(netflix) = tolower(colnames(netflix))
-write_csv(netflix,paste(netflixPath,&quot;netflix.csv&quot;,sep=&quot;&quot;) )
+saveRDS(netflix,paste(netflixPath,&quot;netflix.rds&quot;,sep=&quot;&quot;) )
 colnames(netflixMovies) = tolower(colnames(netflixMovies))
-write_csv(netflixMovies,paste(netflixPath,&quot;netflixMovies.csv&quot;,sep=&quot;&quot;)  )
+saveRDS(netflixMovies,paste(netflixPath,&quot;netflixMovies.rds&quot;,sep=&quot;&quot;)  )
 colnames(netflixShows) = tolower(colnames(netflixShows))
-write_csv(netflixShows,paste(netflixPath,&quot;netflixShows.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixGenres,paste(netflixPath,&quot;netflixGenres.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixRatingTypes,paste(netflixPath,&quot;netflixRatingTypes.csv&quot;,sep=&quot;&quot;) )
-write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(netflixShows,paste(netflixPath,&quot;netflixShows.rds&quot;,sep=&quot;&quot;) )
+saveRDS(netflixGenres,paste(netflixPath,&quot;netflixGenres.rds&quot;,sep=&quot;&quot;) )
+saveRDS(netflixRatingTypes,paste(netflixPath,&quot;netflixRatingTypes.rds&quot;,sep=&quot;&quot;) )
+saveRDS(netflixCountries,paste(netflixPath,&quot;netflixCountries.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="oscars-1" class="section level3">
 <h3>OSCARS</h3>
@@ -1464,7 +1474,10 @@ write_csv(netflixCountries,paste(netflixPath,&quot;netflixCountries.csv&quot;,se
 <pre><code>## [1] &quot;../../CLEAN_DATA/OSCARS/&quot;</code></pre>
 <pre class="r"><code>awards = awards %&gt;% mutate(winner = ifelse(winner,1L,0L),Male = ifelse(Male,1L,0L))
 colnames(awards) = tolower(colnames(awards))
-write_csv(awards,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</code></pre>
+saveRDS(awards,paste(oscarPath,&quot;oscars.rds&quot;,sep=&quot;&quot;) )
+
+
+saveRDS(awards,paste(oscarPath,&quot;oscars.rds&quot;,sep=&quot;&quot;) )</code></pre>
 </div>
 <div id="sequels-1" class="section level3">
 <h3>SEQUELS</h3>
@@ -1472,8 +1485,8 @@ write_csv(awards,paste(oscarPath,&quot;oscars.csv&quot;,sep=&quot;&quot;) )</cod
 <pre><code>## [1] &quot;../../CLEAN_DATA/SEQUELS/&quot;</code></pre>
 <pre class="r"><code>colnames(sequels) = c(&quot;title&quot;,&quot;year&quot;,&quot;rating&quot;,&quot;duration&quot;,&quot;genres&quot;,&quot;votes&quot;,&quot;directors&quot;,&quot;seriesTitle&quot;,&quot;order&quot;)
 
-write_delim(sequels,paste(sequelPath,&quot;sequels.csv&quot;,sep=&quot;&quot;),delim= &quot;;&quot;  )
-write_csv(seqGenres,paste(sequelPath,&quot;sequelGenres.csv&quot;,sep=&quot;&quot;))</code></pre>
+saveRDS(sequels,paste(sequelPath,&quot;sequels.rds&quot;,sep=&quot;&quot;)  )
+saveRDS(seqGenres,paste(sequelPath,&quot;sequelGenres.rds&quot;,sep=&quot;&quot;))</code></pre>
 </div>
 <div id="subindex-code" class="section level3">
 <h3>SUBINDEX-CODE</h3>

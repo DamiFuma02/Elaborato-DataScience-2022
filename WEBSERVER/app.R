@@ -1,15 +1,7 @@
-# STRUTTURA LINK INTERNI
+# LINK STRUCTURE
 # "./" == "./www/"
 # "./HTML" == "./www/HTML"
 # library(shiny)
-
-
-# alla compilazione vengono 
-# introdotti tutti i file presenti nella cartella R/
-
-spec(amazonMovies)
-spec(disneyMovies)
-spec(netflixMovies)
 
 
 mainUI = fluidPage(
@@ -19,7 +11,7 @@ mainUI = fluidPage(
   p(id="c",a(id = "startLink","START PRESENTATION", href="./HTML/Presentation.html")),
   
   h3(id = "indexTitle","INDEX"),
-  radioButtons("chosenAPP","CHOOSE THE APP",choiceNames = c("Reccomendation System","MOVIELENS User MAPS","OSCARS INTERACTIVE MAP"), choiceValues = c("RS","UM","OM")),
+  radioButtons("chosenAPP","CHOOSE THE APP",choiceNames = c("RECOMENDATION SYSTEM","MOVIELENS USER MAPS","OSCARS INTERACTIVE MAP"), choiceValues = c("RS","UM","OM")),
   actionButton("invia","LAUNCH APP"),
   uiOutput("outUI")
 )
@@ -35,7 +27,7 @@ usersMap_UI = fluidPage(
 
 oscars_UI = fluidPage(
   h2("","OSCAR INTERACTIVE MAP"),
-  radioButtons("license","CHOOSE THE LICENSE",choiceNames = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"), choiceValues = c("G","PG","PG-13","R","NA")),
+  radioButtons("license","CHOOSE THE AGE LIMITATION",choiceNames = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"), choiceValues = c("G","PG","PG-13","R","NA")),
   actionButton("sendLicense","SEND"),
   uiOutput("interactivePlot")
 )
@@ -43,7 +35,7 @@ oscars_UI = fluidPage(
 
 
 reccomendAPP_UI = fluidPage(
-  h2(id = "","Reccomendation System"),
+  h2(id = "","Recomendation System"),
   checkboxGroupInput("platform",label = "Choose your straming services", choiceNames = c("None","Amazon Prime Video","Disney +","Netflix"),choiceValues = c("none","amazon","disney","netflix")),
   radioButtons("movieType",label = "Choose the movie Type",choiceNames = c("Movie","TV-Shows"), choiceValues = c("M","T")),
   radioButtons("arrangeBy","Arrange BY",choices = c("year","duration","oscarNominees")),
@@ -51,7 +43,7 @@ reccomendAPP_UI = fluidPage(
   textInput("age","INSERT YOUR AGE"),
   actionButton("print","SEND"),
   textOutput("printout"),
-  tableOutput("printTable")
+  tableOutput("outputType")
 )
 
 
@@ -120,12 +112,12 @@ server <-  function(input,output){
     }
   })
   
-  # reccomendation
+  # recomendation
    reccTable = eventReactive(input$print,{
-      compiledList = list(platform = sort(input$platform),movieType = input$movieType, arrange = input$arrangeBy, order = input$order)
+      compiledList = list(platform = sort(input$platform),movieType = input$movieType, arrange = input$arrangeBy, order = input$order, age = input$age)
      reccomendAPP(compiledList)
    })
-    output$printTable = renderTable({
+    output$outputType = renderTable({
       reccTable()
      })
     
@@ -140,12 +132,6 @@ server <-  function(input,output){
       ggplotly(oscMap())
     })
     
-    
-    
-    
-    
-    
-   
     
   }
 

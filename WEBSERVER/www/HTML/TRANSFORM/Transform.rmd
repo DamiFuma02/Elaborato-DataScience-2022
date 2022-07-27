@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 -   [AMAZON](./Amazon.html)
 
--   [DISNEY](./Disney.html)
+-   [DISNEY](./Gross.html#disney)
 
 -   [GROSS](./Gross.html)
 

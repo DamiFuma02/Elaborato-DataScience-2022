@@ -29,22 +29,48 @@ bestTitles = function(y){
 
 colnames(gross)[7] = "duration"
 
-bestMoviesByYear = gross  %>% group_by(year) %>% summarise(title = unlist(lapply(unique(year), bestTitles))) %>% left_join(gross %>% select(-year) ,by="title") 
+bestMoviesByYear = gross  %>% group_by(year) %>% summarise(title = unlist(lapply(unique(year), bestTitles))) %>% left_join(gross %>% select(-year) ,by="title")  %>% select(-distributor)
 
 
 
-plot = ggplot(bestMoviesByYear, aes(x=year, y=gross, size = duration, color = license, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5), name="NOMINEES") + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"))  + theme(legend.position="none")
+plot = ggplot(bestMoviesByYear, aes(x=year, y=gross, size = duration, color = agerating, text=title)) + geom_point(alpha=0.5) + scale_size(range = c(1,5),name="DURATION (MINS)") + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"), name = "AGE LIMITATIONS")  + theme(legend.position="right")
 
 ggplotly(plot)
-
 ```
 
 ```{r}
-grossYear = gross %>% group_by(year) %>% summarise(gross = sum(gross),filmCounts = n())
+
+mostFreqRating = function(years){
+  l = length(years)
+  ratingsByYear = vector(mode = "character",length = l)
+  years = sort(years)
+  for (i in 1:l){
+    d = gross %>% filter(year == years[i])
+    rats = unique(d$agerating)
+    
+    if (length(rats) == 1){
+      ratingsByYear[i] = rats
+    } else  {
+      counts = vector(mode = "integer",length = length(rats))
+      for (j in 1:length(rats)){
+        counts[j] = nrow(d %>% filter(agerating == rats[j]))
+      }
+      ratingsByYear[i] = rats[order(counts,decreasing=TRUE)[1]]
+    }
+  }
+  return (ratingsByYear)
+}
 
 
-#View(grossYear)
-ggplot(grossYear,aes(year,gross)) + geom_point(aes(color = filmCounts)) + geom_smooth()
+grossYear = gross %>% group_by(year)  %>% summarise (gross = sum(gross),filmCount = n()) %>% mutate( license = mostFreqRating(year))
+```
+
+
+
+```{r}
+ggplot(grossYear,aes(year,gross,size = filmCount,color = license )) + geom_point() + scale_size(range(1,5),name="FILM COUNT")  + scale_color_discrete(labels = c("ALL PEOPLE","OVER 10","OVER 13","OVER 17","UNRATED"), name = "AGE LIMITATIONS")
+
+
 ```
 
 # UNITING DATA {#unitingData}
@@ -53,12 +79,14 @@ ggplot(grossYear,aes(year,gross)) + geom_point(aes(color = filmCounts)) + geom_s
 
 ```{r}
 
-data = inner_join(amazon,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+data = inner_join(amazon,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`,duration = `duration.x`) %>% mutate(duration = strtoi(gsub(" min","",duration))) %>% select(title,duration,year,agerating,gross)
 
  
 
 
-ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS AMAZON MOVIES")  + scale_color_discrete(labels=c("Over 10","Over 13","Over 17","NA"))
+plot = ggplot(data,aes(x=year,y=gross,color =agerating,text=title,size = duration)) + geom_point(alpha=0.5)  + labs(title="GROSS AMAZON MOVIES")  + scale_color_discrete(labels=c("Over 10","Over 13","Over 17","NA")) + theme(legend.position = "right")
+
+ggplotly(plot)
 
 
 grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 
@@ -70,13 +98,15 @@ ggplot(grossYear,aes(year,gross)) + geom_point() + geom_smooth() + labs(title="T
 ## DISNEY
 
 ```{r}
-data = inner_join(disney,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+data = inner_join(disney,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`,duration = `duration.x`) %>% mutate(duration = strtoi(gsub(" min","",duration))) %>% select(title,duration,year,agerating,gross)
 
  
 
 
 
-ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS DISNEY MOVIES")  + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","NA"))
+plot = ggplot(data,aes(x=year,y=gross,text=title,color = agerating,size = duration)) + geom_point(alpha = 0.5) + labs(title="GROSS DISNEY MOVIES")  + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","NA")) + theme(legend.position = "right")
+
+ggplotly(plot)
 
 grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 
 
@@ -87,11 +117,11 @@ ggplot(grossYear,aes(year,gross)) + geom_point() + geom_smooth() + labs(title="T
 ## NETFLIX
 
 ```{r}
-data = inner_join(netflix,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`) %>% select(title,gross,license,year)
+data = inner_join(netflix,gross,by="title") %>% filter(`year.x` == `year.y`) %>% mutate(year = `year.x`,duration = `duration.x`) %>% mutate(duration = strtoi(gsub(" min","",duration))) %>% select(title,duration,year,agerating,gross)
 
  
-ggplot(data,aes(x=year,y=gross)) + geom_point(aes(color =license)) + labs(title="GROSS NETFLIX MOVIES") + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","Over 17","NA"  ))
-
+plot = ggplot(data,aes(x=year,y=gross,text=title,size = duration, color = agerating)) + geom_point(alpha = 0.5 ) + labs(title="GROSS NETFLIX MOVIES") + scale_color_discrete(labels=c("ALL PEOPLE","Over 10","Over 13","Over 17","NA"  )) + theme(legend.position = "right")
+ggplotly(plot)
 
 
 grossYear = data %>% group_by(year) %>% summarise(gross = sum(gross)) 

@@ -8,8 +8,67 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(readr)
+library(microbenchmark)
 library(dplyr)
 ```
+
+# FILE TYPE {#fileType}
+
+-   CSV (Comma Separated Values) is the best solution if you want to open these files with other analysis software, such as Excel
+
+-   RDS (R Data Structure) preserves the column types and reduces the file dimensions
+
+```{r}
+
+dirtyOscars = read_delim("../../DATASETS/OSCARS/oscars.csv",delim=";")
+spec(dirtyOscars)
+(winnerValues = unique(dirtyOscars$winner))
+typeof(winnerValues)
+
+clanOscars = dirtyOscars %>% mutate(winner = (winner == "VERO"), year = as.integer(year_film)) %>% select(film,year,winner)
+
+clanMoreOscars = dirtyOscars %>% mutate(winner = ifelse(winner == "VERO",1L,0L), year = as.integer(year_film)) %>% select(film,year,winner)
+
+(winnerValues = unique(clanOscars$winner))
+typeof(winnerValues)
+
+#SAVING IN CSV FORMAT
+cleanCSVPath = "./datasets/clanOscars.csv"
+write_csv(clanOscars,cleanCSVPath)
+# RDS FORMAT
+cleanRDSPath = "./datasets/clanOscars.rds"
+saveRDS(clanOscars,cleanRDSPath)
+
+clanMoreRDSPath = "./datasets/clanMoreOscars.rds"
+saveRDS(clanMoreRDSPath,clanMoreRDSPath)
+
+
+
+
+compare <- microbenchmark(read_csv(cleanCSVPath,show_col_types = FALSE),   readRDS(cleanRDSPath),  times = 10)
+
+compare 
+
+
+# READING DATA
+
+oscarsCSV = read_csv(cleanCSVPath,show_col_types = FALSE)
+oscarsRDS = readRDS(cleanRDSPath)
+
+head(oscarsCSV)
+head(oscarsRDS)
+
+
+
+```
+
+### FILE DIMENSIONS
+
+![](images/oscarsCSV.png)
+
+![](images/oscarsRDS.png)
+
+![](images/oscarsIntegerRDS.png)
 
 # AMAZON DATASETS
 
@@ -28,9 +87,9 @@ spec(amazCleanMore)
 levels(factor(amazCleanMore$movie))
 # 1 = TRUE, 0 = FALSE
 
-write_csv(amazDirty,"./amazDirt.csv")
-write_csv(amazClean,"./amazClean.csv")
-write_csv(amazCleanMore  ,"./amazCleanMore.csv")
+write_csv(amazDirty,"./datasets/amazDirt.csv")
+write_csv(amazClean,"./datasets/amazClean.csv")
+write_csv(amazCleanMore  ,"./datasets/amazCleanMore.csv")
 
 paste("ALL FILES HAVE"  , nrow(amazClean) , "ROWS")
 nMovies = nrow(amazClean %>% filter(movie)) 

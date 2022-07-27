@@ -1,8 +1,7 @@
-
 filePath = "./www/CLEAN_DATA/NETFLIX/"
-netflix <- read_csv(paste(filePath,"netflix.csv",sep=""),col_types = "ccccicicl")
-netflixCountries <- read_csv(paste(filePath,"netflixCountries.csv",sep=""),col_types = "?")
-netflixGenres <- read_csv(paste(filePath,"netflixGenres.csv",sep=""),col_types = "?")
-netflixMovies <- read_csv(paste(filePath,"netflixMovies.csv",sep=""),col_types = "?")
-netflixRatingTypes <- read_csv(paste(filePath,"netflixRatingTypes.csv",sep=""),col_types = "?")
-netflixShows <- read_csv(paste(filePath,"netflixShows.csv",sep=""),col_types = "?")
+netflix <- readRDS(paste(filePath,"netflix.rds",sep=""))
+netflixCountries <- readRDS(paste(filePath,"netflixCountries.rds",sep=""))
+netflixGenres <- readRDS(paste(filePath,"netflixGenres.rds",sep=""))
+netflixMovies <- readRDS(paste(filePath,"netflixMovies.rds",sep=""))
+netflixRatingTypes <- readRDS(paste(filePath,"netflixRatingTypes.rds",sep=""))
+netflixShows <- readRDS(paste(filePath,"netflixShows.rds",sep=""))
